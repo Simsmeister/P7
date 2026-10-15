@@ -18,6 +18,17 @@ Initialising UDS system complete:
   - Command buffer size: 8192
   - Hashmap size: 4194304
 Starting Unity Data Store Application
+[Error] Failed to free block of size 4506 - size delta was 46!
+ #2 free_block(ushared_memory_pool*, unsigned long, unsigned long)
+ #3 ushared_memory_pool_free(ushared_memory_pool*, upool_reference)
+ #4 uds_evict_stale_entries(uds_system_t*, long, unsigned long*, unsigned long)
+ #5 GarbageCollector::Collect(uds_system_t*, long)
+ #6 GarbageCollector::ThreadFunction()
+ #7 uds::ThreadedBase::StaticThreadWrapper(void*)
+ #8 Thread::RunThreadWrapper(void*)
+ #9 _pthread_start
+ #10 thread_start
+
 Unity Data Store Application Complete
-[Warning] Shutting down service while there are still connected clients, client count = 2
+[Warning] Shutting down service while there are still connected clients, client count = 3
 Shut down UDS service system complete
