@@ -1,0 +1,40 @@
+# Unity-generated folders (Unity recreates these locally)
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+/[Mm]emoryCaptures/
+/[Rr]ecordings/
+
+# Built applications and build intermediates
+/[Bb]uild/
+/[Bb]uilds/
+*.apk
+*.aab
+
+# Generated IDE projects and local caches
+/.vs/
+/.idea/
+.gradle/
+*.csproj
+*.sln
+*.slnx
+*.suo
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# OS metadata
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
+
+# Keep Assets (including .meta), Packages, and ProjectSettings tracked.
