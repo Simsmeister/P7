@@ -28,7 +28,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0.02}
-  m_LocalScale: {x: 2.25, y: 0.62, z: 0.015}
+  m_LocalScale: {x: 2.25, y: 0.48, z: 0.015}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 8403786652484582265}
@@ -66,7 +66,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 30271ab3fa04d421bb06939c8be37003, type: 2}
+  - {fileID: 2100000, guid: 7041d1be1a802491fbb6d31e045a935d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -241,6 +241,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7084809300585936730}
   - component: {fileID: 2893667467671457007}
+  - component: {fileID: 5338911299099834427}
   m_Layer: 0
   m_Name: Shield Exercise Game
   m_TagString: Untagged
@@ -268,6 +269,9 @@ Transform:
   - {fileID: 8403786652484582265}
   - {fileID: 447110309852250208}
   - {fileID: 2140242077870241697}
+  - {fileID: 931674486280843532}
+  - {fileID: 436768613683221181}
+  - {fileID: 8588005941434930234}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &2893667467671457007
@@ -297,7 +301,28 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 86e212b290eaf4429ac0e558ab6ef3eb, type: 2}
   replay: {fileID: 0}
   coach: {fileID: 601157242780670807}
+  pathStream: {fileID: 3314909098139183153}
+  adaptiveCoach: {fileID: 5338911299099834427}
+  menu: {fileID: 4863597563646110264}
+  conduit: {fileID: 1137265422918865774}
+  exerciseGapSeconds: 2.5
   arcade: {fileID: 1476432395337060586}
+--- !u!114 &5338911299099834427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7334801746062404458}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b172ad4289aad4895bb5eae7cbecdc97, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EmilVR.AdaptiveExerciseCoach
+  adaptationEnabled: 1
+  minimumRangeScale: 0.4
+  fastestDurationScale: 0.85
+  slowestDurationScale: 2
 --- !u!1001 &1410290791948797077
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -379,6 +404,83 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 1018366382310454068, guid: 2d2f061fbaa7440f89b56a102f8ba062, type: 3}
   m_PrefabInstance: {fileID: 1410290791948797077}
   m_PrefabAsset: {fileID: 0}
+--- !u!1001 &2729349863488826079
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 7084809300585936730}
+    m_Modifications:
+    - target: {fileID: 855813119673942766, guid: 050be00a168894b7fa95a1e7312e44bf, type: 3}
+      propertyPath: game
+      value: 
+      objectReference: {fileID: 2893667467671457007}
+    - target: {fileID: 2958126354623847379, guid: 050be00a168894b7fa95a1e7312e44bf, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2958126354623847379, guid: 050be00a168894b7fa95a1e7312e44bf, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2958126354623847379, guid: 050be00a168894b7fa95a1e7312e44bf, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2958126354623847379, guid: 050be00a168894b7fa95a1e7312e44bf, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2958126354623847379, guid: 050be00a168894b7fa95a1e7312e44bf, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2958126354623847379, guid: 050be00a168894b7fa95a1e7312e44bf, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2958126354623847379, guid: 050be00a168894b7fa95a1e7312e44bf, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2958126354623847379, guid: 050be00a168894b7fa95a1e7312e44bf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2958126354623847379, guid: 050be00a168894b7fa95a1e7312e44bf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 2958126354623847379, guid: 050be00a168894b7fa95a1e7312e44bf, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6183112251978565096, guid: 050be00a168894b7fa95a1e7312e44bf, type: 3}
+      propertyPath: m_Name
+      value: Exercise Path Stream
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 050be00a168894b7fa95a1e7312e44bf, type: 3}
+--- !u!4 &931674486280843532 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2958126354623847379, guid: 050be00a168894b7fa95a1e7312e44bf, type: 3}
+  m_PrefabInstance: {fileID: 2729349863488826079}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &3314909098139183153 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 855813119673942766, guid: 050be00a168894b7fa95a1e7312e44bf, type: 3}
+  m_PrefabInstance: {fileID: 2729349863488826079}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00b2c0bdd68e4a0baeda6e1789bceeef, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EmilVR.ExercisePathStream
 --- !u!1001 &3611264307117866598
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -699,4 +801,158 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 4686716380196716913, guid: 649d5048243a24b9abe657648309ac12, type: 3}
   m_PrefabInstance: {fileID: 6772511744762012635}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1001 &7378577177134901152
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 7084809300585936730}
+    m_Modifications:
+    - target: {fileID: 754161933823870105, guid: 59b22be96216b4e81a61907dc3d0d69b, type: 3}
+      propertyPath: m_Name
+      value: Exercise Main Menu
+      objectReference: {fileID: 0}
+    - target: {fileID: 2673731827343740312, guid: 59b22be96216b4e81a61907dc3d0d69b, type: 3}
+      propertyPath: game
+      value: 
+      objectReference: {fileID: 2893667467671457007}
+    - target: {fileID: 6947451566933603613, guid: 59b22be96216b4e81a61907dc3d0d69b, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6947451566933603613, guid: 59b22be96216b4e81a61907dc3d0d69b, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6947451566933603613, guid: 59b22be96216b4e81a61907dc3d0d69b, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6947451566933603613, guid: 59b22be96216b4e81a61907dc3d0d69b, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6947451566933603613, guid: 59b22be96216b4e81a61907dc3d0d69b, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6947451566933603613, guid: 59b22be96216b4e81a61907dc3d0d69b, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6947451566933603613, guid: 59b22be96216b4e81a61907dc3d0d69b, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6947451566933603613, guid: 59b22be96216b4e81a61907dc3d0d69b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6947451566933603613, guid: 59b22be96216b4e81a61907dc3d0d69b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6947451566933603613, guid: 59b22be96216b4e81a61907dc3d0d69b, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 59b22be96216b4e81a61907dc3d0d69b, type: 3}
+--- !u!4 &436768613683221181 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6947451566933603613, guid: 59b22be96216b4e81a61907dc3d0d69b, type: 3}
+  m_PrefabInstance: {fileID: 7378577177134901152}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &4863597563646110264 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2673731827343740312, guid: 59b22be96216b4e81a61907dc3d0d69b, type: 3}
+  m_PrefabInstance: {fileID: 7378577177134901152}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 242cb0617e67e49d79024f6fd2c3b480, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EmilVR.ExerciseGameMenu
+--- !u!1001 &9030576192248544244
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 7084809300585936730}
+    m_Modifications:
+    - target: {fileID: 755959136776007630, guid: 264f64eba0324459084ce888777d21fd, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 755959136776007630, guid: 264f64eba0324459084ce888777d21fd, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 755959136776007630, guid: 264f64eba0324459084ce888777d21fd, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 755959136776007630, guid: 264f64eba0324459084ce888777d21fd, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 755959136776007630, guid: 264f64eba0324459084ce888777d21fd, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 755959136776007630, guid: 264f64eba0324459084ce888777d21fd, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 755959136776007630, guid: 264f64eba0324459084ce888777d21fd, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 755959136776007630, guid: 264f64eba0324459084ce888777d21fd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 755959136776007630, guid: 264f64eba0324459084ce888777d21fd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 755959136776007630, guid: 264f64eba0324459084ce888777d21fd, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8258315094794643610, guid: 264f64eba0324459084ce888777d21fd, type: 3}
+      propertyPath: game
+      value: 
+      objectReference: {fileID: 2893667467671457007}
+    - target: {fileID: 8402667866187949511, guid: 264f64eba0324459084ce888777d21fd, type: 3}
+      propertyPath: m_Name
+      value: Conduit Repair
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 264f64eba0324459084ce888777d21fd, type: 3}
+--- !u!114 &1137265422918865774 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8258315094794643610, guid: 264f64eba0324459084ce888777d21fd, type: 3}
+  m_PrefabInstance: {fileID: 9030576192248544244}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 15f92cd7aaa9a4923bd1ad8854578abf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EmilVR.ConduitRepairGame
+--- !u!4 &8588005941434930234 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 755959136776007630, guid: 264f64eba0324459084ce888777d21fd, type: 3}
+  m_PrefabInstance: {fileID: 9030576192248544244}
   m_PrefabAsset: {fileID: 0}

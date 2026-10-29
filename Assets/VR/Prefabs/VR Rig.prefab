@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 339492449573895984}
   - component: {fileID: 3552413749679027911}
   m_Layer: 0
-  m_Name: Emil VR Rig
+  m_Name: VR Rig
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

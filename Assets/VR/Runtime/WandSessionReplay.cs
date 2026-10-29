@@ -33,7 +33,7 @@ namespace EmilVR
         public bool IsActive { get; private set; }
         public bool IsDemo { get; private set; }
         WandReplayData savedRecording;
-        float viewDistance=2f,orbit;Vector3 viewOrigin;Quaternion viewerYaw;
+        float viewDistance=2f,orbit,demoYaw;Vector3 viewOrigin;Quaternion viewerYaw;
         public float PlaybackTime { get; private set; }
         public bool Paused { get; private set; }
         InputActionMap input;
@@ -72,16 +72,17 @@ namespace EmilVR
             for(int side=0;side<2;side++)WandPathGame.ResizeWand(wands[side],Data.wandLength);
             PlaybackTime=0;Paused=false;IsActive=true;triggerPrevious=false;figure.gameObject.SetActive(true);return true;
         }
-        public void Close(){guidedPose=false;IsActive=false;if(figure)figure.gameObject.SetActive(false);if(IsDemo){Data=savedRecording;savedRecording=null;IsDemo=false;}}
+        public void Close(){demoYaw=0;guidedPose=false;IsActive=false;if(figure)figure.gameObject.SetActive(false);if(IsDemo){Data=savedRecording;savedRecording=null;IsDemo=false;}}
         void UpdateView()
         {
             anchor=viewOrigin+viewerYaw*new Vector3(0,-.05f,viewDistance);
             viewRotation=viewerYaw*Quaternion.Euler(0,180f+orbit,0);
         }
-        public void HoldDemoAt(float time,string caption){PlaybackTime=time;Paused=true;guidedPose=true;demoCaption=caption;orbit=-180;}
+        public void HoldDemoAt(float time,string caption){PlaybackTime=time;Paused=true;guidedPose=true;demoCaption=caption;orbit=0;}
         public void UpdateGuidance(Vector3 hand,int side,string caption){guidanceHand=hand;guidanceSide=side;demoCaption=caption;}
-        public void OpenExerciseDemo(WandReplayData demonstration,string caption)
-        {savedRecording=Data;Data=demonstration;demoCaption=caption;Open();IsDemo=true;}
+        public static float TutorialYaw(bool sideView,int side)=>sideView?(side==0?-90:90):0;
+        public void OpenExerciseDemo(WandReplayData demonstration,string caption,bool sideView=false)
+        {savedRecording=Data;Data=demonstration;demoCaption=caption;demoYaw=TutorialYaw(sideView,demonstration.frames[0].activeSide);Open();IsDemo=true;}
         public void OpenDemo(WandPathGame game,Vector3 head,Quaternion rotation)
         {
             demoCaption=null;savedRecording=Data;
@@ -95,12 +96,14 @@ namespace EmilVR
             }
             Open();IsDemo=true;
         }
-        Vector3 Map(Vector3 p)=>anchor+viewRotation*(Quaternion.Inverse(Data.rotation)*(p-Data.origin))*Scale;
-        Quaternion Map(Quaternion q)=>viewRotation*Quaternion.Inverse(Data.rotation)*q;
+        Quaternion DemoRotation=>viewerYaw*Quaternion.Euler(0,demoYaw,0);
+        public static Vector3 MirrorPoint(Vector3 p)=>new Vector3(p.x,p.y,-p.z);
+        Vector3 Map(Vector3 p){var local=Quaternion.Inverse(Data.rotation)*(p-Data.origin);return anchor+(IsDemo?DemoRotation*MirrorPoint(local):viewRotation*local)*Scale;}
+        Quaternion Map(Quaternion q){var local=Quaternion.Inverse(Data.rotation)*q;return IsDemo?DemoRotation*Quaternion.LookRotation(MirrorPoint(local*Vector3.forward),MirrorPoint(local*Vector3.up)):viewRotation*local;}
         void Update()
         {
             if(!IsActive||Data==null)return;
-            Vector2 view=guidedPose?Vector2.zero:input["View"].ReadValue<Vector2>();
+            Vector2 view=(guidedPose||IsDemo)?Vector2.zero:input["View"].ReadValue<Vector2>();
             if(Mathf.Abs(view.x)>.2f)orbit+=view.x*65*Time.unscaledDeltaTime;
             if(Mathf.Abs(view.y)>.2f)viewDistance=Mathf.Clamp(viewDistance-view.y*.7f*Time.unscaledDeltaTime,.65f,3.5f);
             UpdateView();
@@ -134,7 +137,7 @@ namespace EmilVR
                 Vector3 target=Vector3.Lerp(s==0?a.targetLeft:a.targetRight,s==0?b.targetLeft:b.targetRight,t);
                 Quaternion tq=Quaternion.Slerp(s==0?a.targetLeftRotation:a.targetRightRotation,s==0?b.targetLeftRotation:b.targetRightRotation,t);
                 hands[s].gameObject.SetActive(ok);wands[s].gameObject.SetActive(ok&&Data.equipment!="shield");
-                if(replayShields[s]){replayShields[s].gameObject.SetActive(ok&&Data.equipment=="shield"&&s==a.activeSide);replayShields[s].SetPositionAndRotation(Map(hand),Map(q));}
+                if(replayShields[s]){replayShields[s].gameObject.SetActive(ok&&Data.equipment=="shield"&&s==a.activeSide);replayShields[s].SetPositionAndRotation(Map(hand),IsDemo?Quaternion.Euler(0,viewer.eulerAngles.y,0):Map(q));}
                 upperArms[s].gameObject.SetActive(ok);forearms[s].gameObject.SetActive(ok);
                 float sign=s==0?-1:1;
                 Vector3 shoulder=c+up*.10f+right*sign*.18f;

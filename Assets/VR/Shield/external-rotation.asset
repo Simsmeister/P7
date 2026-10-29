@@ -27,4 +27,4 @@ MonoBehaviour:
   zeroCreditMetres: 0.14
   fullCreditDegrees: 12
   zeroCreditDegrees: 40
-  minimumTravel: 0.06
+  minimumTravel: 0.02

@@ -8,15 +8,17 @@ namespace EmilVR
         public ShieldExerciseGame game;
         public GameObject handMarkerPrefab;
         class Card { public Transform root; public TextMesh title; public LineRenderer body,arm,trail,head; public Transform live; }
-        Card[] cards=new Card[4];TextMesh caption;Material lineMaterial;
-        static readonly string[] Views={"FRONT","BACK","LEFT SIDE","RIGHT SIDE"};
+        Material cardMaterial;
+        Card[] cards=new Card[1];TextMesh caption;Material lineMaterial;
         void Awake()
         {
             lineMaterial=new Material(Shader.Find("Universal Render Pipeline/Unlit"));lineMaterial.color=Color.white;
             caption=Text("Coach instructions",transform,.011f);
-            for(int i=0;i<4;i++){
+            for(int i=0;i<cards.Length;i++){
                 var c=new Card();c.root=new GameObject("Movement card "+i).transform;c.root.SetParent(transform,false);
-                c.title=Text("View label",c.root,.009f);c.title.transform.localPosition=new Vector3(0,.12f,0);
+                if(!cardMaterial){cardMaterial=new Material(Shader.Find("Universal Render Pipeline/Unlit"));cardMaterial.color=new Color(.025f,.065f,.10f);}
+                var panel=GameObject.CreatePrimitive(PrimitiveType.Cube);panel.name="Current movement panel";Destroy(panel.GetComponent<Collider>());panel.transform.SetParent(c.root,false);panel.transform.localPosition=new Vector3(0,-.15f,.06f);panel.transform.localScale=new Vector3(.85f,.7f,.015f);panel.GetComponent<Renderer>().sharedMaterial=cardMaterial;
+                c.title=Text("View label",c.root,.0075f);c.title.transform.localPosition=new Vector3(0,.12f,0);
                 c.body=Line(c.root,"Illustrative body",new Color(.5f,.7f,.85f),.012f);
                 c.arm=Line(c.root,"Active arm",Color.white,.021f);c.trail=Line(c.root,"Movement route",new Color(.2f,.8f,1),.008f);c.head=Line(c.root,"Head",new Color(.7f,.8f,.9f),.012f);
                 var orb=Instantiate(handMarkerPrefab,c.root,false);orb.name="Your measured hand";orb.transform.localScale=Vector3.one*.035f;orb.GetComponent<Renderer>().sharedMaterial=lineMaterial;c.live=orb.transform;
@@ -49,32 +51,23 @@ namespace EmilVR
         }
         void LateUpdate()
         {
-            if(!game)return;bool calibration=game.IsCalibrating;bool mission=game.IsMission;
-            bool visible=(calibration||mission)&&!(game.replay.IsActive&&!game.replay.IsDemo);
-            caption.gameObject.SetActive(visible&&calibration);
-            for(int i=0;i<4;i++)cards[i].root.gameObject.SetActive(visible&&(calibration||i<2));
+            if(!game)return;
+            bool visible=game.IsMission&&!game.replay.IsActive;
+            caption.gameObject.SetActive(false);
+            for(int i=0;i<cards.Length;i++)cards[i].root.gameObject.SetActive(visible&&i==0);
             if(!visible)return;
             transform.SetPositionAndRotation(game.CoachOrigin+game.CoachRotation*new Vector3(0,0,2.25f),game.CoachRotation);
-            if(calibration){
-                game.replay.figure.gameObject.SetActive(false);
-                caption.transform.localPosition=new Vector3(0,.47f,0);
-                caption.text=game.CurrentStep=="Demo"?"WATCH: "+game.ActiveProfile.displayName+" / "+(game.ActiveSide==0?"LEFT":"RIGHT")+"\n"+game.ActiveProfile.instruction+"\nFour views of the SAME pose. White dot = your hand.":game.GuidanceCaption;
-                float time=game.replay.PlaybackTime;float u=game.ActiveProfile.Progress(time);
-                Example(game.ActiveProfile,game.ActiveSide,u,out var hand,out var start,out var end,out var pivot);
-                // Use the demonstrated controller pose and actual body frame in every view.
-                var data=game.replay.Data;if(data!=null&&data.frames.Count>0){var f=data.frames[Mathf.Clamp(Mathf.RoundToInt(time*60),0,data.frames.Count-1)];hand=Quaternion.Inverse(data.rotation)*((game.ActiveSide==0?f.left:f.right)-data.origin);}
-                for(int i=0;i<4;i++){cards[i].root.localPosition=new Vector3(i%2==0?-.48f:.48f,i<2?.10f:-.60f,0);cards[i].title.text=Views[i]+" / "+(game.ActiveSide==0?"LEFT RED":"RIGHT GREEN");Draw(cards[i],game.ActiveProfile,game.ActiveSide,hand,start,end,pivot,new[]{180f,0f,90f,-90f}[i],.32f,game.CurrentStep!="Demo");}
-            }else{
-                for(int i=0;i<2;i++){
-                    var profile=i==0?game.ActiveProfile:game.NextProfile;int side=i==0?game.ActiveSide:game.NextSide;
-                    if(!profile){cards[i].root.gameObject.SetActive(false);continue;}
-                    float u=i==0?game.CurrentMovementProgress:.5f-.5f*Mathf.Cos(Time.unscaledTime*1.4f);
-                    Example(profile,side,u,out var hand,out var start,out var end,out var pivot);
-                    cards[i].root.localPosition=new Vector3(i==0?-1.4f:1.4f,-.72f,0);cards[i].title.text=(i==0?"NOW":"NEXT")+" / "+(side==0?"LEFT":"RIGHT")+"\n"+profile.displayName;
-                    Draw(cards[i],profile,side,hand,start,end,pivot,profile.movement==ShieldMovement.SerratusReach?90:180,.26f,false);
-                }
+            var profile=game.ActiveProfile;int side=game.ActiveSide;
+            Example(profile,side,game.CurrentMovementProgress,out var hand,out var start,out var end,out var pivot);
+            if(game.PathDefinition(0,out _,out var calibrated,out _)){
+                var inverse=Quaternion.Inverse(game.CoachRotation);
+                start=inverse*(calibrated.start-game.CoachOrigin);end=inverse*(calibrated.end-game.CoachOrigin);pivot=inverse*(calibrated.pivot-game.CoachOrigin);
+                hand=ShieldExerciseProfile.Path(profile.movement,start,end,pivot,game.CurrentMovementProgress);
             }
+            cards[0].root.localPosition=new Vector3(0,-.82f,0);
+            cards[0].title.text="CURRENT / "+(side==0?"LEFT":"RIGHT")+"\n"+profile.displayName;
+            Draw(cards[0],profile,side,hand,start,end,pivot,profile.movement==ShieldMovement.SerratusReach?90:0,.22f,false);
         }
-        void OnDestroy(){if(lineMaterial)Destroy(lineMaterial);}
+        void OnDestroy(){if(lineMaterial)Destroy(lineMaterial);if(cardMaterial)Destroy(cardMaterial);}
     }
 }

@@ -27,6 +27,7 @@ namespace EmilVR
             if(a.magnitude<.05f||b.magnitude<.05f)return Vector3.Lerp(start,end,u);
             return pivot+Vector3.Slerp(a.normalized,b.normalized,u)*Mathf.Lerp(a.magnitude,b.magnitude,u);
         }
-        public float Quality(float metres,float degrees)=>Mathf.Min(1-Mathf.InverseLerp(fullCreditMetres,zeroCreditMetres,metres),1-Mathf.InverseLerp(fullCreditDegrees,zeroCreditDegrees,degrees));
+        // Rotation remains available in recordings but is not scored.
+        public float Quality(float metres,float degrees)=>1-Mathf.InverseLerp(fullCreditMetres,zeroCreditMetres,metres);
     }
 }
