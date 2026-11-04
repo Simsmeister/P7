@@ -49,7 +49,7 @@ Recordings/, Builds/           gitignored outputs
 | `ShieldCoachDisplay.cs` | CURRENT card with stick figure during the mission | `Draw`, static `Example` | Reads game; `WandSessionReplay.EstimateElbow` | active |
 | `WandSessionReplay.cs` | Records and plays replay; also the tutorial mannequin and calibration guide | `BeginRecording`, `Capture`, `Save`, `Open`, `Close`, `OpenExerciseDemo`, `HoldDemoAt`, `UpdateGuidance`, `LoadLatest`, `MirrorPoint` | Game; `WandPathGame.ResizeWand` and `OpenDemo` (72, 86) | active, with legacy wand branches |
 | `EmilVRInput.cs` | Rig hand and controller visuals | `mode`, `allowModeSwitch`, `CycleMode`, `SetMode` | Game forces Controllers (`ShieldExerciseGame.cs:111`) | active |
-| `ShieldArcadeFeedback.cs` | Reactor Rescue: tones, points, combo, burst ring. HUD hidden; points and multiplier are shown through Conduit status text | `Captured`, `Block`, `Reward`, `Show`, `ResetMission`, `Points`, `Combo`, `BestCombo`, `Multiplier` | Called by game | half-alive |
+| `ShieldArcadeFeedback.cs` | Reactor Rescue: tones, points, combo, burst ring. HUD hidden; points and multiplier are shown through Conduit status text | `Captured`, `Block`, `Reward`, `Show`, `ResetMission`, `Points`, `Combo`, `BestCombo`, `Multiplier`, `LastLabel`, static `Perfect`, `Label` | Called by game | half-alive |
 | `ControllerTrackingTrails.cs` | Trigger-drawn debug trails | `RecordFrame`, `ClearTrails` | Own input; instance inactive in `VR Rig.prefab` | dead in gameplay |
 | `WandPathGame.cs` | Old two-wand game; instance disabled in Emil.unity | `Target`, static `Quality`, `ResizeWand` | Replay, `PathTube` | dead, compile dependency |
 | `PathTube.cs` | Old wand tube mesh | `Draw(WandPathGame,...)` | `WandPathGame` | dead |
@@ -153,7 +153,8 @@ All values are prototype settings. None has clinical validation.
 | Outcome | Defeat at battery 0, checked first; victory at power full | `ConduitRepairGame.cs:18` |
 | Node repaired (export, charge, cue) | `q>=.65` |
 | Line glow colour | `Glow(q)`: lerp amber*.35 to white over `InverseLerp(.4,.9,q)`; sections fade over 1.2 s, nodes over 1.3 s; also tints the hand trail | `ConduitRepairGame.cs:40, 66, 71` |
-| Points | `+100q`; if `complete`, `Combo++` and `+100q*min(Combo-1,4)`; else `Combo=0`. `BestCombo` = max `Combo`; `Multiplier` = `clamp(Combo,1,5)` | `ShieldArcadeFeedback.cs:23-24` |
+| Perfect | `complete && q>=.9 && coverage>=.9` (`ShieldArcadeFeedback.Perfect`); label PRÆCIS if perfect, GOD if complete | `ShieldArcadeFeedback.cs` |
+| Points | `+100q`; reward tone and cell charge if `complete`; if perfect, `Combo++` and `+100q*min(Combo-1,4)`; else `Combo=0`. `BestCombo` = max `Combo`; `Multiplier` = `clamp(Combo,1,5)` | `ShieldArcadeFeedback.cs:23-24` |
 
 Adaptive coach, `AdaptiveExerciseCoach.Observe` (66). State is per exercise and arm. `scale` multiplies outward and return duration only (`Apply`, 104).
 
@@ -214,9 +215,9 @@ There is no participant ID anywhere. Sessions are identified only by folder time
 | Hand trail | `ConduitRepairGame.UpdateTrails` adds a `TrailRenderer` to `game.shields` at runtime (prefabs untouched); time .25 s, width .03 m. Previously: new component on the player marker. Marker pose is set at `ShieldExerciseGame.cs:129`. Prefab comes from `ConduitSetup.Marker:16`, so add it there. `ControllerTrackingTrails` records unmapped hand positions and is trigger-driven |
 | Line look, material | `ExercisePathSetup.cs:11-15`, `VR/Shield/Energy Pulse.mat`; theme in `ConduitSetup.Build:29-37` |
 | Show score | `ShieldExerciseGame.DrawText:360`; `ConduitRepairGame.cs:75` status text |
-| Multiplier logic | `ShieldArcadeFeedback.Reward:21`; `success` is passed at `ShieldExerciseGame.cs:338`, where a perfect threshold would go |
+| Multiplier logic | `ShieldArcadeFeedback.Reward`; `complete` and `Perfect(...)` are passed at `ShieldExerciseGame.cs:338` |
 | Multiplier display | `ShieldArcadeFeedback.Show:29`; it is hidden by `!conduit` at `ShieldExerciseGame.cs:139`, or read `Combo` into `ConduitRepairGame.cs:75` |
-| God/Præcis labels | `ShieldExerciseGame.CompleteRep:335-346`. `message` is not displayed during the mission, so draw the label in `ConduitRepairGame.cs:74-75` or add new text |
+| God/Præcis labels | `ShieldArcadeFeedback.Label`, `LastLabel`; drawn in the `clock<0` cue in `ConduitRepairGame` status text |
 | Round summary, best streak | `ExerciseGameMenu.Refresh:69`; streak tracked next to `Combo`; `DrawText:354` does not display with the menu wired |
 | Audio | `ShieldArcadeFeedback.Awake:15`, `Tone:16`. In-tolerance signal is `ShieldExerciseGame.RepairQuality` (45) |
 | Haptics | `ShieldExerciseGame.cs:173`; off switch field in `ExercisePlayerSettings`, toggle via `ExerciseMenuSetup.Build` and `ExerciseGameMenu.Change` |

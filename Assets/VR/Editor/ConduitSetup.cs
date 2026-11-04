@@ -57,6 +57,7 @@ public static class ConduitSetup
         int count=good.movements;good.Resolve(0);if(good.movements!=count)throw new System.Exception("Terminal outcome immutable");
         if(ConduitRepairGame.NodeRepaired(.2f)||!ConduitRepairGame.NodeRepaired(.9f))throw new System.Exception("Node quality feedback");
         if(ConduitRepairGame.Glow(.4f).g>ConduitRepairGame.Glow(.65f).g||ConduitRepairGame.Glow(.65f).g>ConduitRepairGame.Glow(.9f).g||ConduitRepairGame.Glow(.9f)!=Color.white)throw new System.Exception("Graded glow");
+        if(!ShieldArcadeFeedback.Perfect(true,.9f,.9f)||ShieldArcadeFeedback.Perfect(true,.89f,1)||ShieldArcadeFeedback.Perfect(true,1,.89f)||ShieldArcadeFeedback.Perfect(false,1,1)||ShieldArcadeFeedback.Label(true,true)!="PRÆCIS"||ShieldArcadeFeedback.Label(true,false)!="GOD"||ShieldArcadeFeedback.Label(false,false)!="")throw new System.Exception("Perfect threshold and labels");
         Debug.Log("CONDUIT_CHECKS_PASSED victory defeat extension stationary terminal nodes");
     }
 }

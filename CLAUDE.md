@@ -34,7 +34,7 @@ Read PROJECT_MAP.md before exploring the code; open source files only when you n
 | Continuous line | partial | Finite ribbons with gaps, offset about 1.35 m in front of the player (`ExercisePathStream.cs:26-31`, `ShieldExerciseGame.cs:228`) |
 | Theme "Beat Saber Lite" night | partial | Dark and cyan but sci-fi repair; no post-processing volume |
 | Score | partial | Points and multiplier shown in the Conduit status line (`ConduitRepairGame` status text); Path match %, last move 0-100 |
-| Multiplier on consecutive perfects | partial | Counts `complete` reps (not yet "perfect", open decision), up to x5, shown as text |
+| Multiplier on consecutive perfects | built | Counts perfect reps (`ShieldArcadeFeedback.Perfect`), up to x5, shown as text; no visual indicator yet |
 | Audio: completion sound | built | 880 Hz |
 | Audio: in-tolerance tone, rising notes, multiplier sound, soft dampening off the line | missing | |
 | Visual: line glow | partial | Graded by quality (`ConduitRepairGame.Glow`, amber at 0.4 to white at 0.9), fades about 1.2 s; not yet run in Unity on a headset |
@@ -45,7 +45,7 @@ Read PROJECT_MAP.md before exploring the code; open source files only when you n
 | Visual: milestone lighting | partial | Floor lights track cumulative power |
 | Haptics: completion | partial | Fires on endpoint reached |
 | Haptics: multiplier pattern, off switch | missing | |
-| Rewards: God/Præcis labels | missing | |
+| Rewards: God/Præcis labels | built | PRÆCIS = perfect, GOD = complete; shown in the Conduit status line during the gap before the next path |
 | Rewards: personal progress | partial | Data saved, no in-game view |
 | Rewards: cosmetic unlocks | missing | |
 | Rewards: round summary | partial | Menu shows result, accuracy, points and best streak (`ExerciseGameMenu.Refresh`); no per-exercise breakdown |
@@ -53,7 +53,7 @@ Read PROJECT_MAP.md before exploring the code; open source files only when you n
 
 ## 6. Backlog, in priority order
 - P1 Line: read as one continuous line, close gaps, progressive fill. Graded brightness and the hand trail are in, but need a headset look.
-- P2 Rewards: base the multiplier on perfect reps (needs the "perfect" decision), God/Præcis labels, a visual multiplier indicator. Score, multiplier text and best streak are in.
+- P2 Rewards: a visual multiplier indicator. Score, multiplier on perfect reps, PRÆCIS/GOD labels and best streak are in.
 - P3 Audio: in-tolerance tone, soft dampening, rising notes on streaks, multiplier sound.
 - P4 Clinical: therapist-only limits (none now; the player can change the dev toggle and speed cap, reset and recalibrate). Session length and breaks (none now; roughly 47 minutes possible at target 120, an estimate).
 - P5 Evaluation: participant ID in exports, VRNQ questionnaire outside the app (no in-app support), headset test.
@@ -64,7 +64,8 @@ Read PROJECT_MAP.md before exploring the code; open source files only when you n
 - Night "Beat Saber Lite" theme versus the Conduit Repair ship story.
 - Line at the hand versus the current path about 1.35 m in front.
 - Whether the failure ending stays in a rehab game.
-- What "perfect" means as a score threshold.
+
+Decided 2026-11-04: perfect = `complete`, score >= 90 and coverage >= 90 % (`ShieldArcadeFeedback.Perfect`), the same band the adaptive coach treats as strong.
 
 ## 8. Limits to state honestly
 Compensation is only a head-movement heuristic. Elbow, scapula and torso are not measured, and the adaptive thresholds have no clinical validation. Everything in this file comes from static code reading on 2026-11-04, not from a Unity or headset run.

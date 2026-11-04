@@ -335,7 +335,7 @@ namespace EmilVR
             float rawQuality=MovementScore(pathQuality,coverage,phases);float headSeverity=repDuration>0?repHeadSeverity/repDuration:0;float quality=HeadAdjustedScore(rawQuality,headSeverity);scoreSum+=quality;CompletedRepetitions++;
             summaries.Add(string.Join(",",Profile.exerciseId,Side==0?"left":"right",rep+1,F(quality*100),complete?"1":"0",F(heldSeconds),startedPose?"1":"0",returnedPose?"1":"0",impactHit?"1":"0",F(repDuration),F(repDuration>0?repPositionError/repDuration:0),F(repDuration>0?repAngleError/repDuration:0),F(pathQuality*100),F(coverage),F(phases),F(rawQuality*100),F(headSeverity),F((rawQuality-quality)*100)));
             lastResult="Last move: "+Mathf.RoundToInt(quality*100)+" / 100";
-            if(arcade)arcade.Reward(block,complete,quality);
+            if(arcade)arcade.Reward(block,complete,ShieldArcadeFeedback.Perfect(complete,quality,coverage),quality);
             if(conduit)conduit.Resolve(quality);
             if(adaptiveCoach){var baseline=calibrations.Find(c=>c.exerciseId==Profile.exerciseId&&c.side==Side);
                 var decision=adaptiveCoach.Observe(Profile,Side,rep+1,quality*100,coverage,repDuration,repTrackingPause,repHeadMetres,repHeadDegrees,Vector3.Distance(baseline.start,baseline.end),Vector3.Distance(start,end),headSeverity);
