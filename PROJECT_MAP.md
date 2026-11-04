@@ -151,7 +151,8 @@ All values are prototype settings. None has clinical validation.
 | Power | `min(1, power + InverseLerp(.25,1,q)/target)` | `ConduitRepairGame.cs:16` |
 | Battery | `clamp(battery - max(0,.6-q)*16 + (q>=.85 ? 2 : 0), 0, 100)` | `ConduitRepairGame.cs:17` |
 | Outcome | Defeat at battery 0, checked first; victory at power full | `ConduitRepairGame.cs:18` |
-| Node repaired, line glow | `q>=.65`; sections fade over 1.2 s, nodes over 1.3 s | `ConduitRepairGame.cs:40, 66, 71` |
+| Node repaired (export, charge, cue) | `q>=.65` |
+| Line glow colour | `Glow(q)`: lerp amber*.35 to white over `InverseLerp(.4,.9,q)`; sections fade over 1.2 s, nodes over 1.3 s; also tints the hand trail | `ConduitRepairGame.cs:40, 66, 71` |
 | Points | `+100q`; if `complete`, `Combo++` and `+100q*min(Combo-1,4)`; else `Combo=0` | `ShieldArcadeFeedback.cs:23-24` |
 
 Adaptive coach, `AdaptiveExerciseCoach.Observe` (66). State is per exercise and arm. `scale` multiplies outward and return duration only (`Apply`, 104).
@@ -210,7 +211,7 @@ There is no participant ID anywhere. Sessions are identified only by folder time
 | Line at the hand versus in front (open decision) | `ShieldExerciseGame.ProjectShield:225`, used by `MapToFront:230` and `PathVisualPoint:266`; `Verify` in `ShieldExerciseSetup:44-48` asserts displacement |
 | Line brightness and glow | `ExercisePathStream.cs:32-33`; `ConduitRepairGame.NodeRepaired:40` and `LateUpdate:66, 71` |
 | Progressive fill | `ConduitRepairGame.LateUpdate:69-72`, `first` in `ExercisePathStream.cs:26` |
-| Hand trail | New component on the player marker. Marker pose is set at `ShieldExerciseGame.cs:129`. Prefab comes from `ConduitSetup.Marker:16`, so add it there. `ControllerTrackingTrails` records unmapped hand positions and is trigger-driven |
+| Hand trail | `ConduitRepairGame.UpdateTrails` adds a `TrailRenderer` to `game.shields` at runtime (prefabs untouched); time .25 s, width .03 m. Previously: new component on the player marker. Marker pose is set at `ShieldExerciseGame.cs:129`. Prefab comes from `ConduitSetup.Marker:16`, so add it there. `ControllerTrackingTrails` records unmapped hand positions and is trigger-driven |
 | Line look, material | `ExercisePathSetup.cs:11-15`, `VR/Shield/Energy Pulse.mat`; theme in `ConduitSetup.Build:29-37` |
 | Show score | `ShieldExerciseGame.DrawText:360`; `ConduitRepairGame.cs:75` status text |
 | Multiplier logic | `ShieldArcadeFeedback.Reward:21`; `success` is passed at `ShieldExerciseGame.cs:338`, where a perfect threshold would go |

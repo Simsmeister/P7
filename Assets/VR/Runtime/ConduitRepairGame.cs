@@ -38,6 +38,19 @@ namespace EmilVR
         void Awake(){tint=new MaterialPropertyBlock();}
         void Colorize(Renderer renderer,Color color){tint.SetColor("_BaseColor",color);renderer.SetPropertyBlock(tint);}
         public static bool NodeRepaired(float q)=>q>=.65f;
+        // Graded feedback: dim amber when far off the line, full white when on it. NodeRepaired stays the export/charge threshold.
+        public static Color Glow(float q)=>Color.Lerp(new Color(1,.48f,.12f)*.35f,Color.white,Mathf.InverseLerp(.4f,.9f,q));
+        TrailRenderer[] trails;
+        // Short hand trail, added at runtime so the generated marker prefabs stay untouched.
+        void UpdateTrails(bool visible,float match)
+        {
+            if(trails==null){trails=new TrailRenderer[game.shields.Length];for(int s=0;s<trails.Length;s++){var t=game.shields[s].gameObject.AddComponent<TrailRenderer>();t.sharedMaterial=game.pathStream.paths[0].sharedMaterial;t.time=.25f;t.minVertexDistance=.005f;t.widthMultiplier=.03f;t.widthCurve=AnimationCurve.Linear(0,1,1,0);t.emitting=false;trails[s]=t;}}
+            for(int s=0;s<trails.Length;s++){
+                var t=trails[s];bool on=visible&&game.CurrentStep=="Playing"&&game.RepairTracked&&t.gameObject.activeInHierarchy;
+                if(on&&!t.emitting)t.Clear();t.emitting=on;
+                if(on){tint.SetColor("_BaseColor",Glow(match));t.SetPropertyBlock(tint);}
+            }
+        }
         void LateUpdate()
         {
             if(!game||!game.head)return;
@@ -51,8 +64,8 @@ namespace EmilVR
             float clock=game.PathClock,duration=p.outwardSeconds+p.holdSeconds+p.returnSeconds;
             if(repetition!=game.CompletedRepetitions||clock<lastClock){Array.Clear(sampled,0,sampled.Length);Array.Clear(quality,0,quality.Length);repetition=game.CompletedRepetitions;lastSample=-1;charge=0;}
             float dt=Mathf.Max(0,clock-lastClock);lastClock=clock;
-            float match=game.RepairQuality;
-            Color hand=side==0?new Color(1,.2f,.3f):new Color(.1f,1,.45f),lit=Color.white,missed=new Color(1,.48f,.12f);
+            float match=game.RepairQuality;UpdateTrails(visible,match);
+            Color hand=side==0?new Color(1,.2f,.3f):new Color(.1f,1,.45f),missed=new Color(1,.48f,.12f);
             if(game.CurrentStep=="Playing"&&game.RepairTracked){
                 int sample=Mathf.Clamp(Mathf.FloorToInt(clock/duration*119),0,119);
                 // Record one path sample per time bin; never fill tracking gaps with invented data.
@@ -63,12 +76,12 @@ namespace EmilVR
                 float t=duration*i/(nodes.Length-1f);bool show=t>=clock-1.3f;nodes[i].gameObject.SetActive(show);if(!show)continue;
                 int bin=Mathf.Clamp(Mathf.RoundToInt(t/duration*119),0,119);bool passed=t<=clock;
                 nodes[i].gameObject.SetActive(true);nodes[i].transform.position=Point(p,c,side,t,clock);
-                Colorize(nodes[i],passed?(sampled[bin]&&NodeRepaired(quality[bin])?lit*Mathf.Clamp01(1-(clock-t)/1.3f):missed*.35f):hand*.35f);
+                Colorize(nodes[i],passed?(sampled[bin]?Glow(quality[bin])*Mathf.Clamp01(1-(clock-t)/1.3f):missed*.35f):hand*.35f);
                 nodes[i].transform.localScale=Vector3.one*(passed?.025f:.035f);
             }
             for(int i=0;i<repaired.Length;i++){
                 float t=duration*i/repaired.Length,next=duration*(i+1)/repaired.Length;
-                int bin=Mathf.Clamp(Mathf.RoundToInt(t/duration*119),0,119);var line=repaired[i];bool show=next<=clock&&t>=clock-1.2f&&sampled[bin];line.gameObject.SetActive(show);if(!show)continue;line.SetPosition(0,Point(p,c,side,t,clock));line.SetPosition(1,Point(p,c,side,next,clock));float fade=Mathf.Clamp01(1-(clock-t)/1.2f);line.widthMultiplier=.018f*fade;Colorize(line,(NodeRepaired(quality[bin])?lit:missed*.35f)*fade);
+                int bin=Mathf.Clamp(Mathf.RoundToInt(t/duration*119),0,119);var line=repaired[i];bool show=next<=clock&&t>=clock-1.2f&&sampled[bin];line.gameObject.SetActive(show);if(!show)continue;line.SetPosition(0,Point(p,c,side,t,clock));line.SetPosition(1,Point(p,c,side,next,clock));float fade=Mathf.Clamp01(1-(clock-t)/1.2f);line.widthMultiplier=.018f*fade;Colorize(line,Glow(quality[bin])*fade);
             }
             if(clock<=p.outwardSeconds+p.holdSeconds){chargeRing.gameObject.SetActive(true);float t=Mathf.Max(p.outwardSeconds,clock);chargeRing.position=Point(p,c,side,t,clock);chargeRing.rotation=game.CoachRotation;chargeRing.localScale=Vector3.one*(.14f+.045f*charge);Colorize(chargeRing.GetComponent<Renderer>(),Color.Lerp(hand*.5f,hand,charge));}
             string cue=!game.RepairTracked?"TRACKING PAUSED":clock<0?"CONNECT THE NEXT CONDUIT":p.Phase(clock)=="hold"?"CHARGE NODE "+Mathf.RoundToInt(charge*100)+"%":p.Phase(clock)=="rest"?"CONDUIT COMPLETE":NodeRepaired(match)?"REPAIRING":"RECONNECT TO THE PATH";

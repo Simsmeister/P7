@@ -37,9 +37,9 @@ Read PROJECT_MAP.md before exploring the code; open source files only when you n
 | Multiplier on consecutive perfects | partial | Counts `complete` reps, up to x5, not visible |
 | Audio: completion sound | built | 880 Hz |
 | Audio: in-tolerance tone, rising notes, multiplier sound, soft dampening off the line | missing | |
-| Visual: line glow | partial | Binary at 0.65, fades about 1.2 s |
+| Visual: line glow | partial | Graded by quality (`ConduitRepairGame.Glow`, amber at 0.4 to white at 0.9), fades about 1.2 s; not yet run in Unity on a headset |
 | Visual: progressive fill | partial | |
-| Visual: hand light trail | missing | `ControllerTrackingTrails` is a trigger-drawn debug tool |
+| Visual: hand light trail | partial | 0.25 s `TrailRenderer` added to the markers at runtime by `ConduitRepairGame.UpdateTrails`, tinted by `Glow`; not yet run on a headset |
 | Visual: completion effect | partial | Ring at endpoint, not tied to quality, may be hidden by `Show(false)` |
 | Visual: multiplier indicator | missing | |
 | Visual: milestone lighting | partial | Floor lights track cumulative power |
@@ -52,7 +52,7 @@ Read PROJECT_MAP.md before exploring the code; open source files only when you n
 | Rewards: positive ending | partial | Also a failure ending "REPAIR BATTERY EMPTY"; no planned pause |
 
 ## 6. Backlog, in priority order
-- P1 Line: read as one continuous line, close gaps, graded brightness instead of binary, progressive fill, short hand trail.
+- P1 Line: read as one continuous line, close gaps, progressive fill. Graded brightness and the hand trail are in, but need a headset look.
 - P2 Rewards: show score and multiplier, base the multiplier on perfect reps, God/Præcis labels, round summary with best streak.
 - P3 Audio: in-tolerance tone, soft dampening, rising notes on streaks, multiplier sound.
 - P4 Clinical: therapist-only limits (none now; the player can change the dev toggle and speed cap, reset and recalibrate). Session length and breaks (none now; roughly 47 minutes possible at target 120, an estimate).
