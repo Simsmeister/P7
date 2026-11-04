@@ -146,3 +146,8 @@ The convoy has been removed. The arena and menu style remain in `Conduit Repair.
 Follow the dim coloured conduit with your repair tool. Your solid red/green centre has a white outline; the target is a hollow matching ring. Repaired sections briefly glow white and fade; missed sections dim amber. The endpoint node charges during the hold phase. The tool stays facing forward. Controller rotation is recorded but does not affect accuracy, endpoint/hold credit, rewards or adaptation; hand position, coverage and timing still count. Power and battery sit alongside the guide, and floor circuits illuminate as power is restored. Adaptive speed/range, calibration and movement recording are retained.
 
 `conduit.json` records the outcome; `conduit.csv` and `conduit.tsv` contain per-movement results. `conduit-path.csv` and `.tsv` record time-binned path quality (not every raw tracking sample). Existing samples, summaries and replay remain available. TSV opens in separate columns regardless of comma/decimal locale. Previous convoy recordings are kept.
+
+
+## Participant ID
+
+Default awaiting team confirmation. The home menu shows an anonymous per-device ID such as `Participant P003`; write it on the VRNQ questionnaire. Confirming Reset Saved Settings moves to the next ID, while starting a session does not, so repeat sessions by one participant share an ID. To link a questionnaire to data, match the ID to `participantId` in `session.json` or `participant_id` in `outcome.json` inside the session folder. Summary and sample CSV files have no ID column and join through that folder.

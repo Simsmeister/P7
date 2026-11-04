@@ -28,6 +28,11 @@ namespace EmilVR
         void OnApplicationFocus(bool focus){if(focus)recenterFrames=3;}
         public void Recenter(){if(game&&game.head&&game.MenuVisible)transform.SetPositionAndRotation(game.head.position+Quaternion.Euler(0,game.head.eulerAngles.y,0)*new Vector3(0,-.2f,2.3f),Quaternion.Euler(0,game.head.eulerAngles.y,0));}
         int page,exercise;bool wasVisible,wasDown;Widget dragging;float refresh;
+        public const int UnlockPresses=5;const float UnlockWindow=4;
+        // Stops accidental changes only, not access control. Never saved, so every game start is locked.
+        bool unlocked;int presses;float firstPress,noteUntil;string note="";
+        public static int UnlockCount(int presses,float firstPress,float now)=>presses>0&&now-firstPress<=UnlockWindow?presses+1:1;
+        void Note(string text){note=text;noteUntil=Time.unscaledTime+UnlockWindow;Refresh();}
         public void Initialize()
         {
             foreach(var w in widgets){var item=w;
@@ -40,9 +45,15 @@ namespace EmilVR
         public void Navigate(string key)
         {
             if(key=="recenter"){Recenter();return;}
-            if(key=="start"){game.Begin();return;}
-            if(key=="redo"){game.Begin(true);return;}
+            if(key=="start"){unlocked=false;game.Begin();return;}
+            if(key=="redo"){if(!unlocked){Note("Ask your therapist to recalibrate");return;}unlocked=false;game.Begin(true);return;}
             if(key=="replay"){game.ShowLastReplay();return;}
+            if(!unlocked&&key!="home"){
+                if(key!="settings")return;
+                presses=UnlockCount(presses,firstPress,Time.unscaledTime);if(presses==1)firstPress=Time.unscaledTime;
+                if(presses<UnlockPresses){Note("Therapist settings: "+(UnlockPresses-presses)+" more");return;}
+                unlocked=true;presses=0;noteUntil=0;
+            }
             if(key=="confirmReset"){game.ResetSavedSettings();page=0;Refresh();return;}
             if(key=="reset"){page=3;Refresh();return;}
             page=key=="settings"||key=="back"?1:0;
@@ -66,8 +77,8 @@ namespace EmilVR
         {
             game.EnsurePlayerSettings();var data=game.PlayerSettings;
             home.SetActive(page==0);settings.SetActive(page==1);details.SetActive(page==2);resetConfirmation.SetActive(page==3);
-            homeStatus.text=(game.Finished?game.SessionResult+"  |  Accuracy "+game.Score.ToString("F0")+" / 100"+(game.arcade?"  |  "+game.arcade.Points+" points  |  Best streak "+game.arcade.BestCombo:"")+"\n":"")+(data.devMode?"DEV MODE - fixed overrides, normal progress protected":"Your personal pace and range are saved automatically")+"\nEnergy fills after about "+data.totalRepetitions+" strong movements";
-            footer.text=!string.IsNullOrEmpty(data.error)?"Could not save settings. Progress may not persist.":!game.AnyEnabled?"Enable at least one exercise and arm in Settings.":"Point with either controller and press trigger. Drag sliders to adjust.";
+            homeStatus.text=(game.Finished?game.SessionResult+"  |  Accuracy "+game.Score.ToString("F0")+" / 100"+(game.arcade?"  |  "+game.arcade.Points+" points  |  Best streak "+game.arcade.BestCombo:"")+"\n":"")+"Participant "+game.Participant.Id+"  |  "+(data.devMode?"DEV MODE - fixed overrides, normal progress protected":"Your personal pace and range are saved automatically")+"\nEnergy fills after about "+data.totalRepetitions+" strong movements";
+            footer.text=Time.unscaledTime<noteUntil?note:page==3?"Confirming starts a new participant: "+game.Participant.NextId:!string.IsNullOrEmpty(data.error)?"Could not save settings. Progress may not persist.":!string.IsNullOrEmpty(game.Participant.error)?game.Participant.error:!game.AnyEnabled?(unlocked?"Enable at least one exercise and arm in Settings.":"No exercise is switched on. Ask your therapist."):"Point with either controller and press trigger. Drag sliders to adjust.";
             string id=game.exercises[Mathf.Clamp(exercise,0,game.exercises.Length-1)].exerciseId;
             detailTitle.text=game.exercises[exercise].displayName.ToUpper();
             var left=data.Arm(id,0);var right=data.Arm(id,1);

@@ -6,16 +6,17 @@ namespace EmilVR
 {
     [Serializable] public class RepairRun
     {
-        public string version="conduit-1",outcome="active";
+        public string version="conduit-2",outcome="active";
         public float battery=100,power;public int movements,target=18;
         public bool Finished=>outcome!="active";
-        public void Resolve(float accuracy)
+        public bool GoalReached=>outcome=="victory"||outcome=="session_limit";
+        public void Resolve(float accuracy,bool sessionLimit=false)
         {
             if(Finished)return;
             float q=Mathf.Clamp01(accuracy);movements++;
             power=Mathf.Min(1,power+Mathf.InverseLerp(.25f,1,q)/Mathf.Max(1,target));
             battery=Mathf.Clamp(battery-Mathf.Max(0,.6f-q)*16+(q>=.85f?2:0),0,100);
-            if(battery<=0)outcome="defeat";else if(power>=.99999f)outcome="victory";
+            if(battery<=0)outcome="defeat";else if(power>=.99999f)outcome="victory";else if(sessionLimit)outcome="session_limit";
         }
     }
     // All game rewards use the existing personal-range score. Tracking loss never drains battery.
@@ -24,7 +25,7 @@ namespace EmilVR
         public ShieldExerciseGame game;public Transform hud,chargeRing;public TextMesh status;
         public Renderer[] nodes,shipLights;public LineRenderer[] repaired;
         public RepairRun Run {get;private set;}=new RepairRun();
-        public string Result=>Run.outcome=="victory"?"FULL ENERGY - GREAT SESSION":Run.outcome=="defeat"?"OUT OF FLOW - TRY AGAIN":"SESSION STOPPED";
+        public string Result=>Run.outcome=="victory"?"FULL ENERGY - GREAT SESSION":Run.outcome=="defeat"?"OUT OF FLOW - TRY AGAIN":Run.outcome=="session_limit"?"SESSION GOAL REACHED":"SESSION STOPPED";
         readonly List<string> rows=new List<string>();
         readonly List<string> nodeRows=new List<string>();
         readonly float[] quality=new float[120];readonly bool[] sampled=new bool[120];
@@ -32,12 +33,13 @@ namespace EmilVR
         MaterialPropertyBlock tint;
         static string F(float v)=>v.ToString("F4",CultureInfo.InvariantCulture);
         public void Begin(int target){Run=new RepairRun{target=Mathf.Max(1,target)};rows.Clear();nodeRows.Clear();repetition=-1;}
-        public void Resolve(float accuracy){Run.Resolve(accuracy);rows.Add(string.Join(",",Run.movements,F(accuracy),F(Run.power),F(Run.battery),Run.outcome));}
+        public void Resolve(float accuracy,bool sessionLimit=false){Run.Resolve(accuracy,sessionLimit);rows.Add(string.Join(",",Run.movements,F(accuracy),F(Run.power),F(Run.battery),Run.outcome));}
         public string Export()=>"movement,accuracy,ship_power,battery,outcome\n"+string.Join("\n",rows);
         public string ExportNodes()=>"movement,exercise_id,side,exercise_time_s,path_quality,node_repaired\n"+string.Join("\n",nodeRows);
         void Awake(){tint=new MaterialPropertyBlock();}
         void Colorize(Renderer renderer,Color color){tint.SetColor("_BaseColor",color);renderer.SetPropertyBlock(tint);}
         public static bool NodeRepaired(float q)=>q>=.65f;
+        public static bool SectionLit(float sectionEnd,float clock,bool sampled)=>sectionEnd<=clock&&sampled;
         // Graded feedback: dim amber when far off the line, full white when on it. NodeRepaired stays the export/charge threshold.
         public static Color Glow(float q)=>Color.Lerp(new Color(1,.48f,.12f)*.35f,Color.white,Mathf.InverseLerp(.4f,.9f,q));
         TrailRenderer[] trails;
@@ -49,6 +51,17 @@ namespace EmilVR
                 var t=trails[s];bool on=visible&&game.CurrentStep=="Playing"&&game.RepairTracked&&t.gameObject.activeInHierarchy;
                 if(on&&!t.emitting)t.Clear();t.emitting=on;
                 if(on){tint.SetColor("_BaseColor",Glow(match));t.SetPropertyBlock(tint);}
+            }
+        }
+        public static bool PipLit(int pip,int multiplier)=>pip<multiplier;
+        Renderer[] pips;
+        // Cloned from a node to keep a mesh material already in the build and no collider; children of hud, so they hide with the status text.
+        void UpdatePips()
+        {
+            if(pips==null){pips=new Renderer[5];for(int i=0;i<pips.Length;i++){pips[i]=Instantiate(nodes[0],hud);pips[i].name="Multiplier pip "+i;pips[i].transform.localPosition=new Vector3((i-2)*.05f,.165f,0);}}
+            for(int i=0;i<pips.Length;i++){
+                pips[i].gameObject.SetActive(game.arcade);if(!game.arcade)continue;
+                bool lit=PipLit(i,game.arcade.Multiplier);Colorize(pips[i],lit?new Color(.15f,.9f,1):new Color(.2f,.3f,.38f));pips[i].transform.localScale=Vector3.one*(lit?.03f:.018f);
             }
         }
         void LateUpdate()
@@ -81,9 +94,12 @@ namespace EmilVR
             }
             for(int i=0;i<repaired.Length;i++){
                 float t=duration*i/repaired.Length,next=duration*(i+1)/repaired.Length;
-                int bin=Mathf.Clamp(Mathf.RoundToInt(t/duration*119),0,119);var line=repaired[i];bool show=next<=clock&&t>=clock-1.2f&&sampled[bin];line.gameObject.SetActive(show);if(!show)continue;line.SetPosition(0,Point(p,c,side,t,clock));line.SetPosition(1,Point(p,c,side,next,clock));float fade=Mathf.Clamp01(1-(clock-t)/1.2f);line.widthMultiplier=.018f*fade;Colorize(line,Glow(quality[bin])*fade);
+                int bin=Mathf.Clamp(Mathf.RoundToInt(t/duration*119),0,119);var line=repaired[i];bool show=SectionLit(next,clock,sampled[bin]);line.gameObject.SetActive(show);if(!show)continue;
+                // Held at arrival, no approach offset. The return retraces the outward path, so it draws as a thin core in front to avoid z-fighting.
+                bool back=t>=p.outwardSeconds+p.holdSeconds;Vector3 lift=back?game.CoachRotation*Vector3.back*.01f:Vector3.zero;line.SetPosition(0,game.PathVisualPoint(p,c,side,t)+lift);line.SetPosition(1,game.PathVisualPoint(p,c,side,next)+lift);line.widthMultiplier=back?.01f:.018f;Colorize(line,Glow(quality[bin]));
             }
             if(clock<=p.outwardSeconds+p.holdSeconds){chargeRing.gameObject.SetActive(true);float t=Mathf.Max(p.outwardSeconds,clock);chargeRing.position=Point(p,c,side,t,clock);chargeRing.rotation=game.CoachRotation;chargeRing.localScale=Vector3.one*(.14f+.045f*charge);Colorize(chargeRing.GetComponent<Renderer>(),Color.Lerp(hand*.5f,hand,charge));}
+            UpdatePips();
             string cue=!game.RepairTracked?"TRACKING PAUSED":clock<0?(game.arcade&&game.arcade.LastLabel!=""?game.arcade.LastLabel+"!   ":"")+"NEXT LINE INCOMING":p.Phase(clock)=="hold"?"HOLD "+Mathf.RoundToInt(charge*100)+"%":p.Phase(clock)=="rest"?"LINE COMPLETE":NodeRepaired(match)?"IN FLOW":"BACK ON THE LINE";
             status.text="ENERGY "+Mathf.RoundToInt(Run.power*100)+"%   |   FLOW "+Mathf.CeilToInt(Run.battery)+"%\n"+(game.arcade?game.arcade.Points+" POINTS   x"+game.arcade.Multiplier+"   |   ":"")+cue;
         }

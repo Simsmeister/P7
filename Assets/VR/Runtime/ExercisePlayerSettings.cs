@@ -14,6 +14,43 @@ namespace EmilVR
         public ShieldExerciseGame.Calibration calibration; // Head-relative position and yaw-relative rotation.
     }
     [Serializable] public class ExerciseSpeedLimit { public string id; public float fasterPercent = 40; }
+    // Anonymous per-device counter, in its own file so RESET SAVED SETTINGS never loses it.
+    [Serializable] public class ExerciseParticipant
+    {
+        public int number;
+        [NonSerialized] public string filePath,error;
+        [Serializable] class ExportedSession {public string participantId;}
+        public string Id=>FormatId(number);
+        public string NextId=>FormatId(NextNumber(number));
+        public static string FormatId(int number)=>"P"+number.ToString("000");
+        public static int NextNumber(int current)=>Mathf.Max(current,0)+1;
+        public static int ParseId(string id)=>id!=null&&id.Length>1&&id[0]=='P'&&int.TryParse(id.Substring(1),out int n)&&n>0?n:0;
+        public static int ParseFile(string json){try{var data=JsonUtility.FromJson<ExerciseParticipant>(json);return data!=null&&data.number>0?data.number:0;}catch(Exception){return 0;}}
+        static int HighestExported(string sessions)
+        {
+            int highest=0;if(!Directory.Exists(sessions))return 0;
+            foreach(string folder in Directory.GetDirectories(sessions))
+                try{string file=Path.Combine(folder,"session.json");if(File.Exists(file))highest=Mathf.Max(highest,ParseId(JsonUtility.FromJson<ExportedSession>(File.ReadAllText(file)).participantId));}catch(Exception e){Debug.LogWarning(e.Message);}
+            return highest;
+        }
+        public static ExerciseParticipant Load(string path,string sessions)
+        {
+            string text=null;bool existed=false;
+            try{existed=File.Exists(path);if(existed)text=File.ReadAllText(path);}catch(Exception e){Debug.LogWarning(e.Message);}
+            var data=new ExerciseParticipant{filePath=path,number=ParseFile(text)};if(data.number>0)return data;
+            // Missing or damaged: continue after the highest exported ID so none is reused. No file and no exports is a first run.
+            int highest=0;try{highest=HighestExported(sessions);}catch(Exception e){Debug.LogWarning(e.Message);}
+            data.number=NextNumber(highest);data.Save();
+            if(data.error==null&&(existed||highest>0))data.error="Participant ID file was missing or damaged. Continuing at "+data.Id+".";
+            return data;
+        }
+        public void Advance(){number=NextNumber(number);Save();}
+        void Save()
+        {
+            try{Directory.CreateDirectory(Path.GetDirectoryName(filePath));string temp=filePath+".tmp";File.WriteAllText(temp,JsonUtility.ToJson(this,true));if(File.Exists(filePath))File.Replace(temp,filePath,null);else File.Move(temp,filePath);error=null;}
+            catch(Exception e){error="Could not save participant ID. IDs may repeat after a restart.";Debug.LogWarning(error+" "+e.Message);}
+        }
+    }
     [Serializable] public class ExercisePlayerSettings
     {
         public int version = 1, totalRepetitions = 18;

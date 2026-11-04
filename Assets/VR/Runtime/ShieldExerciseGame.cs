@@ -26,19 +26,28 @@ namespace EmilVR
         public bool MenuVisible=>(state==State.Welcome||state==State.Finished)&&!(replay&&replay.IsActive);
         public bool AnyEnabled {get{EnsurePlayerSettings();foreach(var p in exercises)for(int s=0;s<2;s++)if(PlayerSettings.Arm(p.exerciseId,s).enabled)return true;return false;}}
         public void EnsurePlayerSettings(){if(PlayerSettings==null)PlayerSettings=ExercisePlayerSettings.Load(Application.isEditor?"/tmp/emil-editor-player-settings.json":Path.Combine(Application.persistentDataPath,"player-settings.json"));}
+        ExerciseParticipant participant;
+        public ExerciseParticipant Participant=>participant??(participant=ExerciseParticipant.Load(Application.isEditor?"/tmp/emil-editor-participant.json":Path.Combine(Application.persistentDataPath,"participant.json"),Path.Combine(Application.persistentDataPath,"Sessions")));
         public bool MenuRay(int side,out Ray ray,out bool down)
         {
             string n=side==0?"Left":"Right";down=input[n+"Trigger"].ReadValue<float>()>.55f;
             ray=new Ray(pos[side],rot[side]*Vector3.forward);return valid[side];
         }
-        public void ResetSavedSettings(){if(!MenuVisible)return;EnsurePlayerSettings();PlayerSettings=new ExercisePlayerSettings{filePath=PlayerSettings.filePath};PlayerSettings.Save();if(adaptiveCoach)adaptiveCoach.Configure(PlayerSettings);}
+        // TestMode tools press the real confirm button, so they must not advance the real counter.
+        public void ResetSavedSettings(){if(!MenuVisible)return;EnsurePlayerSettings();PlayerSettings=new ExercisePlayerSettings{filePath=PlayerSettings.filePath};PlayerSettings.Save();if(adaptiveCoach)adaptiveCoach.Configure(PlayerSettings);if(!TestMode)Participant.Advance();}
         // Position proxy only: require both downward and opposite-side translation.
         public static float HeadPositionSeverity(Vector3 localDelta,int side)
         {float opposite=side==1?-localDelta.x:localDelta.x;return Mathf.Min(Mathf.InverseLerp(.10f,.25f,opposite),Mathf.InverseLerp(.08f,.20f,-localDelta.y));}
         public static float HeadAdjustedScore(float raw,float severity)=>Mathf.Max(0,raw-.1f*Mathf.Clamp01(severity));
+        // Asked at a rep boundary: the cap wins over a break, and RepairRun.Resolve settles victory and defeat before the cap. A limit of 0 is off.
+        public static string DueAtRepEnd(float active,float sinceBreak,float breakAfter,float cap)=>cap>0&&active>=cap?"cap":breakAfter>0&&sinceBreak>=breakAfter?"break":"";
+        string Due=>DueAtRepEnd(activeSeconds,activeSinceBreak,breakAfterSeconds,sessionCapSeconds);
         public void ShowLastReplay(){if(replay)replay.Open();}
         float repTrackingPause,repHeadMetres,repHeadDegrees,headDisplacementHold,repHeadSeverity;
         public float exerciseGapSeconds=2.5f;
+        // Prototype values, not clinical guidance; a physiotherapist must confirm them. Seconds of active play, except the break length.
+        public float breakAfterSeconds=300,breakSeconds=45,sessionCapSeconds=900;
+        float activeSeconds,activeSinceBreak;int breaksTaken;
         public float PathClock=>clock;
         public bool RepairTracked=>valid[Side]&&HeadValid();
         float repairQuality;
@@ -51,7 +60,7 @@ namespace EmilVR
         public ShieldExerciseProfile ActiveProfile=>Profile;
         public float CurrentMovementProgress=>state==State.Playing?Profile.Progress(clock):0;
         public bool IsCalibrating=>!missionStarted&&state!=State.Welcome&&state!=State.Finished;
-        public bool IsMission=>missionStarted&&state!=State.Finished;
+        public bool IsMission=>missionStarted&&state!=State.Finished&&state!=State.Break;
         public Vector3 CoachOrigin=>origin;public Quaternion CoachRotation=>frame;
         public Vector3 LiveHand=>pos[Side];
         public ShieldExerciseProfile NextProfile=>playlistIndex+1<playlist.Count?MissionProfile(playlist[playlistIndex+1]):null;
@@ -70,7 +79,7 @@ namespace EmilVR
         public bool Finished=>state==State.Finished;
         public int CompletedRepetitions {get;private set;}
         public float Score=>CompletedRepetitions>0?100*scoreSum/CompletedRepetitions:0;
-        enum State { Welcome, Demo, CaptureStart, CaptureEnd, Ready, Tutorial, Approaching, Playing, Finished }
+        enum State { Welcome, Demo, CaptureStart, CaptureEnd, Ready, Tutorial, Approaching, Playing, Finished, Break }
         State state;
         InputActionMap input;
         MaterialPropertyBlock targetTint;Renderer[] targetRenderers;
@@ -91,7 +100,7 @@ namespace EmilVR
         ShieldExerciseProfile MissionProfile(int entry)=>adaptiveCoach?adaptiveCoach.ProfileFor(exercises[entry/2],entry%2):exercises[entry/2];
         ShieldExerciseProfile Profile=>missionStarted?MissionProfile(block):exercises[Mathf.Clamp(block/2,0,exercises.Length-1)];
         [Serializable] public class Calibration {public string exerciseId;public int side;public Vector3 start,end,pivot;public float calibratedTravelMetres;public Quaternion startRotation,endRotation;}
-        [Serializable] class Settings {public bool developerMode;public bool handRotationScored=false;public string schemaVersion="shield-5",scoreVersion="position-only-hand-5",equipment="shield",inputSource;public string calibrationMode="personal-range-stable-pose-2",controlMapping="front-translation-2";public string presentation="finite-3d-paths-mirror-coach-1";public float exerciseGapSeconds;public int[] challengeOrder;public float pathWeight=.7f,phaseWeight=.3f,stationaryScoreFactor=.25f,minimumCompletionCoverage=.65f,endpointFraction=.3f,minimumEndpointMetres=.025f,maximumEndpointMetres=.06f;public string anatomy="Shoulder pivot is estimated. Elbow angle, scapular motion and torso compensation are NOT measured."; public Vector3 frameOrigin;public Quaternion frameRotation;public Calibration[] calibrations;public ExerciseSettings[] exercises;}
+        [Serializable] class Settings {public bool developerMode;public bool handRotationScored=false;public string schemaVersion="shield-6",participantId,scoreVersion="position-only-hand-5",equipment="shield",inputSource;public string calibrationMode="personal-range-stable-pose-2",controlMapping="front-translation-2";public string presentation="finite-3d-paths-mirror-coach-1";public float exerciseGapSeconds,breakAfterSeconds,breakSeconds,sessionCapSeconds;public int[] challengeOrder;public float pathWeight=.7f,phaseWeight=.3f,stationaryScoreFactor=.25f,minimumCompletionCoverage=.65f,endpointFraction=.3f,minimumEndpointMetres=.025f,maximumEndpointMetres=.06f;public string anatomy="Shoulder pivot is estimated. Elbow angle, scapular motion and torso compensation are NOT measured."; public Vector3 frameOrigin;public Quaternion frameRotation;public Calibration[] calibrations;public ExerciseSettings[] exercises;}
         [Serializable] class ExerciseSettings {public string id;public int repetitions;public float outward,hold,returnTime,rest,fullCreditMetres,zeroCreditMetres,fullCreditDegrees,zeroCreditDegrees;}
         public static readonly string Header="timestamp_s,exercise_time_s,exercise_id,repetition,phase,active_side,side,valid,scorable,px,py,pz,qx,qy,qz,qw,target_px,target_py,target_pz,target_qx,target_qy,target_qz,target_qw,head_px,head_py,head_pz,head_qx,head_qy,head_qz,head_qw,hand_error_m,shield_normal_error_deg,head_displacement_m,head_rotation_deg,visual_shield_px,visual_shield_py,visual_shield_pz,visual_target_px,visual_target_py,visual_target_pz";
         Quaternion neutralHead;
@@ -111,7 +120,7 @@ namespace EmilVR
             var rig=FindFirstObjectByType<EmilVRInput>();if(rig){rig.mode=EmilVRInput.InputMode.Controllers;rig.allowModeSwitch=false;}
             EnsurePlayerSettings();SetFrame();
         }
-        void OnDisable(){input.Disable();Finish(false);}
+        void OnDisable(){input.Disable();if(arcade)arcade.StopLineTone();Finish(false);}
         void OnDestroy(){csv?.Dispose();tsv?.Dispose();input.Dispose();}
         void OnApplicationPause(bool pause){if(pause&&csv!=null)Finish(false);}
         void SetFrame(){origin=head.position;frame=Quaternion.Euler(0,head.eulerAngles.y,0);neutralHead=head.rotation;board.SetPositionAndRotation(origin+frame*new Vector3(0,.70f,2.3f),frame);}
@@ -126,7 +135,7 @@ namespace EmilVR
                 pos[s]=trackingSpace.TransformPoint(input[n+"Position"].ReadValue<Vector3>());rot[s]=trackingSpace.rotation*input[n+"Rotation"].ReadValue<Quaternion>();
                 if(simulated){valid[s]=true;pos[s]=origin+frame*new Vector3(s==0?-.25f:.25f,-.35f,.3f);rot[s]=frame;if(s==Side){if(state==State.CaptureStart||state==State.Ready||state==State.Approaching){pos[s]=start;rot[s]=startQ;}else if(state==State.CaptureEnd){pos[s]=end;rot[s]=endQ;}else {Target(clock,out pos[s],out rot[s]);if(TestMode&&state==State.Playing)pos[s]=Vector3.Lerp(start,pos[s],TestHandFraction);}}}
                 if(TestMode&&simulated&&state==State.Playing)rot[s]*=Quaternion.Euler(TestControllerDegrees,TestControllerDegrees,0);
-                shields[s].gameObject.SetActive(!MenuVisible&&valid[s]&&s==Side&&!(replay&&replay.IsActive));if(valid[s])shields[s].SetPositionAndRotation(MapToFront(pos[s],s),frame);
+                shields[s].gameObject.SetActive(!MenuVisible&&state!=State.Break&&valid[s]&&s==Side&&!(replay&&replay.IsActive));if(valid[s])shields[s].SetPositionAndRotation(MapToFront(pos[s],s),frame);
             }
             targetTint.SetColor("_BaseColor",Side==0?new Color(1,.2f,.3f):new Color(.1f,1,.45f));foreach(var r in targetRenderers)r.SetPropertyBlock(targetTint);
             bool a=input["A"].IsPressed()||(simulated&&Keyboard.current!=null&&Keyboard.current.spaceKey.isPressed),b=input["B"].IsPressed()||(simulated&&Keyboard.current!=null&&Keyboard.current.rKey.isPressed),x=input["X"].IsPressed();
@@ -136,9 +145,11 @@ namespace EmilVR
             bool calibrating=state==State.CaptureStart||state==State.CaptureEnd||state==State.Ready;
             if(pressA)SkipTutorialPreview();
             bool reviewing=replay&&replay.IsActive;
-            if(arcade){arcade.Show(!conduit&&!reviewing&&state==State.Playing,block,rep,Profile.repetitions);arcade.core.gameObject.SetActive(false);}
-            board.gameObject.SetActive(!reviewing&&!(menu&&MenuVisible));ghost.gameObject.SetActive(!reviewing&&state!=State.Welcome&&state!=State.Finished);if(reviewing&&!calibrating){projectile.gameObject.SetActive(false);return;}
+            if(arcade){arcade.Show(!conduit&&!reviewing&&state==State.Playing,block,rep,Profile.repetitions);arcade.core.gameObject.SetActive(false);arcade.LineTone(!reviewing&&state==State.Playing&&RepairTracked,RepairQuality);}
+            board.gameObject.SetActive(!reviewing&&!(menu&&MenuVisible));ghost.gameObject.SetActive(!reviewing&&state!=State.Welcome&&state!=State.Finished&&state!=State.Break);if(reviewing&&!calibrating){projectile.gameObject.SetActive(false);return;}
             bool tracked=valid[Side]&&HeadValid();float dt=Mathf.Min(Time.unscaledDeltaTime,.1f);
+            // Active play is when the game clock runs: never calibration, tutorial, break or tracking pauses.
+            if(tracked&&(state==State.Approaching||state==State.Playing)){activeSeconds+=dt;activeSinceBreak+=dt;}
             if(!menu&&(state==State.Welcome||state==State.Finished)&&pressA){Begin();return;}
             if(state==State.Demo){StartAutomaticPose(false);}
             else if(state==State.CaptureStart||state==State.CaptureEnd)
@@ -151,6 +162,7 @@ namespace EmilVR
                 else ghost.SetPositionAndRotation(MapToFront(start,Side),frame);
                 if(clock<=0){replay.Close();if(!missionStarted){if(++calibrationIndex<calibrationQueue.Count){block=calibrationQueue[calibrationIndex];PrepareBlock();}else StartMission();}else{ResetRep();state=State.Playing;if(!recordingOpen)OpenRecording();}}}
             else if(state==State.Tutorial){clock-=dt;ghost.SetPositionAndRotation(MapToFront(start,Side),frame);if(clock<=0)CompleteTutorial();}
+            else if(state==State.Break){clock-=dt;if(clock<=0)LoadChallenge();}
             else if(state==State.Approaching){ghost.SetPositionAndRotation(MapToFront(start,Side),frame);if(tracked)clock+=dt;else trackingPause+=Time.unscaledDeltaTime;
                 if(clock>=0){ResetRep();state=State.Playing;if(!recordingOpen)OpenRecording();}}
             else if(state==State.Playing)
@@ -175,9 +187,9 @@ namespace EmilVR
                 sampleClock+=Time.unscaledDeltaTime;if(sampleClock>=1f/60){sampleClock%=1f/60;Record(tracked,p,q);}
                 if(tracked)clock+=dt;
                 if(clock>=Profile.Cycle){CompleteRep();
-                    if(!conduit&&playlistIndex+1>=playlist.Count){Finish(true);}
-                    else if(conduit&&conduit.Run.Finished){message=conduit.Result;Finish(conduit.Run.outcome=="victory");}
-                    else {playlistIndex++;if(playlistIndex+1>=playlist.Count)playlist.AddRange(PlayerSettings.Playlist(exercises));LoadChallenge();}}
+                    if(!conduit&&(playlistIndex+1>=playlist.Count||Due=="cap")){Finish(true);}
+                    else if(conduit&&conduit.Run.Finished){message=conduit.Result;Finish(conduit.Run.GoalReached);}
+                    else {playlistIndex++;if(playlistIndex+1>=playlist.Count)playlist.AddRange(PlayerSettings.Playlist(exercises));if(Due=="break"){activeSinceBreak=0;breaksTaken++;state=State.Break;clock=breakSeconds;}else LoadChallenge();}}
             }
             projectile.gameObject.SetActive(false);
             if(arcade)arcade.drone.gameObject.SetActive(false);
@@ -187,6 +199,7 @@ namespace EmilVR
         {
             if(state==State.Demo&&replay.IsDemo){replay.Close();StartAutomaticPose(false);}
             else if(state==State.Tutorial)CompleteTutorial();
+            else if(state==State.Break)LoadChallenge();
         }
         void CompleteTutorial(){if(!PlayerSettings.devMode){PlayerSettings.tutorialComplete=true;PlayerSettings.Save();}LoadChallenge();}
         public void Begin(){Begin(false);}
@@ -195,7 +208,7 @@ namespace EmilVR
             EnsurePlayerSettings();if(!AnyEnabled)return;
             if(replay.IsActive)replay.Close();Finish(false);SetFrame();
             if(adaptiveCoach)adaptiveCoach.Configure(PlayerSettings);
-            recordingOpen=false;CompletedRepetitions=0;scoreSum=trackingPause=0;block=0;lastResult="";missionStarted=false;playlistIndex=0;playlist.Clear();folder="";
+            recordingOpen=false;CompletedRepetitions=0;scoreSum=trackingPause=activeSeconds=activeSinceBreak=0;breaksTaken=0;block=0;lastResult="";missionStarted=false;playlistIndex=0;playlist.Clear();folder="";
             if(arcade){arcade.transform.SetPositionAndRotation(origin,frame);arcade.ResetMission();}
             summaries.Clear();calibrations.Clear();calibrationQueue.Clear();calibrationIndex=0;
             showTutorial=recalibrate||!PlayerSettings.tutorialComplete;
@@ -336,7 +349,7 @@ namespace EmilVR
             summaries.Add(string.Join(",",Profile.exerciseId,Side==0?"left":"right",rep+1,F(quality*100),complete?"1":"0",F(heldSeconds),startedPose?"1":"0",returnedPose?"1":"0",impactHit?"1":"0",F(repDuration),F(repDuration>0?repPositionError/repDuration:0),F(repDuration>0?repAngleError/repDuration:0),F(pathQuality*100),F(coverage),F(phases),F(rawQuality*100),F(headSeverity),F((rawQuality-quality)*100)));
             lastResult="Last move: "+Mathf.RoundToInt(quality*100)+" / 100";
             if(arcade)arcade.Reward(block,complete,ShieldArcadeFeedback.Perfect(complete,quality,coverage),quality);
-            if(conduit)conduit.Resolve(quality);
+            if(conduit)conduit.Resolve(quality,Due=="cap");
             if(adaptiveCoach){var baseline=calibrations.Find(c=>c.exerciseId==Profile.exerciseId&&c.side==Side);
                 var decision=adaptiveCoach.Observe(Profile,Side,rep+1,quality*100,coverage,repDuration,repTrackingPause,repHeadMetres,repHeadDegrees,Vector3.Distance(baseline.start,baseline.end),Vector3.Distance(start,end),headSeverity);
                 bool easier=decision.nextRangeScale<decision.rangeScaleUsed||decision.nextDurationScale>decision.durationScaleUsed;
@@ -353,6 +366,7 @@ namespace EmilVR
             if(state==State.Welcome){display.text=prefix+"Scaption / Serratus reach / External rotation\nOne arm at a time. A: begin | B: last replay\nLearn 3 moves, then defend against a mixed sequence.\nUse the comfortable range prescribed for you.";return;}
             if(state==State.Finished){display.text=prefix+"MOVEMENT ACCURACY   "+Score.ToString("F0")+" / 100\n"+CompletedRepetitions+" repetitions scored   "+(arcade?arcade.Points:0)+" game points\n"+message+"\nA: new session | B: replay\nCSV + tab-separated data saved for completed repetitions.";return;}
             if(state==State.Tutorial){display.text="PRACTICE - NO POINTS YET\nMove up/down, left/right, then forward/back.\nFollow the line. Solid centre = you; hollow ring = target.\nHold at the large node, then follow the line back.\nThe CURRENT card shows the movement. A / Space: skip.";return;}
+            if(state==State.Break){display.text="BREAK - GREAT WORK\n"+CompletedRepetitions+" moves done. This rest is part of your session.\nNext line in "+Mathf.CeilToInt(clock)+" s   |   A: skip";return;}
             if(state==State.Approaching){display.text=Profile.displayName+" - "+(Side==0?"LEFT RED":"RIGHT GREEN")+"\nGet into the starting pose as the line approaches.\n"+(!tracked?"PAUSED - tracking unavailable":PositionHint(start))+"\nSpeed "+(100*exercises[block/2].outwardSeconds/Profile.outwardSeconds).ToString("F0")+"%  |  Range "+(adaptiveCoach?100*adaptiveCoach.RangeFor(Profile,Side,calibrations.Find(c=>c.exerciseId==Profile.exerciseId&&c.side==Side).calibratedTravelMetres):100).ToString("F0")+"%"+(lastResult.Length>0?"\n"+lastResult:"");return;}
             if(state==State.Ready&&missionStarted){display.text=GuidanceCaption+"\n"+PositionHint(start)+"  |  "+lastResult;return;}
             string side=Side==0?"LEFT RED":"RIGHT GREEN";
@@ -397,10 +411,11 @@ namespace EmilVR
             if(conduit&&!conduit.Run.Finished)conduit.Run.outcome="aborted";
             csv?.Dispose();tsv?.Dispose();csv=tsv=null;
             if(folder!="")try {
-                var settings=new Settings{developerMode=PlayerSettings!=null&&PlayerSettings.devMode,exerciseGapSeconds=exerciseGapSeconds,challengeOrder=playlist.ToArray(),inputSource=simulated?"SIMULATED TEST":"controller-grip",frameOrigin=origin,frameRotation=frame,calibrations=calibrations.ToArray(),exercises=Array.ConvertAll(exercises,e=>new ExerciseSettings{id=e.exerciseId,repetitions=e.repetitions,outward=e.outwardSeconds,hold=e.holdSeconds,returnTime=e.returnSeconds,rest=e.restSeconds,fullCreditMetres=e.fullCreditMetres,zeroCreditMetres=e.zeroCreditMetres,fullCreditDegrees=e.fullCreditDegrees,zeroCreditDegrees=e.zeroCreditDegrees})};
+                string participantId=TestMode?"TEST":Participant.Id;
+                var settings=new Settings{participantId=participantId,developerMode=PlayerSettings!=null&&PlayerSettings.devMode,exerciseGapSeconds=exerciseGapSeconds,breakAfterSeconds=breakAfterSeconds,breakSeconds=breakSeconds,sessionCapSeconds=sessionCapSeconds,challengeOrder=playlist.ToArray(),inputSource=simulated?"SIMULATED TEST":"controller-grip",frameOrigin=origin,frameRotation=frame,calibrations=calibrations.ToArray(),exercises=Array.ConvertAll(exercises,e=>new ExerciseSettings{id=e.exerciseId,repetitions=e.repetitions,outward=e.outwardSeconds,hold=e.holdSeconds,returnTime=e.returnSeconds,rest=e.restSeconds,fullCreditMetres=e.fullCreditMetres,zeroCreditMetres=e.zeroCreditMetres,fullCreditDegrees=e.fullCreditDegrees,zeroCreditDegrees=e.zeroCreditDegrees})};
                 if(conduit){File.WriteAllText(Path.Combine(folder,"conduit.json"),JsonUtility.ToJson(conduit.Run,true));File.WriteAllText(Path.Combine(folder,"conduit.csv"),conduit.Export());File.WriteAllText(Path.Combine(folder,"conduit.tsv"),conduit.Export().Replace(',','\t'));File.WriteAllText(Path.Combine(folder,"conduit-path.csv"),conduit.ExportNodes());File.WriteAllText(Path.Combine(folder,"conduit-path.tsv"),conduit.ExportNodes().Replace(',','\t'));}
                 if(adaptiveCoach)File.WriteAllText(Path.Combine(folder,"adaptive-coach.json"),adaptiveCoach.ExportJson());
-                File.WriteAllText(Path.Combine(folder,"session.json"),JsonUtility.ToJson(settings,true));string text="exercise_id,side,repetition,score,complete_movement,hold_seconds,start_reached,return_reached,endpoint_reached,valid_seconds,mean_hand_error_m,mean_shield_normal_error_deg,path_accuracy_percent,travel_coverage,phase_completion,unpenalized_score,head_position_severity,head_penalty_points\n"+string.Join("\n",summaries);File.WriteAllText(Path.Combine(folder,"summary.csv"),text);File.WriteAllText(Path.Combine(folder,"summary.tsv"),text.Replace(',','\t'));File.WriteAllText(Path.Combine(folder,"outcome.json"),"{\"complete\":"+(complete?"true":"false")+",\"tracking_pause_seconds\":"+F(trackingPause)+"}");replay.Save(folder);
+                File.WriteAllText(Path.Combine(folder,"session.json"),JsonUtility.ToJson(settings,true));string text="exercise_id,side,repetition,score,complete_movement,hold_seconds,start_reached,return_reached,endpoint_reached,valid_seconds,mean_hand_error_m,mean_shield_normal_error_deg,path_accuracy_percent,travel_coverage,phase_completion,unpenalized_score,head_position_severity,head_penalty_points\n"+string.Join("\n",summaries);File.WriteAllText(Path.Combine(folder,"summary.csv"),text);File.WriteAllText(Path.Combine(folder,"summary.tsv"),text.Replace(',','\t'));File.WriteAllText(Path.Combine(folder,"outcome.json"),"{\"participant_id\":\""+participantId+"\",\"complete\":"+(complete?"true":"false")+",\"outcome\":\""+(conduit?conduit.Run.outcome:complete?"complete":"aborted")+"\",\"tracking_pause_seconds\":"+F(trackingPause)+",\"active_seconds\":"+F(activeSeconds)+",\"breaks\":"+breaksTaken+"}");replay.Save(folder);
             }catch(Exception e){message="Save failed: "+e.Message;Debug.LogError(message);}
             state=State.Finished;ghost.gameObject.SetActive(false);projectile.gameObject.SetActive(false);
         }
