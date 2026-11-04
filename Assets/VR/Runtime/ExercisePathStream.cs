@@ -12,11 +12,14 @@ namespace EmilVR
         const int Samples=180;
         readonly Vector3[] points=new Vector3[Samples];
         MaterialPropertyBlock tint;
-        void Awake(){tint=new MaterialPropertyBlock();}
+        // Dim bridge from the current path's end to the next path's start, so the stream reads as one line. Added at runtime; the prefab is generated.
+        LineRenderer bridge;
+        void Awake(){tint=new MaterialPropertyBlock();bridge=new GameObject("Path Bridge").AddComponent<LineRenderer>();bridge.transform.SetParent(transform,false);bridge.sharedMaterial=paths[0].sharedMaterial;bridge.widthMultiplier=paths[0].widthMultiplier*.5f;bridge.positionCount=2;bridge.gameObject.SetActive(false);}
         public static Vector3 Approach(Vector3 point,Vector3 forward,float timeUntilArrival,float speed)=>point+forward*(timeUntilArrival*speed);
         void LateUpdate()
         {
             bool visible=game&&game.PathsVisible&&!game.replay.IsActive;
+            int shown=0;
             for(int n=0;n<paths.Length;n++){
                 bool show=visible&&game.PathDefinition(n,out _,out _,out _);
                 paths[n].gameObject.SetActive(show);starts[n].gameObject.SetActive(false);ends[n].gameObject.SetActive(show);
@@ -32,8 +35,10 @@ namespace EmilVR
                 var color=side==0?new Color(1,.2f,.3f):new Color(.1f,1,.45f);
                 color*=n>0?.30f:.55f;color.a=1;tint.SetColor("_BaseColor",color);paths[n].SetPropertyBlock(tint);
                 starts[n].position=points[0];ends[n].position=points[Samples-1];
+                if(n==0){bridge.SetPosition(0,points[Samples-1]);shown++;}else if(shown==1){bridge.SetPosition(1,points[0]);tint.SetColor("_BaseColor",color*.5f);bridge.SetPropertyBlock(tint);tint.SetColor("_BaseColor",color);shown++;}
                 starts[n].GetComponent<Renderer>().SetPropertyBlock(tint);ends[n].GetComponent<Renderer>().SetPropertyBlock(tint);
             }
+            bridge.gameObject.SetActive(shown==2);
         }
     }
 }

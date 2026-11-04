@@ -31,7 +31,7 @@ Read PROJECT_MAP.md before exploring the code; open source files only when you n
 ## 5. Status against the team's feedback spec
 | Item | Status | Detail |
 |---|---|---|
-| Continuous line | partial | Finite ribbons with gaps, offset about 1.35 m in front of the player (`ExercisePathStream.cs:26-31`, `ShieldExerciseGame.cs:228`) |
+| Continuous line | partial | Finite ribbons about 1.35 m in front, now joined by a dim runtime bridge from current end to next start (`ExercisePathStream` `bridge`); the 2.5 s gap still exists in time; not yet seen on a headset |
 | Theme "Beat Saber Lite" night | partial | Dark and cyan but sci-fi repair; no post-processing volume |
 | Score | partial | Points and multiplier shown in the Conduit status line (`ConduitRepairGame` status text); Path match %, last move 0-100 |
 | Multiplier on consecutive perfects | built | Counts perfect reps (`ShieldArcadeFeedback.Perfect`), up to x5, shown as text; no visual indicator yet |
@@ -52,7 +52,7 @@ Read PROJECT_MAP.md before exploring the code; open source files only when you n
 | Rewards: positive ending | partial | Also a failure ending "REPAIR BATTERY EMPTY"; no planned pause |
 
 ## 6. Backlog, in priority order
-- P1 Line: read as one continuous line, close gaps, progressive fill. Graded brightness and the hand trail are in, but need a headset look.
+- P1 Line: progressive fill. Graded brightness, hand trail and the bridge between paths are in, but need a headset look.
 - P2 Rewards: a visual multiplier indicator. Score, multiplier on perfect reps, PRÆCIS/GOD labels and best streak are in.
 - P3 Audio: in-tolerance tone, soft dampening, rising notes on streaks, multiplier sound.
 - P4 Clinical: therapist-only limits (none now; the player can change the dev toggle and speed cap, reset and recalibrate). Session length and breaks (none now; roughly 47 minutes possible at target 120, an estimate).
@@ -62,8 +62,9 @@ Read PROJECT_MAP.md before exploring the code; open source files only when you n
 
 ## 7. Open team decisions: ask a human, do not assume
 - Night "Beat Saber Lite" theme versus the Conduit Repair ship story.
-- Line at the hand versus the current path about 1.35 m in front.
 - Whether the failure ending stays in a rehab game.
+
+Decided 2026-11-04: the line stays about 1.35 m in front of the player (no move to the hand).
 
 Decided 2026-11-04: perfect = `complete`, score >= 90 and coverage >= 90 % (`ShieldArcadeFeedback.Perfect`), the same band the adaptive coach treats as strong.
 

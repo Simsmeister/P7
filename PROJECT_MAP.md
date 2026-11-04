@@ -43,7 +43,7 @@ Recordings/, Builds/           gitignored outputs
 | `ShieldExerciseProfile.cs` | ScriptableObject per exercise: timing, tolerances, path shape | `Progress`, `Phase`, static `Path`, `Quality`, `Cycle`; enum `ShieldMovement` | Read by game, coach, stream | active |
 | `AdaptiveExerciseCoach.cs` | Rule-based speed and range per exercise and arm | `Configure`, `ProfileFor`, `RangeFor`, `Observe`, `ExportJson`; class `Decision` | Game, player settings | active |
 | `ExercisePlayerSettings.cs` | `player-settings.json` model, playlist | `Load`, `Save`, `Arm`, `Limit`, `Playlist`, `TransformCalibration`, `UsableCalibration` | Game, coach, menu | active |
-| `ExercisePathStream.cs` | Draws current and incoming line | `LateUpdate`, static `Approach`; `approachSpeed` | Reads game | active |
+| `ExercisePathStream.cs` | Draws current and incoming line, plus a runtime `Path Bridge` LineRenderer (half width, half next colour) joining them | `LateUpdate`, static `Approach`; `approachSpeed` | Reads game | active |
 | `ConduitRepairGame.cs` | Active theme: power, battery, nodes, white repaired sections, status text, floor lights, camera background. `RepairRun` holds outcome logic | `Begin`, `Resolve`, `Export`, `ExportNodes`, `NodeRepaired`, `Result`, `Run` | Reads game; uses `ExercisePathStream.Approach` | active |
 | `ExerciseGameMenu.cs` | World-space menu, ray and mouse input | `Navigate`, `Change`, `Recenter`, static `Hit`; `widgets` | Game, player settings | active |
 | `ShieldCoachDisplay.cs` | CURRENT card with stick figure during the mission | `Draw`, static `Example` | Reads game; `WandSessionReplay.EstimateElbow` | active |
@@ -209,7 +209,7 @@ There is no participant ID anywhere. Sessions are identified only by folder time
 | Backlog item | File and method |
 |---|---|
 | Line continuity, gaps | `ExercisePathStream.LateUpdate` (offset at 25, `n` loop), `ShieldExerciseGame.LoadChallenge:243` and `exerciseGapSeconds` |
-| Line at the hand versus in front (open decision) | `ShieldExerciseGame.ProjectShield:225`, used by `MapToFront:230` and `PathVisualPoint:266`; `Verify` in `ShieldExerciseSetup:44-48` asserts displacement |
+| Line at the hand versus in front (decided: stays in front) | `ShieldExerciseGame.ProjectShield:225`, used by `MapToFront:230` and `PathVisualPoint:266`; `Verify` in `ShieldExerciseSetup:44-48` asserts displacement |
 | Line brightness and glow | `ExercisePathStream.cs:32-33`; `ConduitRepairGame.NodeRepaired:40` and `LateUpdate:66, 71` |
 | Progressive fill | `ConduitRepairGame.LateUpdate:69-72`, `first` in `ExercisePathStream.cs:26` |
 | Hand trail | `ConduitRepairGame.UpdateTrails` adds a `TrailRenderer` to `game.shields` at runtime (prefabs untouched); time .25 s, width .03 m. Previously: new component on the player marker. Marker pose is set at `ShieldExerciseGame.cs:129`. Prefab comes from `ConduitSetup.Marker:16`, so add it there. `ControllerTrackingTrails` records unmapped hand positions and is trigger-driven |
