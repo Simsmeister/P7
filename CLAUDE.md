@@ -60,8 +60,24 @@ Read PROJECT_MAP.md before exploring the code; open source files only when you n
 - P6 Cleanup: one game name (working title SHOULDER FLOW in the menu, ProjectSettings product name unchanged); consistent exercise labels (menu says FORWARD REACH / OUTWARD ROTATION, gameplay says SERRATUS REACH / EXTERNAL ROTATION); real bundle ID (currently template default `com.UnityTechnologies.com.unity.template.urpblank`) with the export tool updated; stale strings ("defend against a mixed sequence", "WATCH THE GHOST SHIELD"); README sync. ("Power target" text is replaced.)
 - Later, optional: haptic toggle and pattern, milestone lighting, cosmetic unlocks, in-game progress view.
 
-## 7. Open team decisions: ask a human, do not assume
-- Whether the failure ending stays in a rehab game.
+## 7. Team decisions
+No open decisions left from the original list. New design questions still go to a human; do not assume.
+
+Decided 2026-11-04: the failure ending stays, but should be improved (see 7a).
+
+### 7a. Failure ending: how it works now and ideas to discuss
+How it works (`RepairRun.Resolve`, `ConduitRepairGame.cs`): FLOW (code: `battery`) starts at 100. Each rep subtracts `max(0, .6-q)*16` and adds 2 when `q>=.85`. At 0 the session ends with "OUT OF FLOW - TRY AGAIN", which is checked before victory. Tracking pauses never drain it. `ConduitSetup.Verify` requires that a stationary player (q=.25) fails even a short session; that is the anti-idle guard, so keep some failure path or replace that check.
+
+Why it needs work: in rehab a hard loss can punish fatigue or pain, which is the moment the player should stop or slow down. It also overlaps with the adaptive coach, which already makes the next rep easier after a poor one, so the player can lose while the game is still easing.
+
+Ideas, not decided or built. Discuss with the team and a physiotherapist:
+- Grace period: no drain during the first N reps (for example 6) or until every exercise and arm has been seen once.
+- Cap the drain per rep (for example at 6) so one bad rep cannot end the session.
+- Turn failure into a break: at 0 FLOW, pause with "TAKE A BREAK" and a 30-60 s rest, then refill to 50 and continue, instead of ending. A planned break is also missing from P4.
+- Coach first: only drain when the adaptive coach is already at its floor for that exercise and arm (range at minimum, speed at slowest). Then a loss means "too hard even at the easiest", which is useful data for the therapist.
+- Therapist switch: failure on or off per player in `player-settings.json`, behind the therapist-only settings planned in P4.
+- Kinder ending screen: show what went well (points, best streak, PRÆCIS count, best exercise) next to the failure text, so the session ends on progress.
+- Log it: export why the session ended; the FLOW curve is already in `conduit.csv`. Report in the paper how often failure happened.
 
 Decided 2026-11-04: night "Beat Saber Lite" theme, no ship story. Player-facing text says ENERGY (was ship power) and FLOW (was battery). Code names, export files and CSV columns keep `conduit`, `ship_power`, `battery` so old data stays comparable. Menu title "SHOULDER FLOW" is a working title until the team picks one game name (P6).
 
