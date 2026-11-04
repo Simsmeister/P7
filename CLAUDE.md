@@ -70,6 +70,23 @@ Decided 2026-11-04: the line stays about 1.35 m in front of the player (no move 
 Decided 2026-11-04: perfect = `complete`, score >= 90 and coverage >= 90 % (`ShieldArcadeFeedback.Perfect`), the same band the adaptive coach treats as strong.
 
 ## 8. Limits to state honestly
-Compensation is only a head-movement heuristic. Elbow, scapula and torso are not measured, and the adaptive thresholds have no clinical validation. Everything in this file comes from static code reading on 2026-11-04, not from a Unity or headset run.
+Compensation is only a head-movement heuristic. Elbow, scapula and torso are not measured, and the adaptive thresholds have no clinical validation. Sections 1-6 come from static code reading on 2026-11-04; section 9 adds what was compiled and checked in batch mode. Nothing was run on a headset.
 
 `origin/Emil` lacks this file; teammates should pull `Share-load`.
+
+## 9. Handoff: work done on 2026-11-04 and where to pick up
+Commits on `Share-load` after the original handoff (`f9e970ad`), all pushed:
+- Graded line glow (`ConduitRepairGame.Glow`) and a 0.25 s hand trail (`UpdateTrails`), both added at runtime.
+- Points, x1-x5 multiplier and best streak shown in the status line and end-of-session menu.
+- "Perfect" defined (`ShieldArcadeFeedback.Perfect`); multiplier counts perfect reps; PRÆCIS / GOD label shown in the gap before the next path.
+- Dim bridge joining the current path to the next (`ExercisePathStream`, runtime `Path Bridge`).
+- Night theme wording: ENERGY / FLOW instead of ship power / battery; menu prefab regenerated (text only).
+
+How it was checked: Unity 6000.6.0f1 batch mode on Windows compiles with 0 errors, and `ConduitSetup.Verify` and `ExercisePathSetup.Verify` pass. The Play Mode test `ShieldExerciseVerification.Run` was not run (it rebuilds prefabs first). Nothing was looked at in Play Mode or on a headset, so the first job is a headset look at glow, trail, bridge, and whether the longer status line fits.
+
+Batch check command (Windows, Unity closed):
+`"C:/Program Files/Unity/Hub/Editor/6000.6.0f1/Editor/Unity.exe" -batchmode -nographics -quit -projectPath <repo> -executeMethod ConduitSetup.Verify -logFile <log>`
+
+Suggested next steps, in order: headset look; improve the failure ending (7a); bloom / post-processing volume for the night look; visual multiplier indicator; audio (P3); therapist limits and breaks (P4); participant ID (P5).
+
+Uncommitted local noise: `UniversalRenderPipelineGlobalSettings.asset`, `EditorBuildSettings.asset`, `ProjectAuditorSettings.asset`, `ShaderGraphSettings.asset` were changed by Unity before this work and are deliberately not committed.
