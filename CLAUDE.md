@@ -32,7 +32,7 @@ Read PROJECT_MAP.md before exploring the code; open source files only when you n
 | Item | Status | Detail |
 |---|---|---|
 | Continuous line | partial | Finite ribbons about 1.35 m in front, now joined by a dim runtime bridge from current end to next start (`ExercisePathStream` `bridge`); the 2.5 s gap still exists in time; not yet seen on a headset |
-| Theme "Beat Saber Lite" night | partial | Dark and cyan but sci-fi repair; no post-processing volume |
+| Theme "Beat Saber Lite" night | partial | Chosen 2026-11-04. Ship and repair text replaced with ENERGY / FLOW wording (runtime and menu prefab); visuals still dark and cyan; no post-processing volume (bloom) yet |
 | Score | partial | Points and multiplier shown in the Conduit status line (`ConduitRepairGame` status text); Path match %, last move 0-100 |
 | Multiplier on consecutive perfects | built | Counts perfect reps (`ShieldArcadeFeedback.Perfect`), up to x5, shown as text; no visual indicator yet |
 | Audio: completion sound | built | 880 Hz |
@@ -49,7 +49,7 @@ Read PROJECT_MAP.md before exploring the code; open source files only when you n
 | Rewards: personal progress | partial | Data saved, no in-game view |
 | Rewards: cosmetic unlocks | missing | |
 | Rewards: round summary | partial | Menu shows result, accuracy, points and best streak (`ExerciseGameMenu.Refresh`); no per-exercise breakdown |
-| Rewards: positive ending | partial | Also a failure ending "REPAIR BATTERY EMPTY"; no planned pause |
+| Rewards: positive ending | partial | "FULL ENERGY - GREAT SESSION"; failure ending still exists as "OUT OF FLOW - TRY AGAIN"; no planned pause |
 
 ## 6. Backlog, in priority order
 - P1 Line: progressive fill. Graded brightness, hand trail and the bridge between paths are in, but need a headset look.
@@ -57,12 +57,13 @@ Read PROJECT_MAP.md before exploring the code; open source files only when you n
 - P3 Audio: in-tolerance tone, soft dampening, rising notes on streaks, multiplier sound.
 - P4 Clinical: therapist-only limits (none now; the player can change the dev toggle and speed cap, reset and recalibrate). Session length and breaks (none now; roughly 47 minutes possible at target 120, an estimate).
 - P5 Evaluation: participant ID in exports, VRNQ questionnaire outside the app (no in-app support), headset test.
-- P6 Cleanup: one game name; consistent exercise labels (menu says FORWARD REACH / OUTWARD ROTATION, gameplay says SERRATUS REACH / EXTERNAL ROTATION); real bundle ID (currently template default `com.UnityTechnologies.com.unity.template.urpblank`) with the export tool updated; stale strings ("defend against a mixed sequence", "WATCH THE GHOST SHIELD"); inaccurate "Power target: N perfect repairs" text; README sync.
+- P6 Cleanup: one game name (working title SHOULDER FLOW in the menu, ProjectSettings product name unchanged); consistent exercise labels (menu says FORWARD REACH / OUTWARD ROTATION, gameplay says SERRATUS REACH / EXTERNAL ROTATION); real bundle ID (currently template default `com.UnityTechnologies.com.unity.template.urpblank`) with the export tool updated; stale strings ("defend against a mixed sequence", "WATCH THE GHOST SHIELD"); README sync. ("Power target" text is replaced.)
 - Later, optional: haptic toggle and pattern, milestone lighting, cosmetic unlocks, in-game progress view.
 
 ## 7. Open team decisions: ask a human, do not assume
-- Night "Beat Saber Lite" theme versus the Conduit Repair ship story.
 - Whether the failure ending stays in a rehab game.
+
+Decided 2026-11-04: night "Beat Saber Lite" theme, no ship story. Player-facing text says ENERGY (was ship power) and FLOW (was battery). Code names, export files and CSV columns keep `conduit`, `ship_power`, `battery` so old data stays comparable. Menu title "SHOULDER FLOW" is a working title until the team picks one game name (P6).
 
 Decided 2026-11-04: the line stays about 1.35 m in front of the player (no move to the hand).
 

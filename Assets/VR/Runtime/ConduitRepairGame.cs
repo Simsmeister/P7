@@ -24,7 +24,7 @@ namespace EmilVR
         public ShieldExerciseGame game;public Transform hud,chargeRing;public TextMesh status;
         public Renderer[] nodes,shipLights;public LineRenderer[] repaired;
         public RepairRun Run {get;private set;}=new RepairRun();
-        public string Result=>Run.outcome=="victory"?"SHIP POWER RESTORED":Run.outcome=="defeat"?"REPAIR BATTERY EMPTY":"SESSION STOPPED";
+        public string Result=>Run.outcome=="victory"?"FULL ENERGY - GREAT SESSION":Run.outcome=="defeat"?"OUT OF FLOW - TRY AGAIN":"SESSION STOPPED";
         readonly List<string> rows=new List<string>();
         readonly List<string> nodeRows=new List<string>();
         readonly float[] quality=new float[120];readonly bool[] sampled=new bool[120];
@@ -84,8 +84,8 @@ namespace EmilVR
                 int bin=Mathf.Clamp(Mathf.RoundToInt(t/duration*119),0,119);var line=repaired[i];bool show=next<=clock&&t>=clock-1.2f&&sampled[bin];line.gameObject.SetActive(show);if(!show)continue;line.SetPosition(0,Point(p,c,side,t,clock));line.SetPosition(1,Point(p,c,side,next,clock));float fade=Mathf.Clamp01(1-(clock-t)/1.2f);line.widthMultiplier=.018f*fade;Colorize(line,Glow(quality[bin])*fade);
             }
             if(clock<=p.outwardSeconds+p.holdSeconds){chargeRing.gameObject.SetActive(true);float t=Mathf.Max(p.outwardSeconds,clock);chargeRing.position=Point(p,c,side,t,clock);chargeRing.rotation=game.CoachRotation;chargeRing.localScale=Vector3.one*(.14f+.045f*charge);Colorize(chargeRing.GetComponent<Renderer>(),Color.Lerp(hand*.5f,hand,charge));}
-            string cue=!game.RepairTracked?"TRACKING PAUSED":clock<0?(game.arcade&&game.arcade.LastLabel!=""?game.arcade.LastLabel+"!   ":"")+"CONNECT THE NEXT CONDUIT":p.Phase(clock)=="hold"?"CHARGE NODE "+Mathf.RoundToInt(charge*100)+"%":p.Phase(clock)=="rest"?"CONDUIT COMPLETE":NodeRepaired(match)?"REPAIRING":"RECONNECT TO THE PATH";
-            status.text="SHIP POWER "+Mathf.RoundToInt(Run.power*100)+"%   |   BATTERY "+Mathf.CeilToInt(Run.battery)+"%\n"+(game.arcade?game.arcade.Points+" POINTS   x"+game.arcade.Multiplier+"   |   ":"")+cue;
+            string cue=!game.RepairTracked?"TRACKING PAUSED":clock<0?(game.arcade&&game.arcade.LastLabel!=""?game.arcade.LastLabel+"!   ":"")+"NEXT LINE INCOMING":p.Phase(clock)=="hold"?"HOLD "+Mathf.RoundToInt(charge*100)+"%":p.Phase(clock)=="rest"?"LINE COMPLETE":NodeRepaired(match)?"IN FLOW":"BACK ON THE LINE";
+            status.text="ENERGY "+Mathf.RoundToInt(Run.power*100)+"%   |   FLOW "+Mathf.CeilToInt(Run.battery)+"%\n"+(game.arcade?game.arcade.Points+" POINTS   x"+game.arcade.Multiplier+"   |   ":"")+cue;
         }
         Vector3 Point(ShieldExerciseProfile p,ShieldExerciseGame.Calibration c,int side,float t,float clock)=>ExercisePathStream.Approach(game.PathVisualPoint(p,c,side,t),game.CoachRotation*Vector3.forward,t-clock,game.pathStream.approachSpeed);
     }

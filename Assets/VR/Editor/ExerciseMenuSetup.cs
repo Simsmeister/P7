@@ -33,11 +33,11 @@ public static class ExerciseMenuSetup
         Panel(Rect("Top accent",canvas,0,446,1000,8),new Color(.1f,.85f,.8f));
         Panel(Rect("Footer divider",canvas,0,-380,900,2),new Color(.12f,.3f,.37f));
         menu.home=Rect("Home",canvas,0,0,1000,900).gameObject;menu.settings=Rect("Settings",canvas,0,0,1000,900).gameObject;menu.details=Rect("Exercise settings",canvas,0,0,1000,900).gameObject;menu.resetConfirmation=Rect("Reset confirmation",canvas,0,0,1000,900).gameObject;
-        Label(menu.home.transform,"POWER / MOVEMENT LAB",0,345,900,70,42);menu.homeStatus=Label(menu.home.transform,"",0,255,900,100,23);
-        Button(menu,menu.home.transform,"start","START REPAIR",0,130);Button(menu,menu.home.transform,"redo","TUTORIAL / RECALIBRATE",0,35);Button(menu,menu.home.transform,"settings","SETTINGS",0,-60);Button(menu,menu.home.transform,"replay","LAST REPLAY",0,-155);
+        Label(menu.home.transform,"SHOULDER FLOW",0,345,900,70,42);menu.homeStatus=Label(menu.home.transform,"",0,255,900,100,23);
+        Button(menu,menu.home.transform,"start","START",0,130);Button(menu,menu.home.transform,"redo","TUTORIAL / RECALIBRATE",0,35);Button(menu,menu.home.transform,"settings","SETTINGS",0,-60);Button(menu,menu.home.transform,"replay","LAST REPLAY",0,-155);
         Button(menu,menu.home.transform,"recenter","CENTER MENU",0,-245);
-        Label(menu.home.transform,"Repair the paths. Charge the nodes. Restore ship power.\nFirst time? Start guides you through your personal calibration.",0,-340,900,80,21);
-        Label(menu.settings.transform,"MISSION SETTINGS",0,365,900,60,38);Slider(menu,menu.settings.transform,"total",260,1,120,true);Toggle(menu,menu.settings.transform,"dev",0,170,350);
+        Label(menu.home.transform,"Follow the line. Hold at the end. Fill your energy.\nFirst time? Start guides you through your personal calibration.",0,-340,900,80,21);
+        Label(menu.settings.transform,"SETTINGS",0,365,900,60,38);Slider(menu,menu.settings.transform,"total",260,1,120,true);Toggle(menu,menu.settings.transform,"dev",0,170,350);
         string[] names={"SCAPTION","FORWARD REACH","OUTWARD ROTATION"};
         for(int i=0;i<3;i++){float y=65-i*110;Label(menu.settings.transform,names[i],-310,y,300,60,23);Toggle(menu,menu.settings.transform,"left:"+i,-50,y,155);Toggle(menu,menu.settings.transform,"right:"+i,125,y,155);Button(menu,menu.settings.transform,"exercise:"+i,"ADJUST",330,y,190);}
         Button(menu,menu.settings.transform,"reset","RESET SAVED SETTINGS",0,-245);Button(menu,menu.settings.transform,"home","BACK TO MENU",0,-335);

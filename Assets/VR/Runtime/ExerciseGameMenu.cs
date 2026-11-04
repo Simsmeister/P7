@@ -66,7 +66,7 @@ namespace EmilVR
         {
             game.EnsurePlayerSettings();var data=game.PlayerSettings;
             home.SetActive(page==0);settings.SetActive(page==1);details.SetActive(page==2);resetConfirmation.SetActive(page==3);
-            homeStatus.text=(game.Finished?game.SessionResult+"  |  Accuracy "+game.Score.ToString("F0")+" / 100"+(game.arcade?"  |  "+game.arcade.Points+" points  |  Best streak "+game.arcade.BestCombo:"")+"\n":"")+(data.devMode?"DEV MODE - fixed overrides, normal progress protected":"Your personal pace and range are saved automatically")+"\nPower target: "+data.totalRepetitions+" perfect repairs";
+            homeStatus.text=(game.Finished?game.SessionResult+"  |  Accuracy "+game.Score.ToString("F0")+" / 100"+(game.arcade?"  |  "+game.arcade.Points+" points  |  Best streak "+game.arcade.BestCombo:"")+"\n":"")+(data.devMode?"DEV MODE - fixed overrides, normal progress protected":"Your personal pace and range are saved automatically")+"\nEnergy fills after about "+data.totalRepetitions+" strong movements";
             footer.text=!string.IsNullOrEmpty(data.error)?"Could not save settings. Progress may not persist.":!game.AnyEnabled?"Enable at least one exercise and arm in Settings.":"Point with either controller and press trigger. Drag sliders to adjust.";
             string id=game.exercises[Mathf.Clamp(exercise,0,game.exercises.Length-1)].exerciseId;
             detailTitle.text=game.exercises[exercise].displayName.ToUpper();
@@ -80,7 +80,7 @@ namespace EmilVR
                 if(!w.slider)continue;
                 float value=w.key=="total"?data.totalRepetitions:w.key=="limit"?data.Limit(id).fasterPercent:w.key=="speedLeft"?left.devSpeed*100:w.key=="speedRight"?right.devSpeed*100:w.key=="rangeLeft"?left.devRange*100:right.devRange*100;
                 w.slider.SetValueWithoutNotify(value);w.slider.interactable=w.key=="total"||w.key=="limit"||data.devMode;
-                string label=w.key=="total"?"Repair target (perfect movements)":w.key=="limit"?"Maximum speed increase (normal mode)":w.key=="speedLeft"?"Dev left speed":w.key=="speedRight"?"Dev right speed":w.key=="rangeLeft"?"Dev left range":"Dev right range";
+                string label=w.key=="total"?"Energy target (strong movements)":w.key=="limit"?"Maximum speed increase (normal mode)":w.key=="speedLeft"?"Dev left speed":w.key=="speedRight"?"Dev right speed":w.key=="rangeLeft"?"Dev left range":"Dev right range";
                 w.label.text=label+": "+value.ToString("F0")+(w.key=="total"?"":"%");w.label.color=w.slider.interactable?Color.white:new Color(.5f,.55f,.6f);
             }
         }
