@@ -66,7 +66,7 @@ namespace EmilVR
         {
             game.EnsurePlayerSettings();var data=game.PlayerSettings;
             home.SetActive(page==0);settings.SetActive(page==1);details.SetActive(page==2);resetConfirmation.SetActive(page==3);
-            homeStatus.text=(game.Finished?game.SessionResult+"  |  Accuracy "+game.Score.ToString("F0")+" / 100\n":"")+(data.devMode?"DEV MODE - fixed overrides, normal progress protected":"Your personal pace and range are saved automatically")+"\nPower target: "+data.totalRepetitions+" perfect repairs";
+            homeStatus.text=(game.Finished?game.SessionResult+"  |  Accuracy "+game.Score.ToString("F0")+" / 100"+(game.arcade?"  |  "+game.arcade.Points+" points  |  Best streak "+game.arcade.BestCombo:"")+"\n":"")+(data.devMode?"DEV MODE - fixed overrides, normal progress protected":"Your personal pace and range are saved automatically")+"\nPower target: "+data.totalRepetitions+" perfect repairs";
             footer.text=!string.IsNullOrEmpty(data.error)?"Could not save settings. Progress may not persist.":!game.AnyEnabled?"Enable at least one exercise and arm in Settings.":"Point with either controller and press trigger. Drag sliders to adjust.";
             string id=game.exercises[Mathf.Clamp(exercise,0,game.exercises.Length-1)].exerciseId;
             detailTitle.text=game.exercises[exercise].displayName.ToUpper();

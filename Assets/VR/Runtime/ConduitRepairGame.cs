@@ -85,7 +85,7 @@ namespace EmilVR
             }
             if(clock<=p.outwardSeconds+p.holdSeconds){chargeRing.gameObject.SetActive(true);float t=Mathf.Max(p.outwardSeconds,clock);chargeRing.position=Point(p,c,side,t,clock);chargeRing.rotation=game.CoachRotation;chargeRing.localScale=Vector3.one*(.14f+.045f*charge);Colorize(chargeRing.GetComponent<Renderer>(),Color.Lerp(hand*.5f,hand,charge));}
             string cue=!game.RepairTracked?"TRACKING PAUSED":clock<0?"CONNECT THE NEXT CONDUIT":p.Phase(clock)=="hold"?"CHARGE NODE "+Mathf.RoundToInt(charge*100)+"%":p.Phase(clock)=="rest"?"CONDUIT COMPLETE":NodeRepaired(match)?"REPAIRING":"RECONNECT TO THE PATH";
-            status.text="SHIP POWER "+Mathf.RoundToInt(Run.power*100)+"%   |   BATTERY "+Mathf.CeilToInt(Run.battery)+"%\n"+cue;
+            status.text="SHIP POWER "+Mathf.RoundToInt(Run.power*100)+"%   |   BATTERY "+Mathf.CeilToInt(Run.battery)+"%\n"+(game.arcade?game.arcade.Points+" POINTS   x"+game.arcade.Multiplier+"   |   ":"")+cue;
         }
         Vector3 Point(ShieldExerciseProfile p,ShieldExerciseGame.Calibration c,int side,float t,float clock)=>ExercisePathStream.Approach(game.PathVisualPoint(p,c,side,t),game.CoachRotation*Vector3.forward,t-clock,game.pathStream.approachSpeed);
     }

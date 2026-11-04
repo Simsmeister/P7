@@ -49,7 +49,7 @@ Recordings/, Builds/           gitignored outputs
 | `ShieldCoachDisplay.cs` | CURRENT card with stick figure during the mission | `Draw`, static `Example` | Reads game; `WandSessionReplay.EstimateElbow` | active |
 | `WandSessionReplay.cs` | Records and plays replay; also the tutorial mannequin and calibration guide | `BeginRecording`, `Capture`, `Save`, `Open`, `Close`, `OpenExerciseDemo`, `HoldDemoAt`, `UpdateGuidance`, `LoadLatest`, `MirrorPoint` | Game; `WandPathGame.ResizeWand` and `OpenDemo` (72, 86) | active, with legacy wand branches |
 | `EmilVRInput.cs` | Rig hand and controller visuals | `mode`, `allowModeSwitch`, `CycleMode`, `SetMode` | Game forces Controllers (`ShieldExerciseGame.cs:111`) | active |
-| `ShieldArcadeFeedback.cs` | Reactor Rescue: tones, points, combo, burst ring. HUD hidden | `Captured`, `Block`, `Reward`, `Show`, `ResetMission`, `Points`, `Combo` | Called by game | half-alive |
+| `ShieldArcadeFeedback.cs` | Reactor Rescue: tones, points, combo, burst ring. HUD hidden; points and multiplier are shown through Conduit status text | `Captured`, `Block`, `Reward`, `Show`, `ResetMission`, `Points`, `Combo`, `BestCombo`, `Multiplier` | Called by game | half-alive |
 | `ControllerTrackingTrails.cs` | Trigger-drawn debug trails | `RecordFrame`, `ClearTrails` | Own input; instance inactive in `VR Rig.prefab` | dead in gameplay |
 | `WandPathGame.cs` | Old two-wand game; instance disabled in Emil.unity | `Target`, static `Quality`, `ResizeWand` | Replay, `PathTube` | dead, compile dependency |
 | `PathTube.cs` | Old wand tube mesh | `Draw(WandPathGame,...)` | `WandPathGame` | dead |
@@ -153,7 +153,7 @@ All values are prototype settings. None has clinical validation.
 | Outcome | Defeat at battery 0, checked first; victory at power full | `ConduitRepairGame.cs:18` |
 | Node repaired (export, charge, cue) | `q>=.65` |
 | Line glow colour | `Glow(q)`: lerp amber*.35 to white over `InverseLerp(.4,.9,q)`; sections fade over 1.2 s, nodes over 1.3 s; also tints the hand trail | `ConduitRepairGame.cs:40, 66, 71` |
-| Points | `+100q`; if `complete`, `Combo++` and `+100q*min(Combo-1,4)`; else `Combo=0` | `ShieldArcadeFeedback.cs:23-24` |
+| Points | `+100q`; if `complete`, `Combo++` and `+100q*min(Combo-1,4)`; else `Combo=0`. `BestCombo` = max `Combo`; `Multiplier` = `clamp(Combo,1,5)` | `ShieldArcadeFeedback.cs:23-24` |
 
 Adaptive coach, `AdaptiveExerciseCoach.Observe` (66). State is per exercise and arm. `scale` multiplies outward and return duration only (`Apply`, 104).
 

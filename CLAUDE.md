@@ -33,8 +33,8 @@ Read PROJECT_MAP.md before exploring the code; open source files only when you n
 |---|---|---|
 | Continuous line | partial | Finite ribbons with gaps, offset about 1.35 m in front of the player (`ExercisePathStream.cs:26-31`, `ShieldExerciseGame.cs:228`) |
 | Theme "Beat Saber Lite" night | partial | Dark and cyan but sci-fi repair; no post-processing volume |
-| Score | partial | Live Path match %, last move 0-100, points hidden (`ShieldExerciseGame.cs:139`) |
-| Multiplier on consecutive perfects | partial | Counts `complete` reps, up to x5, not visible |
+| Score | partial | Points and multiplier shown in the Conduit status line (`ConduitRepairGame` status text); Path match %, last move 0-100 |
+| Multiplier on consecutive perfects | partial | Counts `complete` reps (not yet "perfect", open decision), up to x5, shown as text |
 | Audio: completion sound | built | 880 Hz |
 | Audio: in-tolerance tone, rising notes, multiplier sound, soft dampening off the line | missing | |
 | Visual: line glow | partial | Graded by quality (`ConduitRepairGame.Glow`, amber at 0.4 to white at 0.9), fades about 1.2 s; not yet run in Unity on a headset |
@@ -48,12 +48,12 @@ Read PROJECT_MAP.md before exploring the code; open source files only when you n
 | Rewards: God/Præcis labels | missing | |
 | Rewards: personal progress | partial | Data saved, no in-game view |
 | Rewards: cosmetic unlocks | missing | |
-| Rewards: round summary | partial | No best streak |
+| Rewards: round summary | partial | Menu shows result, accuracy, points and best streak (`ExerciseGameMenu.Refresh`); no per-exercise breakdown |
 | Rewards: positive ending | partial | Also a failure ending "REPAIR BATTERY EMPTY"; no planned pause |
 
 ## 6. Backlog, in priority order
 - P1 Line: read as one continuous line, close gaps, progressive fill. Graded brightness and the hand trail are in, but need a headset look.
-- P2 Rewards: show score and multiplier, base the multiplier on perfect reps, God/Præcis labels, round summary with best streak.
+- P2 Rewards: base the multiplier on perfect reps (needs the "perfect" decision), God/Præcis labels, a visual multiplier indicator. Score, multiplier text and best streak are in.
 - P3 Audio: in-tolerance tone, soft dampening, rising notes on streaks, multiplier sound.
 - P4 Clinical: therapist-only limits (none now; the player can change the dev toggle and speed cap, reset and recalibrate). Session length and breaks (none now; roughly 47 minutes possible at target 120, an estimate).
 - P5 Evaluation: participant ID in exports, VRNQ questionnaire outside the app (no in-app support), headset test.
