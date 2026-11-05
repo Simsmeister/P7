@@ -51,6 +51,7 @@ public static class ExerciseMenuSetup
         menu.footer=Label(canvas,"",0,-415,950,55,20);
         var line=new GameObject("Menu pointer",typeof(LineRenderer));line.transform.SetParent(root.transform,false);menu.pointer=line.GetComponent<LineRenderer>();menu.pointer.positionCount=2;menu.pointer.useWorldSpace=true;menu.pointer.widthMultiplier=.003f;menu.pointer.sharedMaterial=AssetDatabase.LoadAssetAtPath<Material>("Assets/VR/Shield/Energy Pulse.mat");
         menu.settings.SetActive(false);menu.details.SetActive(false);menu.resetConfirmation.SetActive(false);menu.pointer.gameObject.SetActive(false);
+        menu.EnsureResults();
         const string path="Assets/VR/Shield/Exercise Main Menu.prefab";var prefab=PrefabUtility.SaveAsPrefabAsset(root,path);Object.DestroyImmediate(root);
         const string gamePath="Assets/VR/Shield/Shield Exercise Game.prefab";var contents=PrefabUtility.LoadPrefabContents(gamePath);
         try{var game=contents.GetComponent<ShieldExerciseGame>();if(!game.menu)game.menu=((GameObject)PrefabUtility.InstantiatePrefab(prefab,contents.transform)).GetComponent<ExerciseGameMenu>();game.menu.game=game;PrefabUtility.RecordPrefabInstancePropertyModifications(game.menu);PrefabUtility.SaveAsPrefabAsset(contents,gamePath);}

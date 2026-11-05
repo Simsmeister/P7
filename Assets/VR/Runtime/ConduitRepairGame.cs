@@ -70,7 +70,7 @@ namespace EmilVR
             transform.SetPositionAndRotation(game.CoachOrigin,game.CoachRotation);
             var camera=game.head.GetComponent<Camera>();if(camera){camera.clearFlags=CameraClearFlags.SolidColor;camera.backgroundColor=new Color(.018f,.03f,.055f);}
             bool visible=game.PathsVisible&&!(game.replay&&game.replay.IsActive);
-            hud.gameObject.SetActive(visible);chargeRing.gameObject.SetActive(false);
+            hud.gameObject.SetActive(false);chargeRing.gameObject.SetActive(false);
             if(!visible){foreach(var n in nodes)n.gameObject.SetActive(false);foreach(var line in repaired)line.gameObject.SetActive(false);}
             if(shipLights!=null)for(int i=0;i<shipLights.Length;i++)Colorize(shipLights[i],i<Mathf.FloorToInt(Run.power*shipLights.Length)?new Color(.15f,.9f,1):new Color(.06f,.12f,.19f));
             if(!visible||!game.PathDefinition(0,out var p,out var c,out int side))return;
@@ -99,9 +99,9 @@ namespace EmilVR
                 bool back=t>=p.outwardSeconds+p.holdSeconds;Vector3 lift=back?game.CoachRotation*Vector3.back*.01f:Vector3.zero;line.SetPosition(0,game.PathVisualPoint(p,c,side,t)+lift);line.SetPosition(1,game.PathVisualPoint(p,c,side,next)+lift);line.widthMultiplier=back?.01f:.018f;Colorize(line,Glow(quality[bin]));
             }
             if(clock<=p.outwardSeconds+p.holdSeconds){chargeRing.gameObject.SetActive(true);float t=Mathf.Max(p.outwardSeconds,clock);chargeRing.position=Point(p,c,side,t,clock);chargeRing.rotation=game.CoachRotation;chargeRing.localScale=Vector3.one*(.14f+.045f*charge);Colorize(chargeRing.GetComponent<Renderer>(),Color.Lerp(hand*.5f,hand,charge));}
-            UpdatePips();
+            // Compact score HUD is drawn by ShieldArcadeFeedback; keep the route unobstructed.
             string cue=!game.RepairTracked?"TRACKING PAUSED":clock<0?(game.arcade&&game.arcade.LastLabel!=""?game.arcade.LastLabel+"!   ":"")+"NEXT LINE INCOMING":p.Phase(clock)=="hold"?"HOLD "+Mathf.RoundToInt(charge*100)+"%":p.Phase(clock)=="rest"?"LINE COMPLETE":NodeRepaired(match)?"IN FLOW":"BACK ON THE LINE";
-            status.text="ENERGY "+Mathf.RoundToInt(Run.power*100)+"%   |   FLOW "+Mathf.CeilToInt(Run.battery)+"%\n"+(game.arcade?game.arcade.Points+" POINTS   x"+game.arcade.Multiplier+"   |   ":"")+cue;
+            status.text="ENERGY "+Mathf.RoundToInt(Run.power*100)+"%   |   FLOW "+Mathf.CeilToInt(Run.battery)+"%\n"+(game.arcade?"REP STREAK x"+game.arcade.Multiplier+"   |   ":"")+cue;
         }
         Vector3 Point(ShieldExerciseProfile p,ShieldExerciseGame.Calibration c,int side,float t,float clock)=>ExercisePathStream.Approach(game.PathVisualPoint(p,c,side,t),game.CoachRotation*Vector3.forward,t-clock,game.pathStream.approachSpeed);
     }

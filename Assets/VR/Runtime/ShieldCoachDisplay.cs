@@ -17,7 +17,7 @@ namespace EmilVR
             for(int i=0;i<cards.Length;i++){
                 var c=new Card();c.root=new GameObject("Movement card "+i).transform;c.root.SetParent(transform,false);
                 if(!cardMaterial){cardMaterial=new Material(Shader.Find("Universal Render Pipeline/Unlit"));cardMaterial.color=new Color(.025f,.065f,.10f);}
-                var panel=GameObject.CreatePrimitive(PrimitiveType.Cube);panel.name="Current movement panel";Destroy(panel.GetComponent<Collider>());panel.transform.SetParent(c.root,false);panel.transform.localPosition=new Vector3(0,-.15f,.06f);panel.transform.localScale=new Vector3(.85f,.7f,.015f);panel.GetComponent<Renderer>().sharedMaterial=cardMaterial;
+
                 c.title=Text("View label",c.root,.0075f);c.title.transform.localPosition=new Vector3(0,.12f,0);
                 c.body=Line(c.root,"Illustrative body",new Color(.5f,.7f,.85f),.012f);
                 c.arm=Line(c.root,"Active arm",Color.white,.021f);c.trail=Line(c.root,"Movement route",new Color(.2f,.8f,1),.008f);c.head=Line(c.root,"Head",new Color(.7f,.8f,.9f),.012f);
@@ -65,7 +65,7 @@ namespace EmilVR
                 hand=ShieldExerciseProfile.Path(profile.movement,start,end,pivot,game.CurrentMovementProgress);
             }
             cards[0].root.localPosition=new Vector3(0,-.82f,0);
-            cards[0].title.text="CURRENT / "+(side==0?"LEFT":"RIGHT")+"\n"+profile.displayName;
+            cards[0].title.text=(side==0?"LEFT":"RIGHT")+"\n"+profile.displayName;
             Draw(cards[0],profile,side,hand,start,end,pivot,profile.movement==ShieldMovement.SerratusReach?90:0,.22f,false);
         }
         void OnDestroy(){if(lineMaterial)Destroy(lineMaterial);if(cardMaterial)Destroy(cardMaterial);}

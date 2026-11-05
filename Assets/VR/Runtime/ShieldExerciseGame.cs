@@ -145,8 +145,9 @@ namespace EmilVR
             bool calibrating=state==State.CaptureStart||state==State.CaptureEnd||state==State.Ready;
             if(pressA)SkipTutorialPreview();
             bool reviewing=replay&&replay.IsActive;
+            if(arcade&&(reviewing||state!=State.Playing))arcade.TrackPerfect(false,0,0);
             if(arcade){arcade.Show(!conduit&&!reviewing&&state==State.Playing,block,rep,Profile.repetitions);arcade.core.gameObject.SetActive(false);arcade.LineTone(!reviewing&&state==State.Playing&&RepairTracked,RepairQuality);}
-            board.gameObject.SetActive(!reviewing&&!(menu&&MenuVisible));ghost.gameObject.SetActive(!reviewing&&state!=State.Welcome&&state!=State.Finished&&state!=State.Break);if(reviewing&&!calibrating){projectile.gameObject.SetActive(false);return;}
+            board.gameObject.SetActive(!reviewing&&!(menu&&MenuVisible)&&!PathsVisible);ghost.gameObject.SetActive(!reviewing&&state!=State.Welcome&&state!=State.Finished&&state!=State.Break);if(reviewing&&!calibrating){projectile.gameObject.SetActive(false);return;}
             bool tracked=valid[Side]&&HeadValid();float dt=Mathf.Min(Time.unscaledDeltaTime,.1f);
             // Active play is when the game clock runs: never calibration, tutorial, break or tracking pauses.
             if(tracked&&(state==State.Approaching||state==State.Playing)){activeSeconds+=dt;activeSinceBreak+=dt;}
@@ -170,6 +171,7 @@ namespace EmilVR
                 Target(clock,out Vector3 p,out Quaternion q);ghost.SetPositionAndRotation(MapToFront(p,Side),frame);
                 float pe=Vector3.Distance(pos[Side],p),ae=Vector3.Angle(rot[Side]*Vector3.forward,q*Vector3.forward);
                 repairQuality=tracked?Profile.Quality(pe,ae):0;
+                if(arcade)arcade.TrackPerfect(tracked&&Profile.Phase(clock)!="rest",repairQuality,dt);
                 if(tracked)
                 {
                     float progress=Vector3.Dot(pos[Side]-start,end-start)/Mathf.Max(.000001f,(end-start).sqrMagnitude);
@@ -414,9 +416,11 @@ namespace EmilVR
                 string participantId=TestMode?"TEST":Participant.Id;
                 var settings=new Settings{participantId=participantId,developerMode=PlayerSettings!=null&&PlayerSettings.devMode,exerciseGapSeconds=exerciseGapSeconds,breakAfterSeconds=breakAfterSeconds,breakSeconds=breakSeconds,sessionCapSeconds=sessionCapSeconds,challengeOrder=playlist.ToArray(),inputSource=simulated?"SIMULATED TEST":"controller-grip",frameOrigin=origin,frameRotation=frame,calibrations=calibrations.ToArray(),exercises=Array.ConvertAll(exercises,e=>new ExerciseSettings{id=e.exerciseId,repetitions=e.repetitions,outward=e.outwardSeconds,hold=e.holdSeconds,returnTime=e.returnSeconds,rest=e.restSeconds,fullCreditMetres=e.fullCreditMetres,zeroCreditMetres=e.zeroCreditMetres,fullCreditDegrees=e.fullCreditDegrees,zeroCreditDegrees=e.zeroCreditDegrees})};
                 if(conduit){File.WriteAllText(Path.Combine(folder,"conduit.json"),JsonUtility.ToJson(conduit.Run,true));File.WriteAllText(Path.Combine(folder,"conduit.csv"),conduit.Export());File.WriteAllText(Path.Combine(folder,"conduit.tsv"),conduit.Export().Replace(',','\t'));File.WriteAllText(Path.Combine(folder,"conduit-path.csv"),conduit.ExportNodes());File.WriteAllText(Path.Combine(folder,"conduit-path.tsv"),conduit.ExportNodes().Replace(',','\t'));}
+                if(arcade)File.WriteAllText(Path.Combine(folder,"game-points.json"),"{\"version\":\"perfect-flow-2\",\"total_points\":"+arcade.Points+",\"tracking_bonus_points\":"+arcade.TrackingBonusPoints+",\"warmup_seconds\":2,\"base_rep_points\":1000,\"base_tick_points\":100,\"tick_seconds\":0.5,\"minimum_quality\":0.9}");
                 if(adaptiveCoach)File.WriteAllText(Path.Combine(folder,"adaptive-coach.json"),adaptiveCoach.ExportJson());
                 File.WriteAllText(Path.Combine(folder,"session.json"),JsonUtility.ToJson(settings,true));string text="exercise_id,side,repetition,score,complete_movement,hold_seconds,start_reached,return_reached,endpoint_reached,valid_seconds,mean_hand_error_m,mean_shield_normal_error_deg,path_accuracy_percent,travel_coverage,phase_completion,unpenalized_score,head_position_severity,head_penalty_points\n"+string.Join("\n",summaries);File.WriteAllText(Path.Combine(folder,"summary.csv"),text);File.WriteAllText(Path.Combine(folder,"summary.tsv"),text.Replace(',','\t'));File.WriteAllText(Path.Combine(folder,"outcome.json"),"{\"participant_id\":\""+participantId+"\",\"complete\":"+(complete?"true":"false")+",\"outcome\":\""+(conduit?conduit.Run.outcome:complete?"complete":"aborted")+"\",\"tracking_pause_seconds\":"+F(trackingPause)+",\"active_seconds\":"+F(activeSeconds)+",\"breaks\":"+breaksTaken+"}");replay.Save(folder);
             }catch(Exception e){message="Save failed: "+e.Message;Debug.LogError(message);}
+            if(arcade)arcade.TrackPerfect(false,0,0);
             state=State.Finished;ghost.gameObject.SetActive(false);projectile.gameObject.SetActive(false);
         }
     }

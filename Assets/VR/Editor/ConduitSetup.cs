@@ -51,6 +51,18 @@ public static class ConduitSetup
     }
     public static void Verify()
     {
+        var bonus=new PerfectTrackingBonus();int earned=0;
+        for(int i=0;i<19;i++)earned+=bonus.Advance(true,1,.1f);
+        if(earned!=0)throw new System.Exception("No bonus before two seconds");
+        earned+=bonus.Advance(true,.9f,.1f);if(earned!=100||bonus.Ticks!=1)throw new System.Exception("First ding at two seconds, near-perfect accepted");
+        for(int i=0;i<20;i++)earned+=bonus.Advance(true,1,.1f);
+        if(earned!=600||bonus.Ticks!=5||bonus.Multiplier!=2)throw new System.Exception("Half-second ticks and rising multiplier");
+        bonus.Advance(true,.89f,.01f);if(bonus.Ticks!=0||bonus.Seconds!=0)throw new System.Exception("Off-target resets immediately");
+        for(int i=0;i<19;i++)if(bonus.Advance(true,1,.1f)!=0)throw new System.Exception("Must earn warmup again");
+        bonus.Advance(false,1,.1f);if(bonus.Seconds!=0)throw new System.Exception("Tracking loss, rest and gaps reset bonus");
+        bonus.Advance(true,1,30);if(bonus.Ticks!=0||bonus.Seconds>.101f)throw new System.Exception("No reward catch-up after a stall");
+        bonus.Reset();for(int i=0;i<400;i++)bonus.Advance(true,1,.1f);if(bonus.Multiplier!=5)throw new System.Exception("Bonus multiplier capped");
+        Debug.Log("PERFECT_FLOW_CHECKS_PASSED warmup cadence escalation reset tracking stall cap");
         var good=new RepairRun{target=18};for(int i=0;i<18;i++)good.Resolve(1);if(good.outcome!="victory"||good.battery!=100)throw new System.Exception("Accurate repairs restore power");
         var bad=new RepairRun{target=1};for(int i=0;i<100&&!bad.Finished;i++)bad.Resolve(.25f);if(bad.outcome!="defeat"||bad.power!=0)throw new System.Exception("Stationary input must fail even a short session");
         var medium=new RepairRun{target=18};for(int i=0;i<18;i++)medium.Resolve(.7f);if(medium.Finished)throw new System.Exception("Continue beyond initial list");for(int i=0;i<100&&!medium.Finished;i++)medium.Resolve(.7f);if(medium.outcome!="victory")throw new System.Exception("Moderate repairs must succeed");

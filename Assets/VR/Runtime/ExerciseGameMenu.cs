@@ -16,7 +16,9 @@ namespace EmilVR
         }
         public ShieldExerciseGame game;
         public RectTransform canvasRoot;
-        public GameObject home,settings,details,resetConfirmation;
+        public GameObject home,settings,details,resetConfirmation,results;
+        public Text resultTitle,resultScore,resultAccuracy,resultStreak,resultMoves,resultBonus;
+        bool resultsPresented;float resultsAge;
         public Text homeStatus,detailTitle,detailStatus,footer;
         public LineRenderer pointer;
         public List<Widget> widgets=new List<Widget>();
@@ -41,11 +43,36 @@ namespace EmilVR
                 if(w.slider)w.slider.onValueChanged.AddListener(v=>Change(item.key,v));
             }
         }
-        void Awake(){Initialize();}
+        // Also used by the prefab generator. Existing scenes gain the results page without losing menu overrides.
+        public void EnsureResults()
+        {
+            if(results)return;
+            RectTransform Rect(string title,Transform parent,float x,float y,float width,float height){var r=new GameObject(title,typeof(RectTransform)).GetComponent<RectTransform>();r.SetParent(parent,false);r.anchorMin=r.anchorMax=r.pivot=Vector2.one*.5f;r.sizeDelta=new Vector2(width,height);r.anchoredPosition=new Vector2(x,y);return r;}
+            Text Label(string title,float x,float y,float width,float height,int size,Color color){var t=Rect(title,results.transform,x,y,width,height).gameObject.AddComponent<Text>();t.font=homeStatus.font;t.fontSize=size;t.alignment=TextAnchor.MiddleCenter;t.color=color;t.raycastTarget=false;return t;}
+            results=Rect("Run results",canvasRoot,0,0,1000,900).gameObject;
+            var cyan=new Color(.3f,.9f,1);var muted=new Color(.55f,.7f,.8f);
+            Label("Results eyebrow",0,355,850,45,22,cyan).text="S H O U L D E R   F L O W   /   R E S U L T S";
+            resultTitle=Label("Run outcome",0,285,900,70,44,Color.white);
+            resultScore=Label("Final score",0,165,900,120,90,Color.white);
+            Label("Score caption",0,87,800,35,20,muted).text="TOTAL SCORE";
+            var divider=Rect("Result accent",results.transform,0,40,760,2).gameObject.AddComponent<Image>();divider.color=cyan;divider.raycastTarget=false;
+            resultAccuracy=Label("Accuracy value",-290,-22,280,65,40,Color.white);
+            resultStreak=Label("Best streak value",0,-22,280,65,40,Color.white);
+            resultMoves=Label("Movements value",290,-22,280,65,40,Color.white);
+            Label("Accuracy caption",-290,-65,280,35,18,muted).text="ACCURACY";
+            Label("Streak caption",0,-65,280,35,18,muted).text="BEST STREAK";
+            Label("Movement caption",290,-65,280,35,18,muted).text="MOVEMENTS";
+            resultBonus=Label("Tracking bonus contribution",0,-125,900,50,22,new Color(1,.84f,.35f));
+            void Action(string key,string title,float x,float y,float width){var r=Rect(title,results.transform,x,y,width,78);var image=r.gameObject.AddComponent<Image>();var template=widgets.Find(w=>w.key=="start").button.image;image.sprite=template.sprite;image.type=template.type;image.color=new Color(.1f,.24f,.33f);var button=r.gameObject.AddComponent<Button>();button.targetGraphic=image;var label=Rect("Label",r,0,0,width,78).gameObject.AddComponent<Text>();label.font=homeStatus.font;label.fontSize=26;label.alignment=TextAnchor.MiddleCenter;label.color=Color.white;label.text=title;label.raycastTarget=false;widgets.Add(new Widget{key=key,rect=r,button=button,label=label});}
+            Action("again","PLAY AGAIN",-205,-235,380);Action("home","MAIN MENU",205,-235,380);
+            Action("replay","WATCH REPLAY",0,-335,380);
+            results.SetActive(false);
+        }
+        void Awake(){EnsureResults();Initialize();}
         public void Navigate(string key)
         {
             if(key=="recenter"){Recenter();return;}
-            if(key=="start"){unlocked=false;game.Begin();return;}
+            if(key=="start"||key=="again"){unlocked=false;resultsPresented=false;page=0;game.Begin();return;}
             if(key=="redo"){if(!unlocked){Note("Ask your therapist to recalibrate");return;}unlocked=false;game.Begin(true);return;}
             if(key=="replay"){game.ShowLastReplay();return;}
             if(!unlocked&&key!="home"){
@@ -76,15 +103,22 @@ namespace EmilVR
         void Refresh()
         {
             game.EnsurePlayerSettings();var data=game.PlayerSettings;
-            home.SetActive(page==0);settings.SetActive(page==1);details.SetActive(page==2);resetConfirmation.SetActive(page==3);
-            homeStatus.text=(game.Finished?game.SessionResult+"  |  Accuracy "+game.Score.ToString("F0")+" / 100"+(game.arcade?"  |  "+game.arcade.Points+" points  |  Best streak "+game.arcade.BestCombo:"")+"\n":"")+"Participant "+game.Participant.Id+"  |  "+(data.devMode?"DEV MODE - fixed overrides, normal progress protected":"Your personal pace and range are saved automatically")+"\nEnergy fills after about "+data.totalRepetitions+" strong movements";
-            footer.text=Time.unscaledTime<noteUntil?note:page==3?"Confirming starts a new participant: "+game.Participant.NextId:!string.IsNullOrEmpty(data.error)?"Could not save settings. Progress may not persist.":!string.IsNullOrEmpty(game.Participant.error)?game.Participant.error:!game.AnyEnabled?(unlocked?"Enable at least one exercise and arm in Settings.":"No exercise is switched on. Ask your therapist."):"Point with either controller and press trigger. Drag sliders to adjust.";
+            home.SetActive(page==0);settings.SetActive(page==1);details.SetActive(page==2);resetConfirmation.SetActive(page==3);results.SetActive(page==4);
+            canvasRoot.GetComponent<Image>().color=page==4?new Color(.018f,.035f,.065f,.65f):new Color(.018f,.035f,.065f,.98f);
+            if(page==4){
+                string outcome=game.conduit?game.conduit.Run.outcome:"complete";
+                resultTitle.text=outcome=="victory"?"LEVEL COMPLETE":outcome=="session_limit"?"SESSION COMPLETE":outcome=="defeat"?"RUN ENDED":"SESSION STOPPED";
+                resultAccuracy.text=game.Score.ToString("F0")+"%";resultStreak.text=(game.arcade?game.arcade.BestCombo:0).ToString();resultMoves.text=game.CompletedRepetitions.ToString();
+                resultBonus.text=(game.arcade?game.arcade.TrackingBonusPoints:0).ToString("N0")+" POINTS FROM PERFECT FLOW";
+            }
+            homeStatus.text="Participant "+game.Participant.Id+"  |  "+(data.devMode?"DEV MODE - fixed overrides, normal progress protected":"Your personal pace and range are saved automatically")+"\nEnergy fills after about "+data.totalRepetitions+" strong movements";
+            footer.text=Time.unscaledTime<noteUntil?note:page==3?"Confirming starts a new participant: "+game.Participant.NextId:!string.IsNullOrEmpty(data.error)?"Could not save settings. Progress may not persist.":!string.IsNullOrEmpty(game.Participant.error)?game.Participant.error:!game.AnyEnabled?(unlocked?"Enable at least one exercise and arm in Settings.":"No exercise is switched on. Ask your therapist."):page==4?"Point with either controller and press trigger.":"Point with either controller and press trigger. Drag sliders to adjust.";
             string id=game.exercises[Mathf.Clamp(exercise,0,game.exercises.Length-1)].exerciseId;
             detailTitle.text=game.exercises[exercise].displayName.ToUpper();
             var left=data.Arm(id,0);var right=data.Arm(id,1);
             detailStatus.text="Saved: Left "+(left.speed*100).ToString("F0")+"% speed / "+(left.range*100).ToString("F0")+"% range   |   Right "+(right.speed*100).ToString("F0")+"% / "+(right.range*100).ToString("F0")+"%\n"+(data.devMode?"Dev sliders override normal presets. Learning is off.":"Dev sliders are disabled. Turn Dev mode on in Settings to use them.");
             foreach(var w in widgets){
-                if(w.key=="start"||w.key=="redo")w.button.interactable=game.AnyEnabled;
+                if(w.key=="start"||w.key=="again"||w.key=="redo")w.button.interactable=game.AnyEnabled;
                 if(w.key=="dev")w.toggle.SetIsOnWithoutNotify(data.devMode);
                 if(w.key.StartsWith("left:")||w.key.StartsWith("right:")){int e=int.Parse(w.key.Split(':')[1]);w.toggle.SetIsOnWithoutNotify(data.Arm(game.exercises[e].exerciseId,w.key.StartsWith("left:")?0:1).enabled);}
                 if(w.toggle)w.label.text=(w.key=="dev"?"DEV MODE":w.key.StartsWith("left:")?"LEFT":"RIGHT")+"   "+(w.toggle.isOn?"ON":"OFF");
@@ -103,10 +137,11 @@ namespace EmilVR
         }
         void LateUpdate()
         {
-            if(!game||!canvasRoot)return;if(recenterFrames>0&&--recenterFrames==0)Recenter();bool visible=game.MenuVisible;
+            if(!game||!canvasRoot)return;if(!game.Finished)resultsPresented=false;if(recenterFrames>0&&--recenterFrames==0)Recenter();bool visible=game.MenuVisible;
             canvasRoot.gameObject.SetActive(visible);pointer.gameObject.SetActive(false);
             if(!visible){wasVisible=false;wasDown=false;dragging=null;return;}
-            if(!wasVisible){page=0;transform.SetPositionAndRotation(game.head.position+Quaternion.Euler(0,game.head.eulerAngles.y,0)*new Vector3(0,-.2f,2.3f),Quaternion.Euler(0,game.head.eulerAngles.y,0));Refresh();wasVisible=true;}
+            if(!wasVisible){page=game.Finished?(resultsPresented?page:4):0;if(page==4){resultsPresented=true;resultsAge=0;}wasDown=true;transform.SetPositionAndRotation(game.head.position+Quaternion.Euler(0,game.head.eulerAngles.y,0)*new Vector3(0,-.2f,2.3f),Quaternion.Euler(0,game.head.eulerAngles.y,0));Refresh();wasVisible=true;}
+            if(page==4){resultsAge+=Time.unscaledDeltaTime;float u=Mathf.Clamp01(resultsAge/1.1f);resultScore.text=Mathf.RoundToInt((game.arcade?game.arcade.Points:0)*(1-Mathf.Pow(1-u,3))).ToString("N0");}
             refresh+=Time.unscaledDeltaTime;if(refresh>.3f){refresh=0;Refresh();}
             bool right=game.MenuRay(1,out Ray ray,out bool down);bool left=game.MenuRay(0,out var leftRay,out bool leftDown);
             if(left&&(!right||leftDown)){ray=leftRay;down=leftDown;right=true;}

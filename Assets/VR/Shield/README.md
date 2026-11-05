@@ -1,3 +1,19 @@
+## End-of-run results — 2026-11-05
+Finished runs now open a dedicated results screen rather than the start menu. It shows the outcome, animated total score, accuracy, best streak, movements and perfect-flow bonus points. PLAY AGAIN uses saved calibration and learned difficulty; MAIN MENU returns home; WATCH REPLAY opens the saved movement replay. The page is generated into Exercise Main Menu.prefab, with a runtime fallback for existing instances.
+
+Validation: full simulated session passed, including automatic results display, exact final score, Main Menu navigation and Play Again retaining saved calibration/difficulty. The rendered results screen was visually inspected. Not installed or tested on Quest yet.
+
+## Minimal gameplay HUD and larger scores — 2026-11-05
+Gameplay now has a box-free floating score, short streak label, slim energy/flow bars, and brief completion accents. Large instruction/status boxes are hidden during the moving paths; the current movement figure stays at the bottom without its backing panel. Tutorial/calibration/break instructions and tracking-loss warnings remain available. Score counts up and pulses, and bonus dings send a gold pulse around the target.
+Base repetition points are now 1,000 × quality, and tracking ticks start at 100 × multiplier. Standard successful runs exceed 10,000 points; short custom/aborted runs may not. This is cosmetic game scoring and does not change movement scoring or adaptive thresholds. `game-points.json` is now `perfect-flow-2`, with base point values recorded. Earlier validation scores below describe the previous point scale.
+
+Validation: final Unity simulated run passed with 82,142 points (5,000 from tracking bonuses). Board-hidden and score-visible assertions passed, and the final rendered HUD was inspected. Existing adaptive, persistence and replay checks passed. Quest installation/playtest has not been performed.
+
+## Perfect tracking bonus — 2026-11-05
+Follow the target at >=90% positional quality for two continuous seconds to start a bonus. Every 0.5 seconds it awards 10 × multiplier points; every four ticks the multiplier increases, capped at x5. A miss, tracking loss, rest or gap resets this streak, but keeps earned points. A pulsing gold caption over the target and a rising bell show each award. A larger world-space total sits in the center at 2.6 m. The existing completed-repetition streak remains separately labelled REP STREAK. Movement accuracy, adaptation, therapist limits and energy/flow rules are unchanged. `game-points.json` exports total and tracking bonus points separately. Runtime UI uses the existing arcade prefab's font/material, so no generator run is needed to use the feature.
+
+Validation: Unity desktop compilation, bonus timing/reset checks, and the full simulated session passed on 2026-11-05. The session exported 8,134 total points, including 420 tracking bonus points; adaptation, replay and saved settings checks passed. Rendered preview inspected. Audio loudness and VR comfort still need a Quest check; no device installation was performed for this change.
+
 # Shield exercise prototype - Emil
 
 ## Current state, 2026-11-04

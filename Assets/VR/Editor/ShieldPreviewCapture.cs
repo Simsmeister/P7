@@ -37,6 +37,6 @@ public static class ShieldPreviewCapture
         if(!calibration&&game.CurrentStep=="CaptureStart"&&game.AutomaticCaptureProgress>.3f){Capture("emil-path-calibration");calibration=true;}
         if(!reach&&game.ActiveProfile.movement==ShieldMovement.SerratusReach&&game.CurrentStep=="CaptureEnd"&&game.AutomaticCaptureProgress>.3f){Capture("emil-path-reach");reach=true;}
         if(!demo&&game.replay.IsDemo&&game.replay.PlaybackTime>.7f){Capture("emil-path-mirror");demo=true;}
-        if(demo&&!game.replay.IsActive&&game.replay.Data!=null&&game.replay.Data.inputSource=="SIMULATED TEST"&&game.replay.Data.frames.Count>90&&game.CurrentStep=="Playing"&&game.PathClock>1.8f){Capture("emil-path-playing");SessionState.SetBool("ShieldPreview",false);Debug.Log("SHIELD_PREVIEW_CAPTURED");EditorApplication.Exit(0);}
+        if(demo&&!game.replay.IsActive&&game.replay.Data!=null&&game.replay.Data.inputSource=="SIMULATED TEST"&&game.replay.Data.frames.Count>90&&game.CurrentStep=="Playing"&&game.PathClock>3.2f){Capture("emil-path-playing");SessionState.SetBool("ShieldPreview",false);Debug.Log("SHIELD_PREVIEW_CAPTURED");EditorApplication.Exit(0);}
     }
 }
