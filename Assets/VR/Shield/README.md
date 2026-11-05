@@ -1,4 +1,18 @@
-# Shield exercise prototype — Emil
+# Shield exercise prototype - Emil
+
+## Current state, 2026-11-04
+
+This section overrides anything older below, since the rest of this file is a dated changelog. `PROJECT_MAP.md` has the detail, and the code wins if the two disagree.
+
+The game is line following with a night theme: the player follows a line with the hand through three exercises. Reactor Rescue is not the current game. Its HUD, core and drone stay hidden, so there are no visible reactor segments, and `ShieldArcadeFeedback` only supplies audio, points and combo. `ConduitRepairGame` is the active theme, and the player sees ENERGY (`power` in code, `ship_power` in exports) and FLOW (`battery` in code and exports). Shield, conduit and repair remain as internal names and in export files, so old data stays comparable.
+
+Scoring is position-only (`position-only-hand-5`). Quality falls from full credit at 4 cm to zero at 14 cm. Controller rotation is recorded but does not affect accuracy, endpoint or hold credit, or adaptation. The hold has no 20 degree check, since it only needs the hand within the endpoint tolerance.
+
+`session.json` reports schema `shield-6` and `conduit.json` reports `conduit-2`. Samples keep 40 columns and summaries 18.
+
+Session length is not exact. The total setting (1-120, default 18, labelled "Energy target (strong movements)") only sets how fast ENERGY fills. Conduit extends the playlist with new batches until a win (ENERGY full), a loss (FLOW empty) or the session cap (outcome `session_limit`). The cap is 15 minutes of active play, with a 45 s break after each 5 minutes. These are prototype values that a physiotherapist must confirm.
+
+The multiplier counts perfect repetitions (complete, score at least 90, coverage at least 90 %), up to x5. Nothing in this version has been run on a headset.
 
 The active game in Emil is now Shield Exercise Game. The earlier Wand Path Prototype instance is disabled; its assets and old recordings remain available.
 

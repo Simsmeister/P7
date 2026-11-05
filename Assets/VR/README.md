@@ -1,22 +1,24 @@
 # Emil – Quest 3 VR
 
-Scenen er Assets/Scenes/Emil.unity. Emil VR Rig er en prefab med XR Origin, gulvbaseret tracking, VR-kamera og begge inputtyper. Den gamle Main Camera er deaktiveret. VR Test Floor er en separat prefab, som kan flyttes eller fjernes, når dit miljø sættes ind.
+Scenen er Assets/Scenes/Emil.unity. VR Rig er en prefab med XR Origin, gulvbaseret tracking, VR-kamera og begge inputtyper. Den gamle Main Camera er deaktiveret. VR Test Floor er en separat prefab, som ikke ligger i scenen.
 
 ## Hænder og controllere
 
-På Emil VR Rig → Emil VR Input → Mode:
+Spillet sætter selv Controllers-tilstand og slår skift fra, så valgene nedenfor gælder kun uden for spillet.
+
+På VR Rig → Emil VR Input → Mode:
 - Automatic: viser håndtracking, når headsettet leverer trackede hænder; ellers vises controllerhænder ved gyldig controllertracking.
 - Hands: viser kun optisk trackede hænder.
 - Controllers: viser kun hænder styret af controllernes position og rotation.
 
 Venstre controllers menuknap skifter Automatic → Hands → Controllers → Automatic. Du kan stadig tage controlleren op og bruge knappen, selv om dens model er skjult i Hands-tilstand. Tilstandene vælger visningen i spillet; de ændrer ikke Quest-systemets indstillinger. Aktivér håndtracking og automatisk skift mellem hænder og controllere i headsettets indstillinger. Automatic anbefales til normal brug.
 
-Controllerhænderne bruger samme håndmesh og materialer som de optisk trackede hænder, i en fast fingerpose. Controllerne styrer håndens position og rotation. Optiske hænder følger fingrenes bevægelser. Der er endnu ikke tilføjet grabbing, teleportering eller anden spilinteraktion.
+Controllerhænderne bruger samme håndmesh og materialer som de optisk trackede hænder, i en fast fingerpose. Controllerne styrer håndens position og rotation. Optiske hænder følger fingrenes bevægelser. Der er ikke tilføjet grabbing eller teleportering.
 
 ## Prefabs
 
 Assets/VR/Prefabs indeholder:
-- Emil VR Rig
+- VR Rig
 - Left Tracked Hand og Right Tracked Hand
 - Left Controller Hand og Right Controller Hand
 - VR Test Floor
@@ -41,8 +43,10 @@ Tools → Emil VR → Validate Quest Setup kontrollerer Unitys OpenXR-regler for
 
 ## Controller tracking trails
 
+Bemærk: Controller Tracking Trails er deaktiveret i VR Rig og er kun et debugværktøj, så sporene tegnes ikke i spillet.
+
 Hold the RIGHT index trigger past halfway to draw both controller paths. Release it to stop; existing lines remain in the room. Press the LEFT index trigger to clear all lines. Clearing takes priority if both triggers are held. Left path is blue; right path is orange.
 
 The trails record the controller grip position reported by OpenXR, independently of which hand visual is displayed. They require position tracking, break when tracking is reported lost, and resume as a new stroke on reacquisition. Large position jumps also start a new stroke. Quest can report estimated positions while controllers are outside camera coverage, so a line is not proof of optical tracking. Stationary samples closer than 5 mm are omitted. History is limited to 128 strokes of up to 2048 points each; oldest strokes are removed when full.
 
-Prefabs: Controller Tracking Trails and Tracking Trail Stroke. The recorder is nested in Emil VR Rig, with Camera Offset assigned as its tracking space.
+Prefabs: Controller Tracking Trails and Tracking Trail Stroke. The recorder is nested in VR Rig, with Camera Offset assigned as its tracking space.

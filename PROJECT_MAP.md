@@ -22,7 +22,7 @@ Assets/
   VR/Validation.txt            output of Validate Quest Setup
   VR/XRGeneralSettings.asset   active, the loader config registered in EditorBuildSettings
   VR/README.md                 Danish rig notes, Mac flow, partly stale
-  VR/Shield/README.md          dated changelog, partly stale; later sections supersede earlier
+  VR/Shield/README.md          dated changelog; "Current state" at the top overrides older text
   VR/Prototype/README.md       legacy wand game docs
   XR/                          OpenXR loaders and settings, active
   Settings/                    URP assets and volume profiles; SampleSceneProfile is boilerplate
@@ -231,7 +231,7 @@ Missing or damaged `participant.json`: the game continues after the highest ID f
 | Haptics | `ShieldExerciseGame.cs:173`; off switch field in `ExercisePlayerSettings`, toggle via `ExerciseMenuSetup.Build` and `ExerciseGameMenu.Change` |
 | Exercise labels | `ExerciseMenuSetup.cs:41` (menu); `ShieldExerciseSetup.cs:27` and `VR/Shield/*.asset` `displayName` (gameplay); cues in `DrawText:360` |
 | Game name | `ExerciseMenuSetup.cs:36-39`, `ShieldExerciseGame.cs:352`, `ConduitRepairGame.cs:27, 74-75`, `ProjectSettings/ProjectSettings.asset:16` |
-| Stale strings | `ShieldExerciseGame.cs:353, 359`, `ExerciseGameMenu.cs:69, 83`, `ExerciseMenuSetup.cs:37-39`; menu text needs `ExerciseMenuSetup` and a rebuild |
+| Player-facing text | `ShieldExerciseGame.DrawText`, `ExerciseGameMenu.Refresh`, `ExerciseMenuSetup.cs:37-39`; menu text needs `ExerciseMenuSetup` and a rebuild. Old `WAND PATH LAB` default on the board in `Shield Exercise Game.prefab` is replaced by `DrawText` at runtime. Wand wording in `WandPathGame` and the `WandSessionReplay` demo label is reached only through the dead `OpenDemo` |
 | Session limits, breaks | Values in `breakAfterSeconds`, `breakSeconds`, `sessionCapSeconds`; decision in `ShieldExerciseGame.DueAtRepEnd`, asserted in `ConduitSetup.Verify`; rest in `State.Break` (`Update`, `DrawText`, `SkipTutorialPreview`); ending in `RepairRun.Resolve` and `Result`. Target clamp `ExercisePlayerSettings.cs:38, 69`; slider `ExerciseMenuSetup.cs:40`; sliders for the limits would go there and need a generator run |
 | Failure ending | `RepairRun.Resolve` (`ConduitRepairGame.cs:17-18`), `Result:27` |
 | Therapist limits | Lock and press count in `ExerciseGameMenu.Navigate` and `UnlockCount` (`UnlockPresses`, `UnlockWindow`), notes in the `footer` line of `Refresh`; asserted in `ConduitSetup.Verify`. Unlock gesture is a default awaiting team and physiotherapist confirmation. Saved limits still apply while locked. Widgets in `ExerciseMenuSetup.cs:37-47`; `ShieldExerciseGame.ResetSavedSettings:34` |

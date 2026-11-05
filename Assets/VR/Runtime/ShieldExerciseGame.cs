@@ -253,7 +253,7 @@ namespace EmilVR
             block=playlist[playlistIndex];rep=0;for(int i=0;i<playlistIndex;i++)if(playlist[i]==block)rep++;
             var c=EffectiveCalibration(Profile,calibrations.Find(v=>v.exerciseId==Profile.exerciseId&&v.side==Side),Side);
             start=c.start;end=c.end;pivot=c.pivot;startQ=c.startRotation;endQ=c.endRotation;
-            state=State.Approaching;clock=-exerciseGapSeconds;message="Follow the arriving line.";GuidanceCaption="CURRENT: "+Profile.displayName+" / "+(Side==0?"LEFT":"RIGHT")+"\nCopy the start pose. Your shield moves freely in 3D.";
+            state=State.Approaching;clock=-exerciseGapSeconds;message="Follow the arriving line.";GuidanceCaption="CURRENT: "+Profile.displayName+" / "+(Side==0?"LEFT":"RIGHT")+"\nCopy the start pose. Your marker moves freely in 3D.";
         }
         public bool PathDefinition(int offset,out ShieldExerciseProfile profile,out Calibration calibration,out int side)
         {
@@ -363,14 +363,14 @@ namespace EmilVR
         void DrawText(bool tracked)
         {
             string prefix=simulated?"MOVEMENT PATHS - SIMULATION\n":"MOVEMENT PATHS\n";
-            if(state==State.Welcome){display.text=prefix+"Scaption / Serratus reach / External rotation\nOne arm at a time. A: begin | B: last replay\nLearn 3 moves, then defend against a mixed sequence.\nUse the comfortable range prescribed for you.";return;}
+            if(state==State.Welcome){display.text=prefix+"Scaption / Serratus reach / External rotation\nOne arm at a time. A: begin | B: last replay\nLearn 3 moves, then follow the line through a mixed sequence.\nUse the comfortable range prescribed for you.";return;}
             if(state==State.Finished){display.text=prefix+"MOVEMENT ACCURACY   "+Score.ToString("F0")+" / 100\n"+CompletedRepetitions+" repetitions scored   "+(arcade?arcade.Points:0)+" game points\n"+message+"\nA: new session | B: replay\nCSV + tab-separated data saved for completed repetitions.";return;}
             if(state==State.Tutorial){display.text="PRACTICE - NO POINTS YET\nMove up/down, left/right, then forward/back.\nFollow the line. Solid centre = you; hollow ring = target.\nHold at the large node, then follow the line back.\nThe CURRENT card shows the movement. A / Space: skip.";return;}
             if(state==State.Break){display.text="BREAK - GREAT WORK\n"+CompletedRepetitions+" moves done. This rest is part of your session.\nNext line in "+Mathf.CeilToInt(clock)+" s   |   A: skip";return;}
             if(state==State.Approaching){display.text=Profile.displayName+" - "+(Side==0?"LEFT RED":"RIGHT GREEN")+"\nGet into the starting pose as the line approaches.\n"+(!tracked?"PAUSED - tracking unavailable":PositionHint(start))+"\nSpeed "+(100*exercises[block/2].outwardSeconds/Profile.outwardSeconds).ToString("F0")+"%  |  Range "+(adaptiveCoach?100*adaptiveCoach.RangeFor(Profile,Side,calibrations.Find(c=>c.exerciseId==Profile.exerciseId&&c.side==Side).calibratedTravelMetres):100).ToString("F0")+"%"+(lastResult.Length>0?"\n"+lastResult:"");return;}
             if(state==State.Ready&&missionStarted){display.text=GuidanceCaption+"\n"+PositionHint(start)+"  |  "+lastResult;return;}
             string side=Side==0?"LEFT RED":"RIGHT GREEN";
-            string prompt=state==State.Demo?"WATCH THE GHOST SHIELD - demo only":state==State.CaptureStart?"Copy the resting pose and hold still":state==State.CaptureEnd?"Copy the raised/reached pose and hold still":state==State.Ready?"Return to the starting pose and hold still":"Rep "+(rep+1)+" / "+Profile.repetitions+"   "+Profile.Phase(clock).ToUpper()+"   "+Score.ToString("F0")+" /100";
+            string prompt=state==State.Demo?"WATCH THE COACH - demo only":state==State.CaptureStart?"Copy the resting pose and hold still":state==State.CaptureEnd?"Copy the raised/reached pose and hold still":state==State.Ready?"Return to the starting pose and hold still":"Rep "+(rep+1)+" / "+Profile.repetitions+"   "+Profile.Phase(clock).ToUpper()+"   "+Score.ToString("F0")+" /100";
             if(state==State.Playing){Target(clock,out var p,out var q);float quality=Profile.Quality(Vector3.Distance(pos[Side],p),Vector3.Angle(rot[Side]*Vector3.forward,q*Vector3.forward));string phase=Profile.Phase(clock);string cue=phase=="outward"?(Profile.movement==ShieldMovement.Scaption?"LIFT YOUR ARM DIAGONALLY":Profile.movement==ShieldMovement.SerratusReach?"REACH FORWARD":"ROTATE FOREARM OUTWARD"):phase=="hold"?"HOLD ON THE LINE":phase=="return"?"FOLLOW THE RETURN CURVE":"REST";display.text=Profile.displayName+" - "+side+"   "+(playlistIndex+1)+" moves"+"\n"+(!tracked?"PAUSED - tracking unavailable":cue)+"\nPath match "+Mathf.RoundToInt(quality*100)+"%  |  "+PositionHint(p);return;}
             display.text=prefix+Profile.displayName+" - "+side+"\n"+Profile.instruction+"\n"+prompt+"\n"+(!tracked?"PAUSED - tracking unavailable":message)+"\nElbow / shoulder-blade form not measured. X: stop.";
         }
