@@ -25,6 +25,7 @@ public static class ExercisePathSetup
     }
     public static void Verify()
     {
+        VerifyNeuralCoach();
         var a=new Vector3(-.4f,.2f,1.6f);
         if(ExercisePathStream.Approach(a,Vector3.forward,0,.55f)!=a)throw new System.Exception("Arrival must equal the scored 3D target");
         if(Vector3.Distance(ExercisePathStream.Approach(a,Vector3.forward,2.5f,.55f),a+Vector3.forward*1.375f)>.0001f)throw new System.Exception("Exercise gap");
@@ -95,4 +96,36 @@ public static class ExercisePathSetup
             Debug.Log("ADAPTIVE_COACH_AND_PERSISTENCE_CHECKS_PASSED");
         }finally{Object.DestroyImmediate(root);Object.DestroyImmediate(profile);if(System.IO.File.Exists(path))System.IO.File.Delete(path);}
     }
+    public static void VerifyNeuralCoach()
+    {
+        var asset=Resources.Load<TextAsset>("AdaptiveCoach/base-model");if(!asset)throw new System.Exception("Missing trained network");
+        var model=JsonUtility.FromJson<AdaptiveExerciseCoach.Model>(asset.text);
+        if(!AdaptiveExerciseCoach.ValidModel(model)||model.validationMse>.02f)throw new System.Exception("Invalid neural model");
+        for(int score=0;score<=100;score+=2)for(int coverage=0;coverage<=100;coverage+=2){var delta=AdaptiveExerciseCoach.Predict(model,score/100f,coverage/100f);if(float.IsNaN(delta.x)||float.IsNaN(delta.y)||Mathf.Abs(delta.x)>.1f||Mathf.Abs(delta.y)>.15f)throw new System.Exception("Network output bounds");}
+        var poor=AdaptiveExerciseCoach.Predict(model,.3f,.4f);var strong=AdaptiveExerciseCoach.Predict(model,1,1);
+        if(poor.x>=0||poor.y>=0||strong.x<=0||strong.y<=0)throw new System.Exception("Learned direction");
+        model.inputWeights[0]=float.NaN;if(AdaptiveExerciseCoach.ValidModel(model))throw new System.Exception("NaN weights accepted");
+        var root=new GameObject("Neural persistence verification");var coach=root.AddComponent<AdaptiveExerciseCoach>();
+        var profile=ScriptableObject.CreateInstance<ShieldExerciseProfile>();profile.exerciseId="neural-test";
+        string path=System.IO.Path.Combine(System.IO.Path.GetTempPath(),"neural-test-"+System.Guid.NewGuid()+".json");
+        var settings=new ExercisePlayerSettings{filePath=path};settings.Arm(profile.exerciseId,0).range=.7f;
+        try
+        {
+            coach.Configure(settings);coach.RangeFor(profile,0,.5f);var d=coach.Observe(profile,0,1,100,1,8,0,0,0);
+            string personalPath=AdaptiveExerciseCoach.PersonalPath(path);if(!System.IO.File.Exists(personalPath))throw new System.Exception("Separate personal file missing");
+            var personal=JsonUtility.FromJson<AdaptiveExerciseCoach.PersonalData>(System.IO.File.ReadAllText(personalPath));
+            if(personal.arms.Count!=1||personal.arms[0].observations!=1||personal.arms[0].meanScore!=100)throw new System.Exception("Personal observations missing");
+            var restored=ExercisePlayerSettings.Load(path);restored.Arm(profile.exerciseId,0).speed=1.99f;coach.Configure(restored);
+            if(Mathf.Abs(coach.ProfileFor(profile,0).outwardSeconds-profile.outwardSeconds*d.nextDurationScale)>.001f)throw new System.Exception("Personal file is not authoritative after reload");
+            string before=System.IO.File.ReadAllText(personalPath);restored.devMode=true;coach.Configure(restored);coach.Observe(profile,0,2,20,.2f,8,0,0,0);
+            if(System.IO.File.ReadAllText(personalPath)!=before)throw new System.Exception("Dev mode altered personal data");
+            restored.devMode=false;coach.Configure(restored);coach.Observe(profile,0,3,float.NaN,1,8,0,0,0);coach.Observe(profile,0,4,100,1,8,5,0,0);
+            if(System.IO.File.ReadAllText(personalPath)!=before)throw new System.Exception("Invalid/tracking-loss data learned");
+            if(Resources.Load<TextAsset>("AdaptiveCoach/base-model").text!=asset.text)throw new System.Exception("Gameplay changed base model");
+            AdaptiveExerciseCoach.ResetPersonalData(restored);var empty=JsonUtility.FromJson<AdaptiveExerciseCoach.PersonalData>(System.IO.File.ReadAllText(personalPath));if(empty.arms.Count!=0)throw new System.Exception("Reset retained personal history");
+            Debug.Log("NEURAL_COACH_CHECKS_PASSED model validation, bounded predictions, independent persistence, reload, dev mode, unreliable-input gate, reset");
+        }
+        finally{Object.DestroyImmediate(root);Object.DestroyImmediate(profile);System.IO.File.Delete(path);System.IO.File.Delete(AdaptiveExerciseCoach.PersonalPath(path));}
+    }
+
 }

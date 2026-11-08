@@ -1,3 +1,8 @@
+## Neural adaptive coach — 2026-11-08
+The old rules have been replaced by a small trained neural network. All training, inference and player-persistence logic is in `AdaptiveExerciseCoach.cs`. The read-only base model is `Assets/Resources/AdaptiveCoach/base-model.json`; editable simulated training examples are in `Assets/VR/Training/coach-training.json`. Player levels are saved separately alongside settings in `*-adaptive.json`. This starter learns synthetic examples, not clinical outcomes. See [the training and file guide](../../../ADAPTIVE_COACH.md).
+
+Validation: trained model and bounded predictions passed; separate personal persistence/reload, dev-mode exclusion, bad tracking/invalid input, reset, and the existing range/speed checks passed. A full simulated game session passed with neural decisions, adaptation on subsequent attempts, replay and saved-settings restart. No Quest installation or headset validation in this change. Older adaptive sections below are historical.
+
 ## End-of-run results — 2026-11-05
 Finished runs now open a dedicated results screen rather than the start menu. It shows the outcome, animated total score, accuracy, best streak, movements and perfect-flow bonus points. PLAY AGAIN uses saved calibration and learned difficulty; MAIN MENU returns home; WATCH REPLAY opens the saved movement replay. The page is generated into Exercise Main Menu.prefab, with a runtime fallback for existing instances.
 

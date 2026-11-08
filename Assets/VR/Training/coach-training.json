@@ -1,0 +1,3093 @@
+{
+  "version": 1,
+  "provenance": "Synthetic starter examples: imitate a conservative ease/hold/progress policy. Not patient data or clinical validation. Replace with reviewed labelled examples before clinical evaluation.",
+  "examples": [
+    {
+      "score": 0.0,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.35,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.4,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.45,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.5,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.55,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.6,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.65,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.7,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.75,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.8,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.85,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.9,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.0,
+      "coverage": 0.95,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.0,
+      "coverage": 1.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.35,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.4,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.45,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.5,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.55,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.6,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.65,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.7,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.75,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.8,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.85,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.9,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 0.95,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.05,
+      "coverage": 1.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.35,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.4,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.45,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.5,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.55,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.6,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.65,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.7,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.75,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.8,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.85,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.9,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.1,
+      "coverage": 0.95,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.1,
+      "coverage": 1.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.35,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.4,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.45,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.5,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.55,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.6,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.65,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.7,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.75,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.8,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.85,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.9,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 0.95,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.15,
+      "coverage": 1.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.35,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.4,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.45,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.5,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.55,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.6,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.65,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.7,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.75,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.8,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.85,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.9,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.2,
+      "coverage": 0.95,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.2,
+      "coverage": 1.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.35,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.4,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.45,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.5,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.55,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.6,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.65,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.7,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.75,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.8,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.85,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.9,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.25,
+      "coverage": 0.95,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.25,
+      "coverage": 1.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.35,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.4,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.45,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.5,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.55,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.6,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.65,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.7,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.75,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.8,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.85,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.9,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.3,
+      "coverage": 0.95,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.3,
+      "coverage": 1.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.35,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": true
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.4,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.45,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.5,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.55,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.6,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.65,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": true
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.7,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.75,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.8,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.85,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.9,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": true
+    },
+    {
+      "score": 0.35,
+      "coverage": 0.95,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.35,
+      "coverage": 1.0,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.35,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": true
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.4,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": true
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.45,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.5,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.55,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.6,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.65,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.7,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.75,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": true
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.8,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.85,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.9,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.4,
+      "coverage": 0.95,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.4,
+      "coverage": 1.0,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": true
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.35,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.4,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": true
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.45,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.5,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.55,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.6,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.65,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.7,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": true
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.75,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.8,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.85,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.9,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": true
+    },
+    {
+      "score": 0.45,
+      "coverage": 0.95,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.45,
+      "coverage": 1.0,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.35,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.4,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": true
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.45,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.5,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.55,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.6,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.65,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.7,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": true
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.75,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.8,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.85,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.9,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": true
+    },
+    {
+      "score": 0.5,
+      "coverage": 0.95,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": false
+    },
+    {
+      "score": 0.5,
+      "coverage": 1.0,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": true
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.35,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.4,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.45,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.5,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.55,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.6,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.65,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.7,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.75,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.8,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.85,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.9,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 0.95,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": false
+    },
+    {
+      "score": 0.55,
+      "coverage": 1.0,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": false
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.35,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.4,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.45,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.5,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": false
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.55,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": true
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.6,
+      "rangeChange": -0.015,
+      "speedChange": -0.0225,
+      "validation": false
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.65,
+      "rangeChange": -0.015,
+      "speedChange": -0.0225,
+      "validation": false
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.7,
+      "rangeChange": -0.015,
+      "speedChange": -0.0225,
+      "validation": false
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.75,
+      "rangeChange": -0.015,
+      "speedChange": -0.0225,
+      "validation": false
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.8,
+      "rangeChange": -0.015,
+      "speedChange": -0.0225,
+      "validation": false
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.85,
+      "rangeChange": -0.015,
+      "speedChange": -0.0225,
+      "validation": true
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.9,
+      "rangeChange": -0.015,
+      "speedChange": -0.0225,
+      "validation": false
+    },
+    {
+      "score": 0.6,
+      "coverage": 0.95,
+      "rangeChange": -0.015,
+      "speedChange": -0.0225,
+      "validation": false
+    },
+    {
+      "score": 0.6,
+      "coverage": 1.0,
+      "rangeChange": -0.015,
+      "speedChange": -0.0225,
+      "validation": false
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.35,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.4,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.45,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.5,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": false
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.55,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": false
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.6,
+      "rangeChange": -0.015,
+      "speedChange": -0.0225,
+      "validation": false
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.65,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.7,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": true
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.75,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.8,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.85,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": true
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.9,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.65,
+      "coverage": 0.95,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.65,
+      "coverage": 1.0,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.35,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.4,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.45,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.5,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": true
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.55,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": true
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.6,
+      "rangeChange": -0.015,
+      "speedChange": -0.0225,
+      "validation": false
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.65,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.7,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.75,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.8,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.85,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.9,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.7,
+      "coverage": 0.95,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": true
+    },
+    {
+      "score": 0.7,
+      "coverage": 1.0,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.35,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.4,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.45,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": true
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.5,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.55,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.6,
+      "rangeChange": -0.015,
+      "speedChange": -0.0225,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.65,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.7,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.75,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.8,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.85,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.9,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": true
+    },
+    {
+      "score": 0.75,
+      "coverage": 0.95,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.75,
+      "coverage": 1.0,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.35,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": true
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.4,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.45,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.5,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": false
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.55,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": false
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.6,
+      "rangeChange": -0.015,
+      "speedChange": -0.0225,
+      "validation": false
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.65,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.7,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.75,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.8,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.85,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": true
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.9,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.8,
+      "coverage": 0.95,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": true
+    },
+    {
+      "score": 0.8,
+      "coverage": 1.0,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.35,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.4,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.45,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.5,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.55,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": true
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.6,
+      "rangeChange": -0.015,
+      "speedChange": -0.0225,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.65,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.7,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.75,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.8,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.85,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.9,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": true
+    },
+    {
+      "score": 0.85,
+      "coverage": 0.95,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.85,
+      "coverage": 1.0,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.35,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.4,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": true
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.45,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.5,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.55,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.6,
+      "rangeChange": -0.015,
+      "speedChange": -0.0225,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.65,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.7,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.75,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.8,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": true
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.85,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.9,
+      "rangeChange": 0.02,
+      "speedChange": 0.03,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 0.95,
+      "rangeChange": 0.02,
+      "speedChange": 0.03,
+      "validation": false
+    },
+    {
+      "score": 0.9,
+      "coverage": 1.0,
+      "rangeChange": 0.02,
+      "speedChange": 0.03,
+      "validation": false
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.35,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": true
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.4,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.45,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.5,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": false
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.55,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": false
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.6,
+      "rangeChange": -0.015,
+      "speedChange": -0.0225,
+      "validation": false
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.65,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.7,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.75,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": true
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.8,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": true
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.85,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.9,
+      "rangeChange": 0.02,
+      "speedChange": 0.03,
+      "validation": false
+    },
+    {
+      "score": 0.95,
+      "coverage": 0.95,
+      "rangeChange": 0.04,
+      "speedChange": 0.06,
+      "validation": false
+    },
+    {
+      "score": 0.95,
+      "coverage": 1.0,
+      "rangeChange": 0.04,
+      "speedChange": 0.06,
+      "validation": true
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.0,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.05,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.1,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": true
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.15,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.2,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.25,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.3,
+      "rangeChange": -0.1,
+      "speedChange": -0.15,
+      "validation": false
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.35,
+      "rangeChange": -0.09,
+      "speedChange": -0.135,
+      "validation": true
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.4,
+      "rangeChange": -0.075,
+      "speedChange": -0.1125,
+      "validation": false
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.45,
+      "rangeChange": -0.06,
+      "speedChange": -0.09,
+      "validation": false
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.5,
+      "rangeChange": -0.045,
+      "speedChange": -0.0675,
+      "validation": true
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.55,
+      "rangeChange": -0.03,
+      "speedChange": -0.045,
+      "validation": false
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.6,
+      "rangeChange": -0.015,
+      "speedChange": -0.0225,
+      "validation": true
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.65,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.7,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.75,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": true
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.8,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.85,
+      "rangeChange": 0.0,
+      "speedChange": 0.0,
+      "validation": false
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.9,
+      "rangeChange": 0.02,
+      "speedChange": 0.03,
+      "validation": false
+    },
+    {
+      "score": 1.0,
+      "coverage": 0.95,
+      "rangeChange": 0.04,
+      "speedChange": 0.06,
+      "validation": false
+    },
+    {
+      "score": 1.0,
+      "coverage": 1.0,
+      "rangeChange": 0.05,
+      "speedChange": 0.075,
+      "validation": false
+    }
+  ]
+}

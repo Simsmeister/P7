@@ -34,7 +34,7 @@ namespace EmilVR
             ray=new Ray(pos[side],rot[side]*Vector3.forward);return valid[side];
         }
         // TestMode tools press the real confirm button, so they must not advance the real counter.
-        public void ResetSavedSettings(){if(!MenuVisible)return;EnsurePlayerSettings();PlayerSettings=new ExercisePlayerSettings{filePath=PlayerSettings.filePath};PlayerSettings.Save();if(adaptiveCoach)adaptiveCoach.Configure(PlayerSettings);if(!TestMode)Participant.Advance();}
+        public void ResetSavedSettings(){if(!MenuVisible)return;EnsurePlayerSettings();PlayerSettings=new ExercisePlayerSettings{filePath=PlayerSettings.filePath};PlayerSettings.Save();AdaptiveExerciseCoach.ResetPersonalData(PlayerSettings);if(adaptiveCoach)adaptiveCoach.Configure(PlayerSettings);if(!TestMode)Participant.Advance();}
         // Position proxy only: require both downward and opposite-side translation.
         public static float HeadPositionSeverity(Vector3 localDelta,int side)
         {float opposite=side==1?-localDelta.x:localDelta.x;return Mathf.Min(Mathf.InverseLerp(.10f,.25f,opposite),Mathf.InverseLerp(.08f,.20f,-localDelta.y));}
@@ -336,7 +336,7 @@ namespace EmilVR
             end=candidate;endQ=cq;
             if(Profile.movement==ShieldMovement.ExternalRotation)pivot=start-frame*Vector3.forward*.25f;
             calibrations.Add(new Calibration{exerciseId=Profile.exerciseId,side=Side,start=start,end=end,pivot=pivot,calibratedTravelMetres=Vector3.Distance(start,end),startRotation=startQ,endRotation=endQ});
-            if(!PlayerSettings.devMode){var arm=PlayerSettings.Arm(Profile.exerciseId,Side);arm.calibration=ExercisePlayerSettings.TransformCalibration(calibrations[calibrations.Count-1],origin,frame,true);arm.speed=arm.range=1;PlayerSettings.Save();}
+            if(!PlayerSettings.devMode){var arm=PlayerSettings.Arm(Profile.exerciseId,Side);arm.calibration=ExercisePlayerSettings.TransformCalibration(calibrations[calibrations.Count-1],origin,frame,true);arm.speed=arm.range=1;PlayerSettings.Save();if(adaptiveCoach)adaptiveCoach.Recalibrated(Profile.exerciseId,Side);}
             return true;
         }
         void ResetRep(){repTrackingPause=repHeadMetres=repHeadDegrees=headDisplacementHold=repHeadSeverity=0;minimumProgress=float.PositiveInfinity;maximumProgress=float.NegativeInfinity;clock=0;repPositionError=repAngleError=repQuality=repDuration=heldSeconds=0;startedPose=returnedPose=impact=impactHit=false;}

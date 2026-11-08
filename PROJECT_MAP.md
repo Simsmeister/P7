@@ -41,7 +41,7 @@ Recordings/, Builds/           gitignored outputs
 |---|---|---|---|---|
 | `ShieldExerciseGame.cs` | Session state machine, tracking, scoring, recording, export | `Begin(bool)`, `SkipTutorialPreview`, `ResetSavedSettings`, `PathDefinition`, `EffectiveCalibration`, `PathVisualPoint`, static `ProjectShield`, `MovementScore`, `HeadPositionSeverity`, `DueAtRepEnd`; props `PathClock`, `RepairQuality`, `Score`, `CompletedRepetitions`, `CurrentStep`, `MenuVisible` | All below | active |
 | `ShieldExerciseProfile.cs` | ScriptableObject per exercise: timing, tolerances, path shape | `Progress`, `Phase`, static `Path`, `Quality`, `Cycle`; enum `ShieldMovement` | Read by game, coach, stream | active |
-| `AdaptiveExerciseCoach.cs` | Rule-based speed and range per exercise and arm | `Configure`, `ProfileFor`, `RangeFor`, `Observe`, `ExportJson`; class `Decision` | Game, player settings | active |
+| `AdaptiveExerciseCoach.cs` | Single-script neural coach: training, inference, base model loading and separate personal levels | `Configure`, `ProfileFor`, `RangeFor`, `Observe`, `ExportJson`; class `Decision` | Game, player settings | active |
 | `ExercisePlayerSettings.cs` | `player-settings.json` model, playlist; `ExerciseParticipant` is the `participant.json` counter | `Load`, `Save`, `Arm`, `Limit`, `Playlist`, `TransformCalibration`, `UsableCalibration`; `ExerciseParticipant.Load`, `Advance`, `Id`, static `FormatId`, `NextNumber`, `ParseId`, `ParseFile` | Game, coach, menu | active |
 | `ExercisePathStream.cs` | Draws current and incoming line, plus a runtime `Path Bridge` LineRenderer (half width, half next colour) joining them | `LateUpdate`, static `Approach`; `approachSpeed` | Reads game | active |
 | `ConduitRepairGame.cs` | Active theme: power, battery, nodes, white repaired sections, status text, runtime multiplier pips, floor lights, camera background. `RepairRun` holds outcome logic | `Begin`, `Resolve`, `Export`, `ExportNodes`, `NodeRepaired`, `SectionLit`, `PipLit`, `UpdatePips`, `Result`, `Run` | Reads game; uses `ExercisePathStream.Approach` | active |
@@ -157,18 +157,11 @@ All values are prototype settings. None has clinical validation.
 | Perfect | `complete && q>=.9 && coverage>=.9` (`ShieldArcadeFeedback.Perfect`); label PRÆCIS if perfect, GOD if complete | `ShieldArcadeFeedback.cs` |
 | Points | `+100q`; cell charge if `complete`; if perfect, `Combo++` and `+100q*min(Combo-1,4)`; else `Combo=0`. `BestCombo` = max `Combo`; `Multiplier` = `clamp(Combo,1,5)` | `ShieldArcadeFeedback.cs:23-24` |
 
-Adaptive coach, `AdaptiveExerciseCoach.Observe` (66). State is per exercise and arm. `scale` multiplies outward and return duration only (`Apply`, 104).
+Adaptive coach was replaced on 2026-11-08. `AdaptiveExerciseCoach.cs` contains a 2–12–2 tanh network, explicit editor training command and separate player persistence. It loads `Assets/Resources/AdaptiveCoach/base-model.json`; labelled synthetic examples live in `Assets/VR/Training/coach-training.json`. See `ADAPTIVE_COACH.md` for file formats and retraining.
 
-| Condition, in order | Effect | Line |
-|---|---|---|
-| Adaptation off, dev mode, or tracking lost over 10% of rep | No change, not saved | 76-79 |
-| Score `<65` or coverage `<.65` | range -.10, scale /.85 | 80-86 |
-| Same, and score `<45` or coverage `<.45` | range -.15, scale /.8 | 82-84 |
-| Head severity `>.2` | No increase | 87-88 |
-| Score `>=90` and coverage `>=.9` | range +.05, scale /1.1 | 89-94 |
-| Otherwise | Maintain | 95 |
+`Observe` predicts range-fraction and relative-speed changes from score/100 and coverage after each valid repetition. Small predictions (<.015 range / <.0225 speed) are ignored. Tracking reliability, dev-mode exclusion, head-displacement no-increase guard and range/speed bounds are outside the network. Personal levels and measurement averages live alongside the settings file in `*-adaptive.json`; speed/range are mirrored to settings for existing UI compatibility. Existing progress migrates if no personal file exists. Reset clears active personal history; recalibration resets that arm. The base weights never change during play.
 
-Bounds: range floor `max(.4, minimumTravel/travel)` (62), ceiling 1; scale ceiling 2 (`slowestDurationScale`), floor `1/maxSpeed`, with `maxSpeed = 1 + fasterPercent/100` (50), default 1.4.
+Bounds: range floor `max(.4, minimumTravel/travel)`, ceiling 1; duration scale ceiling 2 (`slowestDurationScale`), floor `1/maxSpeed`, with `maxSpeed = 1 + fasterPercent/100`, default 1.4. Network outputs are bounded to ±.1 range change and ±.15 relative speed change per attempt.
 
 Session length arithmetic for the P4 estimate. A base move takes 8.5 s plus a 2.5 s gap, so 11 s. Target 120 with perfect play is 120 moves, about 22 minutes. At q=.6 the battery never drains and power gain per move is .467/120, so about 257 moves or 47 minutes. Adaptive slowing can stretch this further. This has not been measured. The cap now stops it at 15 minutes of active play, plus 2 breaks of 45 s, so about 17 minutes without tracking pauses. At 11 s per move that is about 82 moves, so at a target above about 80 the cap comes before victory.
 
@@ -201,7 +194,7 @@ Quest path: `/sdcard/Android/data/<bundle ID>/files/Sessions/<yyyyMMddTHHmmssfff
 | `summary.csv`, `.tsv` | 18 columns per completed rep. `exercise_id, side, repetition, score, complete_movement, hold_seconds, start_reached, return_reached, endpoint_reached, valid_seconds, mean_hand_error_m, mean_shield_normal_error_deg, path_accuracy_percent, travel_coverage, phase_completion, unpenalized_score, head_position_severity, head_penalty_points` (403) |
 | `session.json` | `schemaVersion=shield-6` (was `shield-5`; `session_limit` and breaks are new meaning, no column changed; nothing in the code compares these strings), `participantId` (additive, same unreleased `shield-6`), `scoreVersion=position-only-hand-5`, `calibrationMode=personal-range-stable-pose-2`, `controlMapping=front-translation-2`, `presentation=finite-3d-paths-mirror-coach-1`, `developerMode`, `breakAfterSeconds`, `breakSeconds`, `sessionCapSeconds`, `challengeOrder`, calibrations, exercises (94) |
 | `outcome.json` | `participant_id`, `complete` (true for victory and `session_limit`), `outcome` (`victory`, `defeat`, `session_limit`, `aborted`), `tracking_pause_seconds`, `active_seconds`, `breaks` |
-| `adaptive-coach.json` | One `Decision` per rep, `policy=position-aware-range-tempo-v5` |
+| `adaptive-coach.json` | One `Decision` per rep, `policy=neural-range-tempo-v1`, model ID and predicted range/speed changes |
 | `conduit.json`, `conduit.csv`, `.tsv` | `version=conduit-2` (was `conduit-1`; adds outcome `session_limit`, on the last row of the CSV); `movement, accuracy, ship_power, battery, outcome` |
 | `conduit-path.csv`, `.tsv` | `movement, exercise_id, side, exercise_time_s, path_quality, node_repaired` |
 | `replay.json` | Replay schema "1", capped at 18,000 frames (`WandSessionReplay.cs:48`) |
