@@ -99,8 +99,8 @@ namespace EmilVR
         int Side=>block%2;
         ShieldExerciseProfile MissionProfile(int entry)=>adaptiveCoach?adaptiveCoach.ProfileFor(exercises[entry/2],entry%2):exercises[entry/2];
         ShieldExerciseProfile Profile=>missionStarted?MissionProfile(block):exercises[Mathf.Clamp(block/2,0,exercises.Length-1)];
-        [Serializable] public class Calibration {public string exerciseId;public int side;public Vector3 start,end,pivot;public float calibratedTravelMetres;public Quaternion startRotation,endRotation;}
-        [Serializable] class Settings {public bool developerMode;public bool handRotationScored=false;public string schemaVersion="shield-6",participantId,scoreVersion="position-only-hand-5",equipment="shield",inputSource;public string calibrationMode="personal-range-stable-pose-2",controlMapping="front-translation-2";public string presentation="finite-3d-paths-mirror-coach-1";public float exerciseGapSeconds,breakAfterSeconds,breakSeconds,sessionCapSeconds;public int[] challengeOrder;public float pathWeight=.7f,phaseWeight=.3f,stationaryScoreFactor=.25f,minimumCompletionCoverage=.65f,endpointFraction=.3f,minimumEndpointMetres=.025f,maximumEndpointMetres=.06f;public string anatomy="Shoulder pivot is estimated. Elbow angle, scapular motion and torso compensation are NOT measured."; public Vector3 frameOrigin;public Quaternion frameRotation;public Calibration[] calibrations;public ExerciseSettings[] exercises;}
+        [Serializable] public class Calibration {public string exerciseId;public int side;public bool automatic,startAnchored;public Vector3 start,end,pivot;public float calibratedTravelMetres;public Quaternion startRotation,endRotation;}
+        [Serializable] class Settings {public bool developerMode;public bool handRotationScored=false;public string schemaVersion="shield-6",participantId,scoreVersion="position-only-hand-5",equipment="shield",inputSource;public string calibrationMode="automatic-estimate-or-manual-3",controlMapping="front-translation-2";public string presentation="finite-3d-paths-mirror-coach-1";public float exerciseGapSeconds,breakAfterSeconds,breakSeconds,sessionCapSeconds;public int[] challengeOrder;public float pathWeight=.7f,phaseWeight=.3f,stationaryScoreFactor=.25f,minimumCompletionCoverage=.65f,endpointFraction=.3f,minimumEndpointMetres=.025f,maximumEndpointMetres=.06f;public string anatomy="Shoulder pivot is estimated. Elbow angle, scapular motion and torso compensation are NOT measured."; public Vector3 frameOrigin;public Quaternion frameRotation;public Calibration[] calibrations;public ExerciseSettings[] exercises;}
         [Serializable] class ExerciseSettings {public string id;public int repetitions;public float outward,hold,returnTime,rest,fullCreditMetres,zeroCreditMetres,fullCreditDegrees,zeroCreditDegrees;}
         public static readonly string Header="timestamp_s,exercise_time_s,exercise_id,repetition,phase,active_side,side,valid,scorable,px,py,pz,qx,qy,qz,qw,target_px,target_py,target_pz,target_qx,target_qy,target_qz,target_qw,head_px,head_py,head_pz,head_qx,head_qy,head_qz,head_qw,hand_error_m,shield_normal_error_deg,head_displacement_m,head_rotation_deg,visual_shield_px,visual_shield_py,visual_shield_pz,visual_target_px,visual_target_py,visual_target_pz";
         Quaternion neutralHead;
@@ -164,7 +164,7 @@ namespace EmilVR
                 if(clock<=0){replay.Close();if(!missionStarted){if(++calibrationIndex<calibrationQueue.Count){block=calibrationQueue[calibrationIndex];PrepareBlock();}else StartMission();}else{ResetRep();state=State.Playing;if(!recordingOpen)OpenRecording();}}}
             else if(state==State.Tutorial){clock-=dt;ghost.SetPositionAndRotation(MapToFront(start,Side),frame);if(clock<=0)CompleteTutorial();}
             else if(state==State.Break){clock-=dt;if(clock<=0)LoadChallenge();}
-            else if(state==State.Approaching){ghost.SetPositionAndRotation(MapToFront(start,Side),frame);if(tracked)clock+=dt;else trackingPause+=Time.unscaledDeltaTime;
+            else if(state==State.Approaching){TryAutomaticAnchor(tracked,dt);ghost.SetPositionAndRotation(MapToFront(start,Side),frame);if(tracked)clock+=dt;else trackingPause+=Time.unscaledDeltaTime;
                 if(clock>=0){ResetRep();state=State.Playing;if(!recordingOpen)OpenRecording();}}
             else if(state==State.Playing)
             {
@@ -217,9 +217,45 @@ namespace EmilVR
             for(int e=0;e<exercises.Length;e++)for(int side=0;side<2;side++){
                 var arm=PlayerSettings.Arm(exercises[e].exerciseId,side);if(!arm.enabled)continue;
                 if(!recalibrate&&ExercisePlayerSettings.UsableCalibration(arm.calibration,exercises[e]))calibrations.Add(ExercisePlayerSettings.TransformCalibration(arm.calibration,origin,frame,false));
-                else calibrationQueue.Add(e*2+side);
+                else if(recalibrate)calibrationQueue.Add(e*2+side);
+                else
+                {
+                    var estimate=AutomaticEnvelope(exercises[e],side,origin,frame);
+                    calibrations.Add(estimate);
+                    if(!PlayerSettings.devMode)
+                    {
+                        arm.automaticRange=true;arm.speed=.65f;arm.range=.2f;
+                        arm.calibration=ExercisePlayerSettings.TransformCalibration(estimate,origin,frame,true);
+                        if(adaptiveCoach)adaptiveCoach.Recalibrated(exercises[e].exerciseId,side,arm.speed,arm.range);
+                    }
+                }
             }
+            if(!PlayerSettings.devMode)PlayerSettings.Save();
             if(calibrationQueue.Count>0){showTutorial=true;block=calibrationQueue[0];PrepareBlock();}else StartMission();
+        }
+        // Conservative automatic start. These are example envelopes, NOT measured personal limits.
+        // The neural coach starts at 20% range / 65% speed and changes only subsequent attempts.
+        public static Calibration AutomaticEnvelope(ShieldExerciseProfile profile,int side,Vector3 origin,Quaternion frame)
+        {
+            float sign=side==0?-1:1;
+            Vector3 pivot=new Vector3(sign*.18f,-.25f,0),start,end;
+            if(profile.movement==ShieldMovement.Scaption){start=pivot+Vector3.down*.5f;end=pivot+new Vector3(sign*.405f,0,.294f);}
+            else if(profile.movement==ShieldMovement.SerratusReach){start=pivot+Vector3.forward*.35f;end=start+Vector3.forward*.10f;}
+            else{pivot+=Vector3.down*.25f;start=pivot+Vector3.forward*.25f;end=pivot+Quaternion.Euler(0,sign*40,0)*Vector3.forward*.25f;}
+            return new Calibration{exerciseId=profile.exerciseId,side=side,automatic=true,start=origin+frame*start,end=origin+frame*end,pivot=origin+frame*pivot,startRotation=frame,endRotation=frame,calibratedTravelMetres=Vector3.Distance(start,end)};
+        }
+        Vector3 anchorCandidate;float anchorStable;bool anchorHasSample;
+        void TryAutomaticAnchor(bool tracked,float dt)
+        {
+            var baseline=calibrations.Find(c=>c.exerciseId==Profile.exerciseId&&c.side==Side);
+            if(baseline==null||!baseline.automatic||baseline.startAnchored)return;
+            // Only settle a plausible starting pose before the movement, never chase the hand during scoring.
+            if(!tracked||!CalibrationPoseAllowed(pos[Side],false)||Vector3.Distance(pos[Side],baseline.start)>.35f){anchorHasSample=false;anchorStable=0;return;}
+            if(!anchorHasSample||Vector3.Distance(anchorCandidate,pos[Side])>.025f){anchorCandidate=pos[Side];anchorStable=0;anchorHasSample=true;return;}
+            anchorStable+=dt;if(anchorStable<.25f)return;
+            Vector3 offset=anchorCandidate-baseline.start;baseline.start+=offset;baseline.end+=offset;baseline.pivot+=offset;baseline.startAnchored=true;
+            var adjusted=EffectiveCalibration(Profile,baseline,Side);start=adjusted.start;end=adjusted.end;pivot=adjusted.pivot;
+            if(!PlayerSettings.devMode){PlayerSettings.Arm(Profile.exerciseId,Side).calibration=ExercisePlayerSettings.TransformCalibration(baseline,origin,frame,true);PlayerSettings.Save();}
         }
         void PrepareBlock()
         {
@@ -252,6 +288,7 @@ namespace EmilVR
         }
         void LoadChallenge()
         {
+            anchorStable=0;anchorHasSample=false;
             block=playlist[playlistIndex];rep=0;for(int i=0;i<playlistIndex;i++)if(playlist[i]==block)rep++;
             var c=EffectiveCalibration(Profile,calibrations.Find(v=>v.exerciseId==Profile.exerciseId&&v.side==Side),Side);
             start=c.start;end=c.end;pivot=c.pivot;startQ=c.startRotation;endQ=c.endRotation;
@@ -276,7 +313,7 @@ namespace EmilVR
             return new Calibration{exerciseId=baseline.exerciseId,side=baseline.side,start=baseline.start,
                 end=ShieldExerciseProfile.Path(profile.movement,baseline.start,baseline.end,baseline.pivot,fraction),
                 pivot=baseline.pivot,startRotation=baseline.startRotation,endRotation=Quaternion.Slerp(baseline.startRotation,baseline.endRotation,fraction),
-                calibratedTravelMetres=baseline.calibratedTravelMetres};
+                calibratedTravelMetres=baseline.calibratedTravelMetres,automatic=baseline.automatic,startAnchored=baseline.startAnchored};
         }
         public Vector3 PathVisualPoint(ShieldExerciseProfile profile,Calibration c,int side,float time)
         {
@@ -336,7 +373,7 @@ namespace EmilVR
             end=candidate;endQ=cq;
             if(Profile.movement==ShieldMovement.ExternalRotation)pivot=start-frame*Vector3.forward*.25f;
             calibrations.Add(new Calibration{exerciseId=Profile.exerciseId,side=Side,start=start,end=end,pivot=pivot,calibratedTravelMetres=Vector3.Distance(start,end),startRotation=startQ,endRotation=endQ});
-            if(!PlayerSettings.devMode){var arm=PlayerSettings.Arm(Profile.exerciseId,Side);arm.calibration=ExercisePlayerSettings.TransformCalibration(calibrations[calibrations.Count-1],origin,frame,true);arm.speed=arm.range=1;PlayerSettings.Save();if(adaptiveCoach)adaptiveCoach.Recalibrated(Profile.exerciseId,Side);}
+            if(!PlayerSettings.devMode){var arm=PlayerSettings.Arm(Profile.exerciseId,Side);arm.calibration=ExercisePlayerSettings.TransformCalibration(calibrations[calibrations.Count-1],origin,frame,true);arm.automaticRange=false;arm.speed=arm.range=1;PlayerSettings.Save();if(adaptiveCoach)adaptiveCoach.Recalibrated(Profile.exerciseId,Side);}
             return true;
         }
         void ResetRep(){repTrackingPause=repHeadMetres=repHeadDegrees=headDisplacementHold=repHeadSeverity=0;minimumProgress=float.PositiveInfinity;maximumProgress=float.NegativeInfinity;clock=0;repPositionError=repAngleError=repQuality=repDuration=heldSeconds=0;startedPose=returnedPose=impact=impactHit=false;}
@@ -353,7 +390,7 @@ namespace EmilVR
             if(arcade)arcade.Reward(block,complete,ShieldArcadeFeedback.Perfect(complete,quality,coverage),quality);
             if(conduit)conduit.Resolve(quality,Due=="cap");
             if(adaptiveCoach){var baseline=calibrations.Find(c=>c.exerciseId==Profile.exerciseId&&c.side==Side);
-                var decision=adaptiveCoach.Observe(Profile,Side,rep+1,quality*100,coverage,repDuration,repTrackingPause,repHeadMetres,repHeadDegrees,Vector3.Distance(baseline.start,baseline.end),Vector3.Distance(start,end),headSeverity);
+                var decision=adaptiveCoach.Observe(Profile,Side,rep+1,quality*100,coverage,repDuration,repTrackingPause,repHeadMetres,repHeadDegrees,Vector3.Distance(baseline.start,baseline.end),Vector3.Distance(start,end),headSeverity,repDuration>0?repPositionError/repDuration:0);
                 bool easier=decision.nextRangeScale<decision.rangeScaleUsed||decision.nextDurationScale>decision.durationScaleUsed;
                 bool harder=decision.nextRangeScale>decision.rangeScaleUsed||decision.nextDurationScale<decision.durationScaleUsed;
                 lastResult=Profile.displayName+" / "+(Side==0?"L":"R")+": "+Mathf.RoundToInt(quality*100)+" -> "+(easier?"easier next time":harder?"harder next time":"unchanged");

@@ -1,3 +1,5 @@
+> Update 2026-11-09: the user explicitly requested removing the therapist multi-click lock. Settings and recalibration now open with one click; the older lock descriptions below are historical. The neural coach now uses mean positional error as a third input and learns adjustment magnitude from the version-2 synthetic dataset. See ADAPTIVE_COACH.md and the latest PROJECT_MAP section.
+
 # P7: Quest 3 shoulder rehabilitation game (AAU Medialogy, Group 704)
 
 ## 1. What it is

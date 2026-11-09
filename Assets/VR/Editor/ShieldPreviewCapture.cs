@@ -24,7 +24,7 @@ public static class ShieldPreviewCapture
         if(!game)game=Object.FindFirstObjectByType<ShieldExerciseGame>();if(!game||Time.timeSinceLevelLoad<1)return;
         if(!menuInitialized){game.PlayerSettings=new ExercisePlayerSettings();game.menu.Navigate("home");menuInitialized=true;return;}
         if(!started&&menuStage<5){
-            if(menuStage==0){Capture("emil-menu-home");for(int i=0;i<ExerciseGameMenu.UnlockPresses;i++)game.menu.Navigate("settings");}
+            if(menuStage==0){Capture("emil-menu-home");game.menu.Navigate("settings");}
             else if(menuStage==1){Capture("emil-menu-settings");game.menu.Navigate("exercise:0");}
             else if(menuStage==2){Capture("emil-menu-exercise");game.menu.Change("dev",1);}
             else if(menuStage==3){Capture("emil-menu-dev");game.menu.Change("dev",0);game.menu.Navigate("reset");}

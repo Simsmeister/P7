@@ -101,7 +101,10 @@ public static class ExercisePathSetup
         var asset=Resources.Load<TextAsset>("AdaptiveCoach/base-model");if(!asset)throw new System.Exception("Missing trained network");
         var model=JsonUtility.FromJson<AdaptiveExerciseCoach.Model>(asset.text);
         if(!AdaptiveExerciseCoach.ValidModel(model)||model.validationMse>.02f)throw new System.Exception("Invalid neural model");
-        for(int score=0;score<=100;score+=2)for(int coverage=0;coverage<=100;coverage+=2){var delta=AdaptiveExerciseCoach.Predict(model,score/100f,coverage/100f);if(float.IsNaN(delta.x)||float.IsNaN(delta.y)||Mathf.Abs(delta.x)>.1f||Mathf.Abs(delta.y)>.15f)throw new System.Exception("Network output bounds");}
+        for(int score=0;score<=100;score+=2)for(int coverage=0;coverage<=100;coverage+=2){var delta=AdaptiveExerciseCoach.Predict(model,score/100f,coverage/100f);if(float.IsNaN(delta.x)||float.IsNaN(delta.y)||Mathf.Abs(delta.x)>AdaptiveExerciseCoach.RangeStep||Mathf.Abs(delta.y)>AdaptiveExerciseCoach.SpeedStep)throw new System.Exception("Network output bounds");}
+        var near=AdaptiveExerciseCoach.Predict(model,.3f,.4f,0);var far=AdaptiveExerciseCoach.Predict(model,.3f,.4f,1);
+        if(far.x>=near.x-.2f||far.y>=near.y-.1f||far.x>-.3f)throw new System.Exception("Network must ease substantially more for large sustained error");
+        if(AdaptiveExerciseCoach.ErrorSeverity(.02f,.4f)!=0||AdaptiveExerciseCoach.ErrorSeverity(.25f,.4f)<.99f)throw new System.Exception("Position error normalization");
         var poor=AdaptiveExerciseCoach.Predict(model,.3f,.4f);var strong=AdaptiveExerciseCoach.Predict(model,1,1);
         if(poor.x>=0||poor.y>=0||strong.x<=0||strong.y<=0)throw new System.Exception("Learned direction");
         model.inputWeights[0]=float.NaN;if(AdaptiveExerciseCoach.ValidModel(model))throw new System.Exception("NaN weights accepted");
@@ -123,6 +126,10 @@ public static class ExercisePathSetup
             if(System.IO.File.ReadAllText(personalPath)!=before)throw new System.Exception("Invalid/tracking-loss data learned");
             if(Resources.Load<TextAsset>("AdaptiveCoach/base-model").text!=asset.text)throw new System.Exception("Gameplay changed base model");
             AdaptiveExerciseCoach.ResetPersonalData(restored);var empty=JsonUtility.FromJson<AdaptiveExerciseCoach.PersonalData>(System.IO.File.ReadAllText(personalPath));if(empty.arms.Count!=0)throw new System.Exception("Reset retained personal history");
+            var fresh=new ExercisePlayerSettings();coach.Configure(fresh);
+            var small=coach.Observe(profile,0,1,30,.4f,8,0,0,0,targetTravelMetres:.4f,meanHandErrorMetres:.02f);
+            var large=coach.Observe(profile,1,1,30,.4f,8,0,0,0,targetTravelMetres:.4f,meanHandErrorMetres:.25f);
+            if(large.nextRangeScale>=small.nextRangeScale-.2f||large.nextDurationScale<=small.nextDurationScale||large.nextRangeScale<.4f)throw new System.Exception("Measured distance must drive faster easing on the next attempt within limits");
             Debug.Log("NEURAL_COACH_CHECKS_PASSED model validation, bounded predictions, independent persistence, reload, dev mode, unreliable-input gate, reset");
         }
         finally{Object.DestroyImmediate(root);Object.DestroyImmediate(profile);System.IO.File.Delete(path);System.IO.File.Delete(AdaptiveExerciseCoach.PersonalPath(path));}
