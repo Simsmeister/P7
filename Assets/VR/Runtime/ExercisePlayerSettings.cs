@@ -10,6 +10,7 @@ namespace EmilVR
         public string id;
         public int side;
         public bool enabled = true;
+        public bool automaticRange; // Estimated envelope, not a measured personal maximum.
         public float speed = 1, range = 1, devSpeed = 1, devRange = 1;
         public ShieldExerciseGame.Calibration calibration; // Head-relative position and yaw-relative rotation.
     }
@@ -70,10 +71,10 @@ namespace EmilVR
             ExercisePlayerSettings data=null;string failure=null;
             try{if(File.Exists(path))data=JsonUtility.FromJson<ExercisePlayerSettings>(File.ReadAllText(path));}
             catch(Exception e){failure="Saved settings could not be read: "+e.Message;}
-            if(data==null||data.version!=1){data=new ExercisePlayerSettings();if(File.Exists(path))failure="Saved settings unavailable. Calibration is required.";}
+            if(data==null||data.version!=1){data=new ExercisePlayerSettings();if(File.Exists(path))failure="Saved settings unavailable. A gentle automatic start will be used.";}
             data.filePath=path;data.error=failure;data.arms=data.arms??new List<ExerciseArmSettings>();data.limits=data.limits??new List<ExerciseSpeedLimit>();
             data.totalRepetitions=Mathf.Clamp(data.totalRepetitions,1,120);
-            foreach(var a in data.arms){a.speed=FiniteClamp(a.speed,.5f,2,1);a.range=FiniteClamp(a.range,.4f,1,1);a.devSpeed=FiniteClamp(a.devSpeed,.5f,2,1);a.devRange=FiniteClamp(a.devRange,.3f,1,1);}
+            foreach(var a in data.arms){a.speed=FiniteClamp(a.speed,.5f,2,1);a.range=FiniteClamp(a.range,a.automaticRange?.15f:.4f,1,1);a.devSpeed=FiniteClamp(a.devSpeed,.5f,2,1);a.devRange=FiniteClamp(a.devRange,.3f,1,1);}
             foreach(var l in data.limits)l.fasterPercent=FiniteClamp(l.fasterPercent,0,100,40);
             return data;
         }
@@ -88,7 +89,7 @@ namespace EmilVR
         {
             Vector3 P(Vector3 p)=>toLocal?Quaternion.Inverse(yaw)*(p-origin):origin+yaw*p;
             Quaternion Q(Quaternion q)=>toLocal?Quaternion.Inverse(yaw)*q:yaw*q;
-            return new ShieldExerciseGame.Calibration{exerciseId=c.exerciseId,side=c.side,start=P(c.start),end=P(c.end),pivot=P(c.pivot),startRotation=Q(c.startRotation),endRotation=Q(c.endRotation),calibratedTravelMetres=c.calibratedTravelMetres};
+            return new ShieldExerciseGame.Calibration{exerciseId=c.exerciseId,side=c.side,start=P(c.start),end=P(c.end),pivot=P(c.pivot),startRotation=Q(c.startRotation),endRotation=Q(c.endRotation),calibratedTravelMetres=c.calibratedTravelMetres,automatic=c.automatic,startAnchored=c.startAnchored};
         }
         public static bool UsableCalibration(ShieldExerciseGame.Calibration c,ShieldExerciseProfile profile)
         {

@@ -57,7 +57,7 @@ namespace EmilVR
             if (!states.TryGetValue(key, out var state))
             {
                 state = new State { profile = Instantiate(source), outward = source.outwardSeconds, returnTime = source.returnSeconds };
-                if(settings!=null){var arm=settings.Arm(source.exerciseId,side);state.maxSpeed=1+settings.Limit(source.exerciseId).fasterPercent/100;
+                if(settings!=null){var arm=settings.Arm(source.exerciseId,side);state.rangeFloor=developerMode?.3f:(arm.automaticRange?.15f:minimumRangeScale);state.maxSpeed=1+settings.Limit(source.exerciseId).fasterPercent/100;
                     state.scale=1/Mathf.Clamp(developerMode?arm.devSpeed:arm.speed,.5f,developerMode?2:state.maxSpeed);state.range=Mathf.Clamp(developerMode?arm.devRange:arm.range,developerMode?.3f:(arm.automaticRange?.15f:minimumRangeScale),1);}
                 else state.maxSpeed=1/fastestDurationScale;
                 Apply(state);states.Add(key, state);

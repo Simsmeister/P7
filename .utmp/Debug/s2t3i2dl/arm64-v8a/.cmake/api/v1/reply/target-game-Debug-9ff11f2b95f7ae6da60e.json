@@ -2,7 +2,7 @@
 	"artifacts" : 
 	[
 		{
-			"path" : "/Users/emilcarstensen/Desktop/Unity/P7/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/Debug/s2t3i2dl/obj/arm64-v8a/libgame.so"
+			"path" : "/Users/emilcarstensen/Desktop/Unity/P7/Library/PramData/AndroidApplicationController/Cache/com.UnityTechnologies.com.unity.template.urpblank/gradle-project/unityLibrary/build/intermediates/cxx/Debug/s2t3i2dl/obj/arm64-v8a/libgame.so"
 		}
 	],
 	"backtrace" : 1,
@@ -73,7 +73,7 @@
 			[
 				{
 					"backtrace" : 4,
-					"path" : "/Users/emilcarstensen/Desktop/Unity/P7/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/src/main/cpp/GameActivity"
+					"path" : "/Users/emilcarstensen/Desktop/Unity/P7/Library/PramData/AndroidApplicationController/Cache/com.UnityTechnologies.com.unity.template.urpblank/gradle-project/unityLibrary/src/main/cpp/GameActivity"
 				},
 				{
 					"backtrace" : 2,

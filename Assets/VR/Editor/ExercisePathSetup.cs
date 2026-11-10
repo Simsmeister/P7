@@ -26,6 +26,13 @@ public static class ExercisePathSetup
     public static void Verify()
     {
         VerifyNeuralCoach();
+        var automaticProfile=ScriptableObject.CreateInstance<ShieldExerciseProfile>();automaticProfile.exerciseId="automatic-check";
+        foreach(ShieldMovement movement in System.Enum.GetValues(typeof(ShieldMovement)))for(int side=0;side<2;side++){
+            automaticProfile.movement=movement;var envelope=ShieldExerciseGame.AutomaticEnvelope(automaticProfile,side,Vector3.zero,Quaternion.identity);
+            if(!envelope.automatic||envelope.startAnchored||!ShieldExerciseGame.RangeDirectionAllowed(movement,envelope.end-envelope.start,side,automaticProfile.minimumTravel))throw new System.Exception("Automatic envelope direction");
+            var saved=ExercisePlayerSettings.TransformCalibration(envelope,Vector3.zero,Quaternion.identity,true);if(!saved.automatic)throw new System.Exception("Estimated range must retain provenance");
+        }
+        Object.DestroyImmediate(automaticProfile);
         var a=new Vector3(-.4f,.2f,1.6f);
         if(ExercisePathStream.Approach(a,Vector3.forward,0,.55f)!=a)throw new System.Exception("Arrival must equal the scored 3D target");
         if(Vector3.Distance(ExercisePathStream.Approach(a,Vector3.forward,2.5f,.55f),a+Vector3.forward*1.375f)>.0001f)throw new System.Exception("Exercise gap");

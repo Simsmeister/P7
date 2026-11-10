@@ -130,7 +130,7 @@ CMAKE_FIND_ROOT_PATH:UNINITIALIZED=/Users/emilcarstensen/Desktop/Unity/P7/.utmp/
 CMAKE_INSTALL_PREFIX:PATH=/usr/local
 
 //No help, variable specified on the command line.
-CMAKE_LIBRARY_OUTPUT_DIRECTORY:UNINITIALIZED=/Users/emilcarstensen/Desktop/Unity/P7/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/Debug/s2t3i2dl/obj/arm64-v8a
+CMAKE_LIBRARY_OUTPUT_DIRECTORY:UNINITIALIZED=/Users/emilcarstensen/Desktop/Unity/P7/Library/PramData/AndroidApplicationController/Cache/com.UnityTechnologies.com.unity.template.urpblank/gradle-project/unityLibrary/build/intermediates/cxx/Debug/s2t3i2dl/obj/arm64-v8a
 
 //Path to a program.
 CMAKE_LINKER:FILEPATH=/Applications/Unity/Hub/Editor/6000.6.0f1/PlaybackEngines/AndroidPlayer/NDK/toolchains/llvm/prebuilt/darwin-x86_64/bin/ld.lld
@@ -182,7 +182,7 @@ CMAKE_RANLIB:FILEPATH=/Applications/Unity/Hub/Editor/6000.6.0f1/PlaybackEngines/
 CMAKE_READELF:FILEPATH=/Applications/Unity/Hub/Editor/6000.6.0f1/PlaybackEngines/AndroidPlayer/NDK/toolchains/llvm/prebuilt/darwin-x86_64/bin/llvm-readelf
 
 //No help, variable specified on the command line.
-CMAKE_RUNTIME_OUTPUT_DIRECTORY:UNINITIALIZED=/Users/emilcarstensen/Desktop/Unity/P7/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/Debug/s2t3i2dl/obj/arm64-v8a
+CMAKE_RUNTIME_OUTPUT_DIRECTORY:UNINITIALIZED=/Users/emilcarstensen/Desktop/Unity/P7/Library/PramData/AndroidApplicationController/Cache/com.UnityTechnologies.com.unity.template.urpblank/gradle-project/unityLibrary/build/intermediates/cxx/Debug/s2t3i2dl/obj/arm64-v8a
 
 //Flags used by the linker during the creation of dll's.
 CMAKE_SHARED_LINKER_FLAGS:STRING=
@@ -255,7 +255,7 @@ Unity_BINARY_DIR:STATIC=/Users/emilcarstensen/Desktop/Unity/P7/.utmp/Debug/s2t3i
 Unity_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
-Unity_SOURCE_DIR:STATIC=/Users/emilcarstensen/Desktop/Unity/P7/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/src/main/cpp
+Unity_SOURCE_DIR:STATIC=/Users/emilcarstensen/Desktop/Unity/P7/Library/PramData/AndroidApplicationController/Cache/com.UnityTechnologies.com.unity.template.urpblank/gradle-project/unityLibrary/src/main/cpp
 
 //The directory containing a CMake configuration file for game-activity.
 game-activity_DIR:PATH=/Users/emilcarstensen/Desktop/Unity/P7/.utmp/Debug/s2t3i2dl/prefab/arm64-v8a/prefab/lib/aarch64-linux-android/cmake/game-activity
@@ -270,7 +270,7 @@ game_IS_TOP_LEVEL:STATIC=OFF
 game_LIB_DEPENDS:STATIC=general;android;general;game-activity::game-activity_static;general;log;general;c++;
 
 //Value Computed by CMake
-game_SOURCE_DIR:STATIC=/Users/emilcarstensen/Desktop/Unity/P7/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/src/main/cpp/GameActivity
+game_SOURCE_DIR:STATIC=/Users/emilcarstensen/Desktop/Unity/P7/Library/PramData/AndroidApplicationController/Cache/com.UnityTechnologies.com.unity.template.urpblank/gradle-project/unityLibrary/src/main/cpp/GameActivity
 
 
 ########################
@@ -355,7 +355,7 @@ CMAKE_GENERATOR_PLATFORM:INTERNAL=
 CMAKE_GENERATOR_TOOLSET:INTERNAL=
 //Source directory with the top level CMakeLists.txt file for this
 // project
-CMAKE_HOME_DIRECTORY:INTERNAL=/Users/emilcarstensen/Desktop/Unity/P7/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/src/main/cpp
+CMAKE_HOME_DIRECTORY:INTERNAL=/Users/emilcarstensen/Desktop/Unity/P7/Library/PramData/AndroidApplicationController/Cache/com.UnityTechnologies.com.unity.template.urpblank/gradle-project/unityLibrary/src/main/cpp
 //Install .so files without execute permission.
 CMAKE_INSTALL_SO_NO_EXE:INTERNAL=0
 //ADVANCED property for variable: CMAKE_LINKER

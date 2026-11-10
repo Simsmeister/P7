@@ -27,9 +27,15 @@ public static class EmilVRBuild
         if (EditorUserBuildSettings.activeBuildTarget != BuildTarget.Android)
         { Debug.LogWarning("Switch to Quest Android first, then build again."); return; }
         Directory.CreateDirectory("Builds");
+        var log = new System.Text.StringBuilder();
+        Application.LogCallback cb = (m, st, t) => { if (t != LogType.Log) log.AppendLine(t + ": " + m + "\n" + st); };
+        Application.logMessageReceived += cb;
         var report = BuildPipeline.BuildPlayer(new BuildPlayerOptions {
             scenes = new[] { "Assets/Scenes/Emil.unity" }, locationPathName = "Builds/Emil-Quest3.apk",
             target = BuildTarget.Android, options = BuildOptions.Development | (cleanBuild ? BuildOptions.CleanBuildCache : BuildOptions.None) });
+        Application.logMessageReceived -= cb;
+        foreach (var step in report.steps) foreach (var msg in step.messages) if (msg.type == LogType.Error || msg.type == LogType.Exception) log.AppendLine("STEP " + step.name + ": " + msg.content);
+        File.WriteAllText("Builds/build-log.txt", "RESULT " + report.summary.result + " errors=" + report.summary.totalErrors + "\n" + log);
         Debug.Log("EMIL_VR_BUILD " + report.summary.result + " errors=" + report.summary.totalErrors);
     }
 }

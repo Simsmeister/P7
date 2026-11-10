@@ -1,2 +1,2 @@
-/Users/emilcarstensen/Desktop/Unity/P7/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/src/main/cpp/CMakeLists.txt
-/Users/emilcarstensen/Desktop/Unity/P7/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/src/main/cpp/GameActivity/CMakeLists.txt
+/Users/emilcarstensen/Desktop/Unity/P7/Library/PramData/AndroidApplicationController/Cache/com.UnityTechnologies.com.unity.template.urpblank/gradle-project/unityLibrary/src/main/cpp/CMakeLists.txt
+/Users/emilcarstensen/Desktop/Unity/P7/Library/PramData/AndroidApplicationController/Cache/com.UnityTechnologies.com.unity.template.urpblank/gradle-project/unityLibrary/src/main/cpp/GameActivity/CMakeLists.txt

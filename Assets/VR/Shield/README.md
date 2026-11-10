@@ -1,3 +1,8 @@
+## Start without mandatory calibration — 2026-11-09
+START now creates a gentle automatic level for new players: 20% range and 65% speed, with ongoing neural adaptation. Starting hand position can settle automatically during incoming paths; scoring targets never follow the hand mid-movement. There is no mandatory pose capture. Existing personal data is retained, and OPTIONAL CALIBRATION remains available on one click. Automatic envelopes are estimates and marked as such in exported calibration data.
+
+Validation: RunAutomatic passed a full no-calibration session, automatic start anchoring, fixed scoring targets, neural progression and saved restart. Regular integration also passed the optional manual-calibration flow. Quest APK built successfully with zero errors; not installed in this change.
+
 ## One-click menus and faster neural easing — 2026-11-09
 Settings and recalibration now open on one click. Reset keeps its confirmation. The neural network has a third input for sustained hand-to-target error, alongside score and coverage. It has been retrained on 2,205 simulated examples to reduce speed/range much more after large errors, while maintaining small increases after successful attempts. Changes apply to the next matching exercise/arm and remain within configured limits. Personal progress and the base model are still separate. Validation: unit checks and full simulated run passed, including one-click recalibration, model-driven large/small adjustments, persistence and results navigation. Quest APK built with zero errors; model nn2-914D68A12D0A1CFF verified inside the APK. Not installed in this change. Older lock and two-input model descriptions below are historical.
 

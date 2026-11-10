@@ -1,7 +1,7 @@
 {
   "buildFiles": [
-    "/Users/emilcarstensen/Desktop/Unity/P7/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/src/main/cpp/CMakeLists.txt",
-    "/Users/emilcarstensen/Desktop/Unity/P7/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/src/main/cpp/GameActivity/CMakeLists.txt"
+    "/Users/emilcarstensen/Desktop/Unity/P7/Library/PramData/AndroidApplicationController/Cache/com.UnityTechnologies.com.unity.template.urpblank/gradle-project/unityLibrary/src/main/cpp/CMakeLists.txt",
+    "/Users/emilcarstensen/Desktop/Unity/P7/Library/PramData/AndroidApplicationController/Cache/com.UnityTechnologies.com.unity.template.urpblank/gradle-project/unityLibrary/src/main/cpp/GameActivity/CMakeLists.txt"
   ],
   "cleanCommandsComponents": [
     [
@@ -21,7 +21,7 @@
     "game::@d02bb112ea9f9c2ed29f": {
       "artifactName": "game",
       "abi": "arm64-v8a",
-      "output": "/Users/emilcarstensen/Desktop/Unity/P7/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/Debug/s2t3i2dl/obj/arm64-v8a/libgame.so",
+      "output": "/Users/emilcarstensen/Desktop/Unity/P7/Library/PramData/AndroidApplicationController/Cache/com.UnityTechnologies.com.unity.template.urpblank/gradle-project/unityLibrary/build/intermediates/cxx/Debug/s2t3i2dl/obj/arm64-v8a/libgame.so",
       "runtimeFiles": []
     }
   }

@@ -10,7 +10,33 @@ public static class ShieldExerciseVerification
     static float finishedWait;static bool capturedHud;static int activeRep=-1;static float activeDuration;static Vector3 activeEndpoint;static ShieldExerciseGame game;static double deadline;static bool started;static bool sawApproach,skippedDemo,skippedTutorial;
     static ShieldExerciseVerification(){if(SessionState.GetBool("ShieldTest",false))EditorApplication.update+=Tick;}
     public static void VerifiedBuild(){ExercisePathSetup.Build();ConduitSetup.Build();ShieldExerciseSetup.Verify();EmilVRBuild.Build();}
-    public static void Run(){ExercisePathSetup.Build();ConduitSetup.Build();ShieldExerciseSetup.Verify();EditorSceneManager.OpenScene("Assets/Scenes/Emil.unity");SessionState.SetBool("ShieldTest",true);EditorApplication.update-=Tick;EditorApplication.update+=Tick;EditorApplication.isPlaying=true;}
+    public static void Run(){SessionState.SetBool("AutomaticTest",false);ExercisePathSetup.Build();ConduitSetup.Build();ShieldExerciseSetup.Verify();EditorSceneManager.OpenScene("Assets/Scenes/Emil.unity");SessionState.SetBool("ShieldTest",true);EditorApplication.update-=Tick;EditorApplication.update+=Tick;EditorApplication.isPlaying=true;}
+    public static void RunAutomatic(){Run();SessionState.SetBool("AutomaticTest",true);}
+    static void AutomaticTick()
+    {
+        if(!started){
+            game.TestMode=true;game.exerciseGapSeconds=.6f;
+            for(int i=0;i<game.exercises.Length;i++){var source=UnityEngine.Object.Instantiate(game.exercises[i]);source.outwardSeconds=1.2f;source.returnSeconds=1.2f;source.holdSeconds=.3f;source.restSeconds=.2f;game.exercises[i]=source;}
+            game.PlayerSettings=new ExercisePlayerSettings{totalRepetitions=6,filePath="/tmp/emil-auto-player-"+Guid.NewGuid()+".json"};
+            game.menu.widgets.Find(w=>w.key=="start").button.onClick.Invoke();
+            if(game.CurrentStep!="Tutorial"&&game.CurrentStep!="Approaching")throw new Exception("Automatic Start entered calibration");
+            if(game.PlayerSettings.arms.Exists(a=>!a.calibration.automatic||!a.automaticRange||a.range!=.2f||a.speed!=.65f))throw new Exception("Automatic gentle initial levels");
+            started=true;
+        }
+        if(game.CurrentStep=="Demo"||game.CurrentStep=="CaptureStart"||game.CurrentStep=="CaptureEnd"||game.CurrentStep=="Ready")throw new Exception("Automatic session must not require pose calibration");
+        if(game.CurrentStep=="Tutorial")game.SkipTutorialPreview();
+        if(game.CurrentStep=="Playing"){
+            game.PathDefinition(0,out var profile,out var calibration,out _);
+            if(activeRep!=game.CompletedRepetitions){activeRep=game.CompletedRepetitions;activeEndpoint=calibration.end;}
+            else if(Vector3.Distance(activeEndpoint,calibration.end)>.00001f)throw new Exception("Automatic target moved during scoring");
+        }
+        if(!game.Finished)return;
+        if(game.conduit.Run.outcome!="victory")throw new Exception("Automatic run must reach victory");
+        var restored=ExercisePlayerSettings.Load(game.PlayerSettings.filePath);
+        if(restored.arms.Exists(a=>!a.calibration.automatic||!a.calibration.startAnchored||a.speed<=.65f||a.range<=.2f))throw new Exception("Automatic anchoring, neural progression and persistence");
+        game.PlayerSettings=restored;game.Begin();if(game.CurrentStep!="Approaching")throw new Exception("Automatic saved restart must skip calibration/tutorial");
+        Debug.Log("AUTOMATIC_START_PASSED no calibration, gentle seed, anchored starts, fixed scored targets, neural progression, saved restart");SessionState.SetBool("AutomaticTest",false);SessionState.SetBool("ShieldTest",false);EditorApplication.Exit(0);
+    }
     static void CaptureHud(bool results=false)
     {
         var score=game.arcade.transform.Find("Floating score HUD/Session points");
@@ -26,6 +52,7 @@ public static class ShieldExerciseVerification
             if(deadline==0)deadline=EditorApplication.timeSinceStartup+360;
             if(EditorApplication.timeSinceStartup>deadline)throw new Exception("Shield integration timeout");
             if(!game)game=UnityEngine.Object.FindFirstObjectByType<ShieldExerciseGame>();if(!game||Time.timeSinceLevelLoad<1)return;
+            if(SessionState.GetBool("AutomaticTest",false)){AutomaticTick();return;}
             if(!started){game.exerciseGapSeconds=.3f;for(int i=0;i<game.exercises.Length;i++){var p=UnityEngine.Object.Instantiate(game.exercises[i]);p.outwardSeconds=1.2f;p.holdSeconds=.3f;p.returnSeconds=1.2f;p.restSeconds=.2f;p.repetitions=3;game.exercises[i]=p;}game.TestMode=true;game.PlayerSettings=new ExercisePlayerSettings{totalRepetitions=18,filePath="/tmp/emil-integration-player-"+Guid.NewGuid()+".json"};
                 game.menu.Navigate("settings");if(!game.menu.settings.activeSelf)throw new Exception("Settings must open on one click");
                 var toggle=game.menu.widgets.Find(w=>w.key=="left:0").toggle;toggle.isOn=false;if(game.PlayerSettings.Arm(game.exercises[0].exerciseId,0).enabled)throw new Exception("Menu toggle not wired");toggle.isOn=true;
@@ -67,7 +94,7 @@ public static class ShieldExerciseVerification
                 }
                 if(reductions!=6||increases==0||applied==0)throw new Exception("Missing down/up/next-attempt coverage");
                 var files=Directory.GetFiles("/tmp/emil-shield-tests","replay.json",SearchOption.AllDirectories);Array.Sort(files);if(!game.replay.LoadRecording(files[files.Length-1])||!game.replay.Open()||game.replay.Data.equipment!="shield")throw new Exception("Shield replay roundtrip");
-                game.replay.Close();var restoredSettings=ExercisePlayerSettings.Load(game.PlayerSettings.filePath);if(!restoredSettings.tutorialComplete||restoredSettings.arms.Exists(a=>a.calibration==null))throw new Exception("Calibration/tutorial persistence");game.PlayerSettings=restoredSettings;game.menu.Navigate("again");if(game.CurrentStep!="Approaching"||Mathf.Abs(game.ActiveProfile.outwardSeconds-game.exercises[Array.FindIndex(game.exercises,p=>p.exerciseId==game.ActiveProfile.exerciseId)].outwardSeconds/restoredSettings.Arm(game.ActiveProfile.exerciseId,game.ActiveSide).speed)>.0001f)throw new Exception("Saved start must skip tutorial and retain adaptation");
+                game.replay.Close();var restoredSettings=ExercisePlayerSettings.Load(game.PlayerSettings.filePath);if(!restoredSettings.tutorialComplete||restoredSettings.arms.Exists(a=>a.calibration==null||a.automaticRange||a.calibration.automatic))throw new Exception("Calibration/tutorial persistence");game.PlayerSettings=restoredSettings;game.menu.Navigate("again");if(game.CurrentStep!="Approaching"||Mathf.Abs(game.ActiveProfile.outwardSeconds-game.exercises[Array.FindIndex(game.exercises,p=>p.exerciseId==game.ActiveProfile.exerciseId)].outwardSeconds/restoredSettings.Arm(game.ActiveProfile.exerciseId,game.ActiveSide).speed)>.0001f)throw new Exception("Saved start must skip tutorial and retain adaptation");
                 Debug.Log("SHIELD_INTEGRATION_PASSED conduit reaches victory after extended sequence; poor/head-turn easing, successful recovery, next-attempt application, stable in-progress targets, saved settings");SessionState.SetBool("ShieldTest",false);EditorApplication.Exit(0);
             }
         }catch(Exception e){Debug.LogException(e);SessionState.SetBool("ShieldTest",false);EditorApplication.Exit(1);}

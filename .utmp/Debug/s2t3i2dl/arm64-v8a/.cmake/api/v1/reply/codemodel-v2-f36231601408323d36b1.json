@@ -66,7 +66,7 @@
 				{
 					"directoryIndex" : 1,
 					"id" : "game::@d02bb112ea9f9c2ed29f",
-					"jsonFile" : "target-game-Debug-cd214684d4d7ef5b6383.json",
+					"jsonFile" : "target-game-Debug-9ff11f2b95f7ae6da60e.json",
 					"name" : "game",
 					"projectIndex" : 1
 				}
@@ -77,7 +77,7 @@
 	"paths" : 
 	{
 		"build" : "/Users/emilcarstensen/Desktop/Unity/P7/.utmp/Debug/s2t3i2dl/arm64-v8a",
-		"source" : "/Users/emilcarstensen/Desktop/Unity/P7/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/src/main/cpp"
+		"source" : "/Users/emilcarstensen/Desktop/Unity/P7/Library/PramData/AndroidApplicationController/Cache/com.UnityTechnologies.com.unity.template.urpblank/gradle-project/unityLibrary/src/main/cpp"
 	},
 	"version" : 
 	{

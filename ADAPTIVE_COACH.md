@@ -1,3 +1,10 @@
+## Automatic start (2026-11-09)
+START no longer requires manual calibration. New arms/exercises get an estimated example envelope and begin at 20% of that range and 65% of normal speed. The existing trained network then adjusts after completed attempts. Automatic ranges can ease to 15%, but never below the exercise's minimum useful travel; manual calibrated ranges keep the existing 40% floor.
+
+During the incoming path, a suitable stable hand position can automatically anchor the starting pose (250 ms, tracked, posture check, no more than 35 cm from the estimate). This adds no extra screen or mandatory wait. If it cannot find a suitable pose, gameplay continues and can retry on a later approach. Once scoring starts, the path stays fixed. Estimated envelopes are tagged in saved settings/recordings; they must not be presented as measured personal maximum reach.
+
+Existing saved manual calibration and progress are retained. OPTIONAL CALIBRATION remains a one-click manual alternative. The first short gameplay introduction can be skipped. This mechanism finds an in-game challenge level, not a measured anatomical or clinical limit.
+
 # Neural adaptive coach
 
 All adaptive logic lives in `Assets/VR/Runtime/AdaptiveExerciseCoach.cs`. No ML package, server or internet connection is needed. The existing prefab still references this same script.
