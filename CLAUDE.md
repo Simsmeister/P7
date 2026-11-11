@@ -61,6 +61,8 @@ Read PROJECT_MAP.md before exploring the code; open source files only when you n
 | Rewards: positive ending | partial | "FULL ENERGY - GREAT SESSION"; failure ending still exists as "OUT OF FLOW - TRY AGAIN"; planned break "BREAK - GREAT WORK" and session cap "SESSION GOAL REACHED" are in, treated as completed goals; compile and pass `ConduitSetup.Verify`, not yet run in Play Mode or seen on a headset |
 
 ## 6. Backlog, in priority order
+Pilot test 1 (2026-11-11) changes the priorities: see section 10 for the iteration 2 plan, which comes after the data processing and Overleaf write-up. The items below are the older backlog.
+
 - P1 Line: headset look. Progressive fill, graded brightness, hand trail and the bridge between paths are in, but none has been seen on a headset. Check the frame rate too, since up to 119 lit sections can stay active at once.
 - P2 Rewards: headset look at the multiplier pips, which have not been seen on a headset. Score, multiplier on perfect reps, PRÆCIS/GOD labels and best streak are in.
 - P3 Audio: listen on a headset. In-tolerance tone, soft dampening, rising notes on streaks and multiplier chime are in, but nobody has heard them, so levels, the 220 Hz pitch on the Quest speakers and whether a sustained tone gets tiring are all open. No mute toggle yet; the tunables sit together at the top of `ShieldArcadeFeedback`.
@@ -123,3 +125,29 @@ Batch check command (Windows, Unity closed):
 Suggested next steps, in order: headset look; improve the failure ending (7a); bloom / post-processing volume for the night look; tune the audio by ear (P3); confirm the therapist unlock and the break and cap values (P4); confirm the participant ID default (P5).
 
 Uncommitted local noise: `UniversalRenderPipelineGlobalSettings.asset`, `EditorBuildSettings.asset`, `ProjectAuditorSettings.asset`, `ShaderGraphSettings.asset` were changed by Unity before this work and are deliberately not committed.
+
+## 10. Pilot test 1 (2026-11-11) and the plan for iteration 2
+Order agreed by the team: first process the pilot data and write it into Overleaf (Methods, Findings, Limitations), then build iteration 2. Nothing below is built yet. This is the first time the game ran on a headset with participants, so the "not seen on a headset" notes above are partly outdated; the findings here are what was actually seen.
+
+Sources (Drive folder P7/Test): "Pilottest d. 10-11-2026" (procedure and interview guide), "Observatør Noter", "Pilottest - Lydfiler" (7 recordings), and the SurveyXact survey "P7 - UES-SF" (id 1919004). Participants: 4 Medialogy students (MED7), healthy, 2 with moderate and 2 with no VR experience; participants 3 and 4 spoke English.
+
+Results, descriptive only (n = 4). UES-SF total mean 3.57 of 5 (FA 3.46, PU 3.50 reversed, AE 3.75, RW 3.58). SUS mean 73.75 (52.5 to 85). Game results exist for participants 1 and 2 only: 88 % and 92 % accuracy, best streak 4 and 6, 22 and 21 movements. Survey rows R1-R4 are assumed to be participants 1-4 by completion time; confirm against the team's notes.
+
+Findings, most severe first, with what iteration 2 should do:
+1. Targets out of reach, fall risk. Participant 3 stepped forward and back and reached behind himself; participant 4 stood on one leg and nearly fell on the overhead exercise ("the circle is so far away sometimes"); participant 1 felt he had to walk forward. Fix: calibrate each participant standing still, add a floor marker, and clamp target distance and height to the calibrated reach. Safety issue, so it goes first.
+2. Depth of the target ring is hard to judge (3 of 4: "the rings are very 2D", "too behind or too close"). Fix: a depth cue, for example the ring changing colour or size with the z-distance to the hand, or a line or shadow from hand to target. Alternative: weight depth less in the position error.
+3. Tutorial text disappears too fast (participants 1, 2, 4). The tutorial lasts 9 s (`ShieldExerciseGame.cs:287`, `clock=9`) for five lines of text. Fix: wait for A, or at least about 20 s with fewer lines.
+4. Players are unsure how they are doing early on, and the ENERGY bar is unclear (participant 1: "what does the energy bar mean?"). Fix: show points from the first rep and explain ENERGY and FLOW in the tutorial.
+5. The exercise card is missed, so players just follow the line and use the arm (participant 2). Fix: move the coach figure closer to the line or into view.
+6. Compensation seen: elbow pulled back and trunk movement (participant 4), "more the arm" (participant 1). Ties to 1 and 5, and confirms the limit that only head movement is measured.
+7. Feedback works, mainly as information. The sound was the most praised element ("very pleasant, ding ding"). Keep it. Participant 1 missed music ("snorr saber"); consider a beat or music.
+8. Engagement varied: participant 1 found it long and boring and would not replay; participant 2 could have played 10 more minutes; 3 and 4 would play once more.
+
+Test procedure fixes before the next test:
+- Participant 4 pressed REPLAY on the menu, so the test was restarted; lock replay to dev mode.
+- Participant 3 ended in the main menu without a score; make sure the result screen stays until the test leader moves on.
+- Survey: UES items are set up as multiple choice (two respondents ticked two boxes on three items); make them single choice. "Application X" is still in the item text, "appealed to be visual senses" has a typo, two SUS items miss the leading "I", and participant 3 was unsure of the language.
+- Think-aloud gave almost nothing while playing; prompt during play or rely on the interview.
+- The recording for participant 1 only has the interview.
+
+Paper (Overleaf) work from this pilot: Methods (who took part and the procedure), Findings (the UES and SUS table and a table of themes with quotes and timestamps), a Design section "Iteration 2" that ties each change to a finding, and Limitations (n = 4, healthy Medialogy students rather than physiotherapy students, the survey errors, missing game data for two participants). Whisper transcripts of the recordings were not corrected word for word; check quotes against the audio before citing them.
