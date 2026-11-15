@@ -1,10 +1,10 @@
 # ninja log v5
-1	405	1794340303596369519	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	37e306241ce72c3f
-1	407	1794340303599035075	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	601a935c3df4dfde
-1	411	1794340303603449697	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	30a4f8f951b7f2d6
-1	418	1794340303610441084	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	82cb730463dbe2fa
-1	420	1794340303611640613	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	890bdbbe020b2bf8
-1	440	1794340303632558109	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	3eb7dcba7ae938da
-1	453	1794340303645049733	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	8a5019b160e79fe3
-1	481	1794340303671223342	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	e663cbab9d3b74b
-481	520	1794340303712460631	/Users/emilcarstensen/Desktop/Unity/P7/Library/PramData/AndroidApplicationController/Cache/com.UnityTechnologies.com.unity.template.urpblank/gradle-project/unityLibrary/build/intermediates/cxx/Debug/s2t3i2dl/obj/arm64-v8a/libgame.so	71f48ed24697da58
+1	466	1794342142296561927	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	4aee5e775ac5be37
+2	481	1794342142311556621	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	e8501fd24e1c4bf7
+1	491	1794342142320976170	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	4fce99df23124397
+1	500	1794342142331830629	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	e134d3a8f6bec937
+3	516	1794342142347264238	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	62b506efef8949d6
+3	526	1794342142358541738	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	3f9fbf653366ffb2
+1	549	1794342142379674117	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	79be1a9d76942ee4
+0	560	1794342142389440497	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	f15d691c702562bd
+560	609	1794342142440685056	/Users/emilcarstensen/Desktop/Unity/P7/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/Debug/s2t3i2dl/obj/arm64-v8a/libgame.so	b9dd5a4deea291a2

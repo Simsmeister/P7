@@ -213,11 +213,7 @@ TextMesh:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5615772901635181290}
-  m_Text: 'WAND PATH LAB
-
-    Left RED / Right GREEN
-
-    Hold both triggers to calibrate.'
+  m_Text: 
   m_OffsetZ: 0
   m_CharacterSize: 0.011
   m_LineSpacing: 1
@@ -265,7 +261,6 @@ Transform:
   - {fileID: 326952304674118336}
   - {fileID: 3855264923221148268}
   - {fileID: 1497996421207181555}
-  - {fileID: 2086930500799308458}
   - {fileID: 8403786652484582265}
   - {fileID: 447110309852250208}
   - {fileID: 2140242077870241697}
@@ -289,24 +284,26 @@ MonoBehaviour:
   head: {fileID: 0}
   trackingSpace: {fileID: 0}
   board: {fileID: 8403786652484582265}
-  ghost: {fileID: 1497996421207181555}
-  projectile: {fileID: 2086930500799308458}
-  shields:
+  boardText: {fileID: 3732954813103411059}
+  handMarkers:
   - {fileID: 326952304674118336}
   - {fileID: 3855264923221148268}
-  display: {fileID: 3732954813103411059}
+  targetMarker: {fileID: 1497996421207181555}
   exercises:
   - {fileID: 11400000, guid: 70b88361ef9f54ff782a0c473efcfe00, type: 2}
   - {fileID: 11400000, guid: 61c9d7c8e87aa47a8b35433b44ec196a, type: 2}
   - {fileID: 11400000, guid: 86e212b290eaf4429ac0e558ab6ef3eb, type: 2}
   replay: {fileID: 0}
-  coach: {fileID: 601157242780670807}
+  coachCard: {fileID: 601157242780670807}
   pathStream: {fileID: 3314909098139183153}
   adaptiveCoach: {fileID: 5338911299099834427}
   menu: {fileID: 4863597563646110264}
-  conduit: {fileID: 1137265422918865774}
+  pathFeedback: {fileID: 1137265422918865774}
+  scoreFeedback: {fileID: 1476432395337060586}
   exerciseGapSeconds: 2.5
-  arcade: {fileID: 1476432395337060586}
+  breakAfterSeconds: 300
+  breakSeconds: 45
+  sessionCapSeconds: 900
 --- !u!114 &5338911299099834427
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -739,68 +736,6 @@ PrefabInstance:
 Transform:
   m_CorrespondingSourceObject: {fileID: 4959346926260523345, guid: 287fb16a7aae64533b292719f5ff8b9d, type: 3}
   m_PrefabInstance: {fileID: 5772154631001168290}
-  m_PrefabAsset: {fileID: 0}
---- !u!1001 &6772511744762012635
-PrefabInstance:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    serializedVersion: 3
-    m_TransformParent: {fileID: 7084809300585936730}
-    m_Modifications:
-    - target: {fileID: 4686716380196716913, guid: 649d5048243a24b9abe657648309ac12, type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4686716380196716913, guid: 649d5048243a24b9abe657648309ac12, type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4686716380196716913, guid: 649d5048243a24b9abe657648309ac12, type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4686716380196716913, guid: 649d5048243a24b9abe657648309ac12, type: 3}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4686716380196716913, guid: 649d5048243a24b9abe657648309ac12, type: 3}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4686716380196716913, guid: 649d5048243a24b9abe657648309ac12, type: 3}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4686716380196716913, guid: 649d5048243a24b9abe657648309ac12, type: 3}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4686716380196716913, guid: 649d5048243a24b9abe657648309ac12, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4686716380196716913, guid: 649d5048243a24b9abe657648309ac12, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4686716380196716913, guid: 649d5048243a24b9abe657648309ac12, type: 3}
-      propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5671962765268406363, guid: 649d5048243a24b9abe657648309ac12, type: 3}
-      propertyPath: m_Name
-      value: Energy Pulse
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-    m_RemovedGameObjects: []
-    m_AddedGameObjects: []
-    m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 649d5048243a24b9abe657648309ac12, type: 3}
---- !u!4 &2086930500799308458 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4686716380196716913, guid: 649d5048243a24b9abe657648309ac12, type: 3}
-  m_PrefabInstance: {fileID: 6772511744762012635}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &7378577177134901152
 PrefabInstance:

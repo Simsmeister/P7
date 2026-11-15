@@ -45,4 +45,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EmilVR.ShieldCoachDisplay
   game: {fileID: 0}
-  handMarkerPrefab: {fileID: 4472463987332805680, guid: 9993d9b025534427aaaca9751fb1f585, type: 3}

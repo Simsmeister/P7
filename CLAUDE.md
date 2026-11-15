@@ -1,25 +1,32 @@
 # P7: Quest 3 shoulder rehabilitation game (AAU Medialogy, Group 704)
 
 ## 1. What it is
+<<<<<<< Updated upstream
 A Just Dance-like VR game for Quest 3: the player follows a line with their hand through three shoulder exercises (Scaption, Serratus Reach, External Rotation), and an adaptive coach adjusts speed and range per exercise and arm. There is no throwing, no parrying and no opponent in the build, and none is planned. The hand is the Quest controller grip, since `ShieldExerciseGame.cs:120` forces controller mode. Code names are historical: "Emil" is the scene and tools, "shield" is the marker the player moves.
+=======
+A Just Dance-like VR game for Quest 3: the player follows a line with their hand through three shoulder exercises (Scaption, Serratus Reach, External Rotation), and an adaptive coach adjusts speed and range per exercise and arm. There is no throwing, no parrying and no opponent. The hand is the Quest controller grip. Some data names are historical and kept so old exports stay comparable: "shield" (the hand marker), "conduit" (ENERGY/FLOW progress), `ship_power` and `battery`.
+>>>>>>> Stashed changes
 
 Research question: "How can an adaptive VR game be designed to support physiotherapists in providing an appropriate level of challenge while promoting engagement in shoulder rehabilitation exercises for adults aged 18-35 with higher functional demands"
 
 Target group: Danish adults 18-35 with higher functional demands (returning to sport or demanding physical activity). The paper lives in a separate Overleaf project. If it and the code disagree about the mechanic, trust the code and flag the difference.
 
 ## 2. Run and build
-Unity 6000.6.0f1, URP 17.6.0, OpenXR 1.18.0, XR Hands 1.9.0. The build tool builds only `Assets/Scenes/Emil.unity`; `SampleScene` is also listed in Build Settings but is template boilerplate.
+Unity 6000.6.0f1, URP 17.6.0, OpenXR 1.18.0, XR Hands 1.9.0. The only scene is `Assets/Scenes/P7.unity`.
 
-Menu `Tools > Emil VR`: Switch to Quest Android, then Build Quest APK (writes `Builds/Emil-Quest3.apk`, development build), and Validate Quest Setup. README and editor paths assume a Mac: the docs say Mac and the code hard-codes `/tmp`. Editor Play Mode without a headset runs a labelled desktop simulation (Space = A, R = B, mouse on the menu).
+Menu `Tools > P7`: Switch to Quest Android, Build Quest APK (writes `Builds/P7-Quest3.apk`, development build), Export Quest Recordings, Load Replay File in Play Mode, Train Coach Model, Run Checks, Run Play Mode Test. Editor Play Mode without a headset runs a labelled desktop simulation (Space = A, R = B, mouse on the menu). In the editor, settings files go to `/tmp/p7-editor-*`.
+
+Do not keep the project in an iCloud-synced folder (such as the Mac Desktop): iCloud creates "name 2" copies inside `Library/`, which breaks the Android build with duplicate-symbol errors. If it happens, delete `Library/Bee` and any "* 2*" files under `Library/`.
 
 ## 3. Code map
-Read PROJECT_MAP.md before exploring the code; open source files only when you need to change them. When structure changes (scripts, prefabs, wiring, schema, formulas), update the map in the same commit.
+Read PROJECT_MAP.md before exploring the code. When structure changes (scripts, prefabs, wiring, data formats, formulas), update the map in the same commit.
 
 Start flow. START runs `Begin(false)`. Every enabled exercise and arm without a usable saved calibration gets an `AutomaticEnvelope`: an estimated example range, not a measured one, that starts at 20 % range and 65 % speed (`range=.2`, `speed=.65`) and is flagged `automaticRange`. An automatic range can shrink to a floor of .15; a manually calibrated range keeps the .4 floor. While a line approaches, `TryAutomaticAnchor` moves the estimated start to the hand once, if the hand holds an allowed pose within 2.5 cm for 0.25 s and within 35 cm of the estimate. It never moves a target during scoring. The OPTIONAL CALIBRATION menu button runs `Begin(true)`, the demo and pose-capture flow, which replaces the estimate with a measured range.
 
 Adaptive coach (`AdaptiveExerciseCoach.cs`, details in `ADAPTIVE_COACH.md`). A 3-16-2 tanh network. The inputs are score, coverage and the rep's mean hand error (normalised by `ErrorSeverity`); the outputs are the range and speed change for the next attempt of that exercise and arm, bounded to ±.45 and ±.35. It was trained offline on 2,205 synthetic examples labelled by hand-written rules (1,792 train, 413 held out), with the menu item `Tools/Emil VR/AI/Train Base Neural Model`. The weights live in `Assets/Resources/AdaptiveCoach/base-model.json` and never change during play; each player's levels go to a separate `*-adaptive.json` next to `player-settings.json`. Gates outside the network: a dead zone ignores changes under .02 range and .0225 speed, a head-displacement flag (severity above .2) blocks increases but still allows easing, and a rep with more than 10 % tracking loss is not learned from. Dev mode switches learning off. The labels are invented, so the coach is not clinically validated.
 
 ## 4. Traps
+<<<<<<< Updated upstream
 - `ShieldExerciseVerification.Run` and `VerifiedBuild` have no menu items (they need `-executeMethod`) and rebuild prefabs first, so they can overwrite manual prefab edits.
 - Generated prefabs in general: `Build Conduit Repair` rewrites the Conduit, menu and marker prefabs. `Set Up Shield Exercises` rewrites the Left/Right/Target Shield prefabs back to old discs before its early return. Change the generator, or edit the prefab and stop running that tool.
 - Conduit Repair is the active theme and supplies line feedback; extract it rather than delete it.
@@ -37,28 +44,39 @@ Adaptive coach (`AdaptiveExerciseCoach.cs`, details in `ADAPTIVE_COACH.md`). A 3
 - Participant ID (default awaiting team confirmation). Tester: read `Participant P003` on the home menu and write it on the VRNQ sheet; before the next participant, open Settings and confirm RESET SAVED SETTINGS, which advances the ID and clears calibration and the coach's personal levels. Repeat sessions by one participant need no reset.
 - The participant counter is per device, so two headsets both issue `P001`, and uninstalling the app wipes the counter and `Sessions`. Keep a headset label on the paper sheet and pull exports before any uninstall.
 - `OnApplicationPause` still ends the session as `aborted`. If the Quest pauses the app when the headset comes off, a patient who takes it off during a break loses the rest of the session. Not tested on a headset.
+=======
+- The prefabs are now the source of truth; the old prefab generators were removed. Edit prefabs directly.
+- Export formats (CSV columns, JSON field names, `schemaVersion` strings) are research data. Do not rename fields in `SessionProgress`, `ReplayData`, `Calibration`, `AdaptiveCoach.Decision` or the `SessionInfo` class without updating analysis scripts.
+- Settings and Tutorial/Recalibrate open with one click (the old therapist multi-click lock was removed on request, 2026-11-09). A saved `devMode` stays on until switched off in Settings; with it on, the patient plays with dev overrides and no adaptation, so switch it off before handing over.
+- Break and cap numbers (5 min, 45 s, 15 min) are prototype values, not clinical guidance, and a physiotherapist must confirm them. They are serialized fields on `ExerciseGame`; active play counts only while the game clock runs.
+- Participant ID: an anonymous per-device counter (`P001`...). Read it on the home menu and write it on the VRNQ sheet; before the next participant, confirm RESET SAVED SETTINGS, which advances the ID and clears calibration. Two headsets both issue `P001`, and uninstalling the app wipes the counter and `Sessions`, so pull exports first.
+- `OnApplicationPause` ends the session as `aborted`. If the Quest pauses the app when the headset comes off, the rest of the session is lost. Not tested on a headset.
+- Replay stops capturing at 18,000 frames (about 5 minutes at 60 Hz). Raw samples continue.
+- The bundle ID is still the template default (`com.UnityTechnologies.com.unity.template.urpblank`). Export reads it from Player Settings, so changing it is safe.
+>>>>>>> Stashed changes
 
 ## 5. Status against the team's feedback spec
 | Item | Status | Detail |
 |---|---|---|
-| Continuous line | partial | Finite ribbons about 1.35 m in front, now joined by a dim runtime bridge from current end to next start (`ExercisePathStream` `bridge`); the 2.5 s gap still exists in time; not yet seen on a headset |
+| Continuous line | partial | Finite ribbons about 1.35 m in front, now joined by a dim runtime bridge from current end to next start (`PathStream` bridge); the 2.5 s gap still exists in time; not yet seen on a headset |
 | Theme "Beat Saber Lite" night | partial | Chosen 2026-11-04. Ship and repair text replaced with ENERGY / FLOW wording (runtime and menu prefab); visuals still dark and cyan; no post-processing volume (bloom) yet |
-| Score | partial | Points and multiplier shown in the Conduit status line (`ConduitRepairGame` status text); Path match %, last move 0-100 |
-| Multiplier on consecutive perfects | built | Counts perfect reps (`ShieldArcadeFeedback.Perfect`), up to x5, shown as text and pips |
-| Audio: completion sound | partial | 880 Hz on a complete rep that is not perfect; a perfect rep plays its streak note instead. Compiles and passes `ConduitSetup.Verify`; nobody has listened to it |
-| Audio: in-tolerance tone, soft dampening off the line | partial | Looping 220 Hz tone on a runtime child `Line Tone` with its own low-pass, audible only while `Playing` and tracked; volume and cutoff follow `RepairQuality` continuously (`ShieldArcadeFeedback.LineTone`). Compiles and passes `ConduitSetup.Verify`; nobody has listened to it, on a headset or anywhere else |
-| Audio: rising notes, multiplier sound | partial | Perfect reps step up an A major pentatonic from 880 to 1760 Hz, capped at the sixth perfect in a row (`StreakNote`); a two-note chime follows .2 s later when `Multiplier` rises. Compiles and passes `ConduitSetup.Verify`; nobody has listened to it, on a headset or anywhere else |
-| Visual: line glow | partial | Graded by quality (`ConduitRepairGame.Glow`, amber at 0.4 to white at 0.9), now held for the whole rep through the progressive fill; not yet run in Unity on a headset |
-| Visual: progressive fill | partial | The followed part stays lit until the rep ends, tinted per section by `Glow`; tracking gaps stay unlit (`ConduitRepairGame.SectionLit`). Sections hold at their arrival position. The return draws as a thin core in front of the outward fill. Compiles and passes `ConduitSetup.Verify`; not yet seen on a headset |
-| Visual: hand light trail | partial | 0.25 s `TrailRenderer` added to the markers at runtime by `ConduitRepairGame.UpdateTrails`, tinted by `Glow`; not yet run on a headset |
+| Score | partial | Points and multiplier shown in the floating score HUD (the floating score HUD (`ScoreFeedback`)); Path match %, last move 0-100 |
+| Multiplier on consecutive perfects | built | Counts perfect reps (`ScoreFeedback.Perfect`), up to x5, shown as "3x / 3 STREAK" under the score |
+| Audio: completion sound | partial | 880 Hz on a complete rep that is not perfect; a perfect rep plays its streak note instead. Compiles and passes `P7Tests`; nobody has listened to it |
+| Audio: in-tolerance tone, soft dampening off the line | partial | Looping 220 Hz tone on a runtime child `Line Tone` with its own low-pass, audible only while `Playing` and tracked; volume and cutoff follow `RepairQuality` continuously (`ScoreFeedback.LineTone`). Compiles and passes `P7Tests`; nobody has listened to it, on a headset or anywhere else |
+| Audio: rising notes, multiplier sound | partial | Perfect reps step up an A major pentatonic from 880 to 1760 Hz, capped at the sixth perfect in a row (`StreakNote`); a two-note chime follows .2 s later when `Multiplier` rises. Compiles and passes `P7Tests`; nobody has listened to it, on a headset or anywhere else |
+| Visual: line glow | partial | Graded by quality (`PathFeedback.Glow`, amber at 0.4 to white at 0.9), now held for the whole rep through the progressive fill; not yet run in Unity on a headset |
+| Visual: progressive fill | partial | The followed part stays lit until the rep ends, tinted per section by `Glow`; tracking gaps stay unlit (`PathFeedback.SectionLit`). Sections hold at their arrival position. The return draws as a thin core in front of the outward fill. Compiles and passes `P7Tests`; not yet seen on a headset |
+| Visual: hand light trail | partial | 0.25 s `TrailRenderer` added to the markers at runtime by `PathFeedback.UpdateTrails`, tinted by `Glow`; not yet run on a headset |
 | Visual: completion effect | partial | Ring at endpoint, not tied to quality, may be hidden by `Show(false)` |
-| Visual: multiplier indicator | partial | Five pips above the status panel, created at runtime by `ConduitRepairGame.UpdatePips`; the lit count equals the multiplier, and lit pips are brighter and larger. The "x3" text stays beside the points. `Multiplier` reads x1 at both 0 and 1 perfect reps, so the second pip lights on the second perfect in a row. Compiles and passes `ConduitSetup.Verify`; not yet seen on a headset |
+| Visual: multiplier indicator | partial | Streak text under the floating score. The old multiplier pips were never visible (their panel was hidden) and were removed in the 2026-11-10 cleanup |
 | Visual: milestone lighting | partial | Floor lights track cumulative power |
 | Haptics: completion | partial | Fires on endpoint reached |
 | Haptics: multiplier pattern, off switch | missing | |
-| Rewards: God/Præcis labels | built | PRÆCIS = perfect, GOD = complete; shown in the Conduit status line during the gap before the next path |
+| Rewards: God/Præcis labels | partial | The floating HUD shows PERFECT / NICE after a complete rep. The PRÆCIS / GOD labels lived on a hidden panel and were removed in the 2026-11-10 cleanup |
 | Rewards: personal progress | partial | Data saved, no in-game view |
 | Rewards: cosmetic unlocks | missing | |
+<<<<<<< Updated upstream
 | Rewards: round summary | partial | Results page (`ExerciseGameMenu.EnsureResults`, page 4) shows outcome, total score, accuracy, best streak, moves and perfect-flow bonus; no per-exercise breakdown |
 | Rewards: positive ending | partial | "FULL ENERGY - GREAT SESSION"; failure ending still exists as "OUT OF FLOW - TRY AGAIN" but did not trigger in the pilot; planned break "BREAK - GREAT WORK" and session cap "SESSION GOAL REACHED" are in, treated as completed goals |
 
@@ -71,6 +89,23 @@ Pilot test 1 (2026-11-11) changes the priorities: see section 10 for the iterati
 - P4 Clinical: a therapist lock on Settings and recalibration, asked for by physiotherapist Expert 2, was built and then removed on 2026-11-09 (see Traps), so therapist-only limits are open again. Session length and breaks are in: a 45 s break after each 5 minutes of active play and a finish at the next rep boundary after 15 minutes, exported as outcome `session_limit`. The numbers are prototype values, not clinical guidance, and a physiotherapist must confirm them, along with whether A may skip a break. Only the timing helper and `RepairRun` are asserted, so the break has not been run. Follow-up: menu sliders for these values, which needs `ExerciseMenuSetup` and a generator run.
 - P5 Evaluation: participant ID in exports is in as a default awaiting team confirmation: an anonymous per-device counter (`P001`, `P002`...) in `participant.json`, shown on the home menu, advanced by the RESET SAVED SETTINGS confirmation, written to `session.json` and `outcome.json` (see Traps). It compiles and passes `ConduitSetup.Verify`, which asserts the helpers and file recovery but not the menu or a real export. Still open: VRNQ questionnaire outside the app (no in-app support), headset test.
 - P6 Cleanup: one game name (working title SHOULDER FLOW in the menu, ProjectSettings product name unchanged); consistent exercise labels (menu says FORWARD REACH / OUTWARD ROTATION, gameplay says SERRATUS REACH / EXTERNAL ROTATION); real bundle ID (currently template default `com.UnityTechnologies.com.unity.template.urpblank`) with the export tool updated. Runtime stale strings and README sync are done, checked with `ConduitSetup.Verify` only; the old `WAND PATH LAB` default text on the board in `Shield Exercise Game.prefab` remains and needs a prefab change, though `DrawText` replaces it at runtime.
+=======
+| Rewards: round summary | partial | Menu shows result, accuracy, points and best streak (`GameMenu.Refresh`); no per-exercise breakdown |
+| Start point fits the player | partial | 2026-11-10. The coach measures where the hand waits in the last 0.8 s of the approach (within 30 cm of the start), plus the start and rest of the repetition. Before this fix only the in-repetition windows counted, where players follow the ring, so the offset stayed under the 2.5 cm dead zone and the start never moved; the neural network (v3 schema: 4 inputs incl. start offset, 3 outputs incl. start follow 0-1; model `nn3-28ACEF866E89FF43`) decides which fraction of that offset the whole path moves. Hard guards: max 5 cm per step, 20 cm total, under 2.5 cm ignored (`AdaptiveCoach.NextStartShift`). Saved per exercise and arm in `*-adaptive.json`. Start-follow labels are synthetic, like the range/speed labels. The automatic estimate is also scaled by eye height (`ExerciseGame.BodyScaleFor`). Passes `P7Tests`; not yet tried on a headset |
+| Larger movements | partial | 2026-11-10. Automatic estimate v3 = the mastered movement: scaption to about 140 degrees, 18 cm serratus reach, 75 degrees rotation; range 1 is the goal. Without the tutorial an arm starts at 35 % range. Old automatic ranges are replaced on the next START (`Calibration.estimateVersion`). Manual calibrations still cap at the captured range. Passes `P7Tests`; not yet tried on a headset |
+| First-time tutorial | partial | 2026-11-10. First START (or Tutorial/Recalibrate): intro board, then per exercise a demo of the whole movement (full range) on the figure, then "your turn" for every enabled arm: the full-range line comes and the player copies it as far as is comfortable, with live hints on the board (higher/lower/left/right/forward/closer, "good - hold it here"). No capture percentages. The demo shows the mastered movement (full automatic estimate) at normal speed, and the practice line runs at normal speed too; missing it is fine. The furthest point reached (x0.9, `PracticeRangeShare`) becomes that arm's starting range and the path quality sets its starting speed 0.6-1 (`PracticeSpeed`, `AdaptiveCoach.SetMeasuredLevel`), and the start offset feeds the network's start shift; the network adapts from there. Practice reps give no points, recording or FLOW. A skips. Settings has a TUTORIAL ALWAYS switch (`tutorialEveryStart` in `player-settings.json`) that runs it on every START; the switch is a runtime copy of the DEV MODE toggle placed beside it (`GameMenu.AddTutorialToggle`), not a prefab widget. Built into the APK of 2026-11-10 23:17; the switch is not yet seen on a headset |
+| Rewards: positive ending | partial | "FULL ENERGY - GREAT SESSION"; failure ending still exists as "OUT OF FLOW - TRY AGAIN"; planned break "BREAK - GREAT WORK" and session cap "SESSION GOAL REACHED" are in, treated as completed goals; compile and pass `P7Tests`, not yet run in Play Mode or seen on a headset |
+
+## 6. Backlog, in priority order
+- P0 Progression fix (2026-11-10, after the first headset test: "perfect" never got harder). Cause: the labels only increased at score >= 90 and coverage >= 90, by +2-5 %, and the +2 % range was inside the runtime dead zone; score 65-89 kept the level. New labels (`Tools/coach_training_labels.py`): score >= 70 with coverage >= 75 % and low error increase range and speed by 3-12 % per attempt. Model retrained. Needs a headset check that it gets harder at a good pace but not too fast.
+- P0 Headset test of the 2026-11-10 changes (network v3 `nn3-E0B86DC292408867`; rebuild the APK so it is on the Quest): does the start point now settle at the right height for short and tall players (watch `nextStartShift` in `adaptive-coach.json`), are the larger automatic movements OK, and is the tutorial clear and not too long (intro 12 s, wrap-up 5 s, `ExerciseGame.TutorialIntroSeconds`). Open team question: should manual calibrations also be allowed to grow past the captured range?
+- P1 Line: headset look. Progressive fill, graded brightness, hand trail and the bridge between paths are in, but none has been seen on a headset. Check the frame rate too, since up to 119 lit sections can stay active at once.
+- P2 Rewards: headset look at the floating score HUD and streak text. Score, multiplier on perfect reps and best streak are in.
+- P3 Audio: listen on a headset. In-tolerance tone, soft dampening, rising notes on streaks and multiplier chime are in, but nobody has heard them, so levels, the 220 Hz pitch on the Quest speakers and whether a sustained tone gets tiring are all open. No mute toggle yet; the tunables sit together at the top of `ScoreFeedback`.
+- P4 Clinical: the therapist lock was removed on request (2026-11-09). Session length and breaks are in: a 45 s break after each 5 minutes of active play and a finish at the next rep boundary after 15 minutes, exported as outcome `session_limit`. The numbers are prototype values, not clinical guidance, and a physiotherapist must confirm them, along with whether A may skip a break. Only the timing helper and `SessionProgress` are asserted, so the break has not been run. Follow-up: menu sliders for these values, which needs the menu prefab and a generator run.
+- P5 Evaluation: participant ID in exports is in as a default awaiting team confirmation: an anonymous per-device counter (`P001`, `P002`...) in `participant.json`, shown on the home menu, advanced by the RESET SAVED SETTINGS confirmation, written to `session.json` and `outcome.json` (see Traps). It compiles and passes `P7Tests`, which asserts the helpers and file recovery but not the menu or a real export. Still open: VRNQ questionnaire outside the app (no in-app support), headset test.
+- P6 Cleanup: one game name (working title SHOULDER FLOW in the menu, ProjectSettings product name unchanged); consistent exercise labels (menu says FORWARD REACH / OUTWARD ROTATION, gameplay says SERRATUS REACH / EXTERNAL ROTATION); real bundle ID (currently the template default; the export tool reads it from Player Settings).
+>>>>>>> Stashed changes
 - Later, optional: haptic toggle and pattern, milestone lighting, cosmetic unlocks, in-game progress view.
 
 ## 7. Team decisions
@@ -79,7 +114,7 @@ No open decisions left from the original list. New design questions still go to 
 Decided 2026-11-04: the failure ending stays, but should be improved (see 7a).
 
 ### 7a. Failure ending: how it works now and ideas to discuss
-How it works (`RepairRun.Resolve`, `ConduitRepairGame.cs`): FLOW (code: `battery`) starts at 100. Each rep subtracts `max(0, .6-q)*16` and adds 2 when `q>=.85`. At 0 the session ends with "OUT OF FLOW - TRY AGAIN", which is checked before victory. Tracking pauses never drain it. `ConduitSetup.Verify` requires that a stationary player (q=.25) fails even a short session; that is the anti-idle guard, so keep some failure path or replace that check.
+How it works (`SessionProgress.Resolve`, `SessionProgress.cs`): FLOW (code: `battery`) starts at 100. Each rep subtracts `max(0, .6-q)*16` and adds 2 when `q>=.85`. At 0 the session ends with "OUT OF FLOW - TRY AGAIN", which is checked before victory. Tracking pauses never drain it. `P7Tests` requires that a stationary player (q=.25) fails even a short session; that is the anti-idle guard, so keep some failure path or replace that check.
 
 Why it needs work: in rehab a hard loss can punish fatigue or pain, which is the moment the player should stop or slow down. It also overlaps with the adaptive coach, which already makes the next rep easier after a poor one, so the player can lose while the game is still easing.
 
@@ -88,7 +123,11 @@ Ideas, not decided or built. Discuss with the team and a physiotherapist:
 - Cap the drain per rep (for example at 6) so one bad rep cannot end the session.
 - Turn failure into a break: at 0 FLOW, pause with "TAKE A BREAK" and a 30-60 s rest, then refill to 50 and continue, instead of ending. The planned break from P4 is time-based and separate from this.
 - Coach first: only drain when the adaptive coach is already at its floor for that exercise and arm (range at minimum, speed at slowest). Then a loss means "too hard even at the easiest", which is useful data for the therapist.
+<<<<<<< Updated upstream
 - Therapist switch: failure on or off per player in `player-settings.json`, set in Settings.
+=======
+- Therapist switch: failure on or off per player in `player-settings.json`.
+>>>>>>> Stashed changes
 - Kinder ending screen: show what went well (points, best streak, PRÆCIS count, best exercise) next to the failure text, so the session ends on progress.
 - Log it: `outcome.json` and `conduit.json` already say why the session ended, and the FLOW curve is in `conduit.csv`. Report in the paper how often failure happened.
 
@@ -96,6 +135,7 @@ Decided 2026-11-04: night "Beat Saber Lite" theme, no ship story. Player-facing 
 
 Decided 2026-11-04: the line stays about 1.35 m in front of the player (no move to the hand).
 
+<<<<<<< Updated upstream
 Decided 2026-11-04: perfect = `complete`, score >= 90 and coverage >= 90 % (`ShieldArcadeFeedback.Perfect`).
 
 ## 8. Limits to state honestly
@@ -153,3 +193,11 @@ Test procedure fixes before the next test:
 - The recording for participant 1 only has the interview.
 
 Paper (Overleaf) work from this pilot: done on 2026-11-12. Pilot results sit in Design as "Iteration 1 and pilot test" (`sec:pilot-results`, UES/SUS table and themes table), not in Findings, which is kept for the main evaluation with physiotherapy students and experts; a second pilot would get its own iteration subsection. Still to write: a Design section "Iteration 2" that ties each change to a finding. Also in: Methods (transcription and the survey error) and Limitations (n = 4, healthy Medialogy students rather than physiotherapy students, the survey errors, missing game data for two participants). Whisper transcripts of the recordings were not corrected word for word; check quotes against the audio before citing them.
+=======
+Decided 2026-11-04: perfect = `complete`, score >= 90 and coverage >= 90 % (`ScoreFeedback.Perfect`), the same band the adaptive coach treats as strong.
+
+## 8. Limits to state honestly
+Compensation is only a head-movement heuristic. Elbow, scapula and torso are not measured, and the adaptive thresholds have no clinical validation.
+
+`P7Tests` and `P7PlayModeTest` cover the rules and a full simulated session. Nothing replaces a headset test.
+>>>>>>> Stashed changes

@@ -38,3 +38,4 @@ Thumbs.db
 Desktop.ini
 
 # Keep Assets (including .meta), Packages, and ProjectSettings tracked.
+/.utmp/
