@@ -1,53 +1,18 @@
 # PROJECT_MAP
 
-<<<<<<< Updated upstream
-Last verified: commit `1fcc24eb`, 2026-11-12. Its game code is unchanged since `457c05e1`, the pilot build. Static code reading only; nothing was run in Unity for this check.
+Last verified: commit `a6ab39a2`, 2026-11-16. Static code reading plus a batch run of `P7Tests.RunChecks` (passed); nothing was run on a headset for this check. Update this file in the same commit when structure changes.
 
-Update this file in the same commit when structure changes. Bare file names below live in `Assets/VR/Runtime/` or `Assets/VR/Editor/`. Line numbers into `ShieldExerciseGame.cs`, `AdaptiveExerciseCoach.cs`, `ExercisePlayerSettings.cs`, `ExerciseGameMenu.cs`, `ConduitRepairGame.cs` and `ExercisePathStream.cs` are for this commit; numbers into the editor generators date from `28684f98` and may have drifted. Many lines are very long, so search by the named method if a number is off.
-
-## Directory tree
-
-```
-Assets/
-  Scenes/Emil.unity            active, the only scene the build tool builds
-  Scenes/SampleScene.unity     boilerplate (still listed in EditorBuildSettings, index 1)
-  VR/Runtime/                  active game code plus legacy wand scripts (table below)
-  VR/Editor/                   menu tools and prefab generators (table below)
-  VR/Shield/                   active: game prefabs, 3 exercise profile .asset files, materials
-  VR/Training/                 coach-training.json, the synthetic examples for the neural coach
-  VR/Prefabs/                  active: VR Rig, hand prefabs. Tracking trail prefabs are debug only
-  VR/Prototype/                legacy wand game, except Session Replay.prefab (live) and
-                               materials it uses; Recorded Head.mat seeds Coach Hand Marker
-  VR/HandVisualizer/           imported XR Hands sample, source of the hand prefabs
-  VR/Materials/                active: Floor, hand materials; Tracking Trail is debug only
-  VR/SetupComplete.txt         gate file: Validate Quest Setup exits silently without it
-  VR/Validation.txt            output of Validate Quest Setup
-  VR/XRGeneralSettings.asset   active, the loader config registered in EditorBuildSettings
-  VR/README.md                 Danish rig notes, Mac flow, partly stale
-  VR/Shield/README.md          dated changelog; "Current state" at the top overrides older text
-  VR/Prototype/README.md       legacy wand game docs
-  XR/                          OpenXR loaders and settings, active
-  Settings/                    URP assets and volume profiles; SampleSceneProfile is boilerplate
-  Prefabs/gymnasium/           imported environment, not instantiated in Emil.unity
-  Resources/AdaptiveCoach/     active: base-model.json, the trained coach weights (loaded at runtime)
-  Resources/, Resources 2/     otherwise performance test JSON or empty, boilerplate
-  Editor/                      empty
-  TutorialInfo/, Readme.asset  boilerplate
-  InputSystem_Actions.inputactions  boilerplate; VR scripts build their input actions in code
-ADAPTIVE_COACH.md             coach file formats, retraining steps and guards
-ProjectSettings/, Packages/    Unity config; bundle ID at ProjectSettings/ProjectSettings.asset:176
-Recordings/, Builds/           gitignored outputs
-=======
-Last updated: 2026-11-10, after the start shift, larger automatic estimate and tutorial. Update this file in the same commit when structure changes.
+Bare file names below live in `Assets/VR/Runtime/` or `Assets/VR/Editor/`. Line numbers are for `a6ab39a2`; if one is off, search for the named method.
 
 ## Folders
 
 ```
 Assets/
-  Scenes/P7.unity              the only scene
+  Scenes/P7.unity              the only scene, the only one in the build
   VR/Runtime/                  game code (namespace P7), table below
   VR/Editor/                   Tools > P7 menu, checks and the Play Mode test
-  VR/Shield/                   game prefabs, the three exercise .asset files, materials
+  VR/Shield/                   game prefabs, the three exercise .asset files, materials;
+                               README.md is a dated changelog with old names
   VR/Prefabs/                  VR Rig and hand prefabs
   VR/Prototype/                Session Replay.prefab (the replay/demo mannequin) and its materials
   VR/HandVisualizer/           hand meshes used by the rig's tracked hands (inactive)
@@ -57,297 +22,153 @@ Assets/
   XR/, Settings/               OpenXR and URP settings
   Prefabs/gymnasium/           imported gym model, not used in the scene yet
   InputSystem_Actions          project-wide input actions (required by the Input System settings)
+  TempDiagnostics/             temporary debugging tools (Tools > Temp); remove before hand-in
+  _Recovery/0.unity            crash-recovery scene committed by accident; remove
 Tools/coach_training_labels.py  the synthetic label rules for the coach network
+ADAPTIVE_COACH.md              coach file formats, retraining steps and guards
 Builds/, Recordings/           build output and exported sessions (gitignored)
->>>>>>> Stashed changes
+.utmp/                         Android build cache; gitignored, but about 47 files are still tracked
 ```
 
 ## Runtime scripts
 
-<<<<<<< Updated upstream
-| Script | Purpose | Main members | Talks to | Status |
-|---|---|---|---|---|
-| `ShieldExerciseGame.cs` | Session state machine, tracking, scoring, recording, export | `Begin(bool)`, `SkipTutorialPreview`, `ResetSavedSettings`, `PathDefinition`, `EffectiveCalibration`, `PathVisualPoint`, `TryAutomaticAnchor`, static `AutomaticEnvelope`, `ProjectShield`, `MovementScore`, `HeadPositionSeverity`, `DueAtRepEnd`; class `Calibration` (with `automatic`, `startAnchored`); props `PathClock`, `RepairQuality`, `Score`, `CompletedRepetitions`, `CurrentStep`, `MenuVisible` | All below | active |
-| `ShieldExerciseProfile.cs` | ScriptableObject per exercise: timing, tolerances, path shape | `Progress`, `Phase`, static `Path`, `Quality`, `Cycle`; enum `ShieldMovement` | Read by game, coach, stream | active |
-| `AdaptiveExerciseCoach.cs` | Single-script neural coach: training, inference, base model loading and separate personal levels | `Configure`, `ProfileFor`, `RangeFor`, `Observe`, `Recalibrated`, `ExportJson`; static `Predict`, `Train`, `ErrorSeverity`, `PersonalPath`, `ResetPersonalData`, `ValidModel`, editor `TrainBaseModel`; classes `Decision`, `Model`, `Example`, `PersonalLevel` | Game, player settings | active |
-| `ExercisePlayerSettings.cs` | `player-settings.json` model, playlist; `ExerciseParticipant` is the `participant.json` counter | `ExerciseArmSettings` (with `automaticRange`); `Load`, `Save`, `Arm`, `Limit`, `Playlist`, `TransformCalibration`, `UsableCalibration`; `ExerciseParticipant.Load`, `Advance`, `Id`, static `FormatId`, `NextNumber`, `ParseId`, `ParseFile` | Game, coach, menu | active |
-| `ExercisePathStream.cs` | Draws current and incoming line, plus a runtime `Path Bridge` LineRenderer (half width, half next colour) joining them | `LateUpdate`, static `Approach`; `approachSpeed` | Reads game | active |
-| `ConduitRepairGame.cs` | Active theme: power, battery, nodes, white repaired sections, status text, runtime multiplier pips, floor lights, camera background. `RepairRun` holds outcome logic | `Begin`, `Resolve`, `Export`, `ExportNodes`, `NodeRepaired`, `SectionLit`, `PipLit`, `UpdatePips`, `Result`, `Run` | Reads game; uses `ExercisePathStream.Approach` | active |
-| `ExerciseGameMenu.cs` | World-space menu, ray and mouse input, and the results page. Every page opens on one click; there is no lock | `Navigate`, `Change`, `Recenter`, `EnsureResults`, static `Hit`; `widgets` | Game, player settings | active |
-| `ShieldCoachDisplay.cs` | CURRENT card with stick figure during the mission | `Draw`, static `Example` | Reads game; `WandSessionReplay.EstimateElbow` | active |
-| `WandSessionReplay.cs` | Records and plays replay; also the tutorial mannequin and calibration guide | `BeginRecording`, `Capture`, `Save`, `Open`, `Close`, `OpenExerciseDemo`, `HoldDemoAt`, `UpdateGuidance`, `LoadLatest`, `MirrorPoint` | Game; `WandPathGame.ResizeWand` and `OpenDemo` (72, 86) | active, with legacy wand branches |
-| `EmilVRInput.cs` | Rig hand and controller visuals | `mode`, `allowModeSwitch`, `CycleMode`, `SetMode` | Game forces Controllers (`ShieldExerciseGame.cs:120`) | active |
-| `ShieldArcadeFeedback.cs` | Reactor Rescue: all game audio (procedural one-shots, streak notes, multiplier chime, looping line tone on a runtime `Line Tone` child), points, combo, burst ring. HUD hidden; points and multiplier are shown through Conduit status text and pips | `Captured`, `Block`, `Reward`, `LineTone`, `StopLineTone`, `Show`, `ResetMission`, `Points`, `Combo`, `BestCombo`, `Multiplier`, `LastLabel`, static `Perfect`, `Label`, `StreakNote`, `LineLevel`, `LineCutoff` | Called by game | half-alive |
-| `ControllerTrackingTrails.cs` | Trigger-drawn debug trails | `RecordFrame`, `ClearTrails` | Own input; instance inactive in `VR Rig.prefab` | dead in gameplay |
-| `WandPathGame.cs` | Old two-wand game; instance disabled in Emil.unity | `Target`, static `Quality`, `ResizeWand` | Replay, `PathTube` | dead, compile dependency |
-| `PathTube.cs` | Old wand tube mesh | `Draw(WandPathGame,...)` | `WandPathGame` | dead |
-=======
-| Script | What it does |
-|---|---|
-| `ExerciseGame.cs` | The session: reads the controllers, runs the state machine (Welcome, Demo, CaptureStart, CaptureEnd, Ready, Tutorial, Approaching, Playing, Break, Finished), scores each repetition and ends the session |
-| `ExerciseGame.Calibration.cs` | Saved calibrations, the automatic estimate and its one-time anchoring, the exercise demo and the manual pose capture |
-| `ExerciseGame.Recording.cs` | 60 Hz samples while playing and all files written at the end of a session |
-| `ExerciseProfile.cs` | ScriptableObject per exercise: timing, tolerances and the path shape |
-| `Calibration.cs` | Start/end/pivot of one exercise and arm; converts between world and head-relative storage, and scales the range |
-| `AdaptiveCoach.cs` | Neural coach (4 inputs, 16 hidden, 3 outputs) that changes range, speed and the start point (start follow) per exercise and arm; personal levels; training. See ADAPTIVE_COACH.md |
-| `SavedSettings.cs` | `player-settings.json`: per-arm settings, speed limits, playlist; also `JsonFile.Write` |
-| `Participant.cs` | `participant.json`: the anonymous P001, P002... counter |
-| `SessionProgress.cs` | ENERGY (`power`) and FLOW (`battery`) and the session outcome |
-| `PathStream.cs` | Draws the current and next line flying towards the player, plus the bridge between them |
-| `PathFeedback.cs` | Nodes along the line, lit sections behind the hand, the hold ring, hand trail and floor lights |
-| `ScoreFeedback.cs` | Points, streak, all sounds and the floating score HUD |
-| `PerfectFlowBonus.cs` | Bonus points for staying on the line |
-| `CoachCard.cs` | Stick figure below the line that shows the current movement |
-| `SessionReplay.cs`, `ReplayData.cs` | Recording and playback on a mannequin; also the exercise demo and calibration guide |
-| `GameMenu.cs` | World-space menu with controller-ray and mouse hit testing; adds the TUTORIAL ALWAYS switch at runtime as a copy of the DEV MODE toggle |
-| `ControllerVisuals.cs` | Moves the controller models to the tracked controllers |
->>>>>>> Stashed changes
+| Script | What it does | Main members |
+|---|---|---|
+| `ExerciseGame.cs` | The session: reads the controllers, runs the state machine (Welcome, Demo, CaptureStart, CaptureEnd, Ready, Tutorial, Approaching, Playing, Finished, Break), the tutorial, scoring of each repetition, breaks and the end of the session | `Begin(bool)`, `StartMission`, `BeginTutorial`, `LoadChallenge`, `UpdatePlaying`, `MeasureFrame`, `ScoreRepetition`, `DueAtRepEnd`, `Finish`, `EffectiveCalibration`, `PathVisualPoint`, `ProjectToFront`, `ResetSavedSettings`, `SkipTutorialPreview` |
+| `ExerciseGame.Calibration.cs` | Saved calibrations, the automatic estimate and its one-time anchoring, the exercise demo and the manual pose capture | `PrepareCalibration`, `AutomaticEstimate`, `BodyScaleFor`, `TryAnchorAutomaticStart`, `PrepareBlock`, `UpdatePoseCapture`, `TryCaptureEnd`, `UpdateReady`, `RangeDirectionAllowed` |
+| `ExerciseGame.Recording.cs` | 60 Hz samples while playing and all files written at the end of a session | `OpenRecording`, `RecordAt60Hz`, `AddSummaryRow`, `WriteSessionFiles`, class `SessionInfo` |
+| `ExerciseProfile.cs` | ScriptableObject per exercise: timing, tolerances and the path shape | `Progress`, `Phase`, static `Path`, `Quality`, `Cycle`; enum `ExerciseMovement` |
+| `Calibration.cs` | Start, end and pivot of one exercise and arm; converts between world and head-relative storage, and scales the range | `automatic`, `startAnchored`, `estimateVersion`, `ToLocal`, `ToWorld`, `IsUsableFor`, `Scaled` |
+| `AdaptiveCoach.cs` | Neural coach (4 inputs, 16 hidden, 3 outputs) that changes range, speed and the start point per exercise and arm; personal levels; training. See ADAPTIVE_COACH.md | `Configure`, `ProfileFor`, `RangeFor`, `StartShiftFor`, `Observe`, `ObserveStart`, `SetMeasuredLevel`, `Recalibrated`, `ExportJson`; static `Predict`, `PredictStartFollow`, `NextStartShift`, `ErrorSeverity`, `Train`, `PersonalPath`, `ResetPersonalData` |
+| `SavedSettings.cs` | `player-settings.json`: per-arm settings, speed limits, playlist; also `JsonFile.Write` (atomic write) | `ArmSettings`, `Load`, `Save`, `Arm`, `Limit`, `Playlist` |
+| `Participant.cs` | `participant.json`: the anonymous P001, P002... counter, with recovery from `Sessions/*/session.json` | `Load`, `Advance`, `Id`, `NextId`, static `FormatId`, `ParseId`, `ParseFile` |
+| `SessionProgress.cs` | ENERGY (`power`) and FLOW (`battery`) and the session outcome; saved as `conduit.json` | `Resolve`, `Finished`, `GoalReached` |
+| `PathStream.cs` | Draws the current and next line flying towards the player, plus the runtime `Path Bridge` between them | `LateUpdate`, static `Approach`; `approachSpeed` |
+| `PathFeedback.cs` | 24 nodes along the line, up to 119 lit sections behind the hand, the hold ring, hand trail, floor lights and camera background; owns the `SessionProgress` run | `Begin`, `Resolve`, `Run`, `ExportProgress`, `ExportNodes`, static `NodeRepaired`, `SectionLit`, `Glow` |
+| `ScoreFeedback.cs` | Points, streak, all sounds and the floating score HUD | `Reward`, `EndpointReached`, `TrackPerfect`, `LineTone`, `StopLineTone`, `ResetMission`, `Points`, `Combo`, `BestCombo`, `Multiplier`, `TrackingBonusPoints`; static `Perfect`, `StreakNote`, `LineLevel`, `LineCutoff` |
+| `PerfectFlowBonus.cs` | Bonus points for staying on the line | `Advance`, `Reset`, `Multiplier`; `PointsPerTick=100` |
+| `CoachCard.cs` | Stick figure below the line that shows the current movement | static `ExampleMovement` |
+| `SessionReplay.cs`, `ReplayData.cs` | Recording and playback on a mannequin; also the exercise demo and calibration guide | `BeginRecording`, `Capture`, `Save`, `LoadRecording`, `Open`, `Close`, `OpenExerciseDemo`, `HoldDemoAt`, `UpdateGuidance`, static `EstimateElbow`, `MirrorPoint`; `MaxFrames=18000` |
+| `GameMenu.cs` | World-space menu with controller-ray and mouse hit testing, settings and the results page; adds the TUTORIAL ALWAYS switch at runtime as a copy of the DEV MODE toggle | `Navigate`, `Change`, `Recenter`, `RefreshResults`, `AddTutorialToggle` |
+| `ControllerVisuals.cs` | Moves the controller models to the tracked controllers and hides them when tracking is lost | `leftController`, `rightController` |
 
 ## Editor scripts (Tools > P7)
 
-<<<<<<< Updated upstream
-| Script | Purpose | Menu item (`Tools/Emil VR/...`) | Status |
-|---|---|---|---|
-| `EmilVRBuild.cs` | Build APK (development flag, Android target required) | Switch to Quest Android; Build Quest APK; Clean Build Quest APK; Restart Editor for Build | active |
-| `EmilVRValidation.cs` | OpenXR rules, writes `Validation.txt` | Validate Quest Setup | active |
-| `WandDataExport.cs` | `adb -d pull` of Sessions, 60 s timeout, bundle ID hard-coded (22) | Export Quest Recordings | active; dialog text describes old files |
-| `ConduitSetup.cs` | Generates Conduit Repair, Left/Right/Target Shield markers, arena materials; re-parents into game prefab; calls `ExerciseMenuSetup.Build`. `Verify` checks `RepairRun` | Build Conduit Repair | active generator |
-| `ExerciseMenuSetup.cs` | Generates `Exercise Main Menu.prefab`; menu strings live here | none (from `ConduitSetup`, `ExercisePathSetup`) | active generator |
-| `ExercisePathSetup.cs` | Generates `Exercise Path Stream.prefab`, adds coach. `Verify` runs `VerifyNeuralCoach` (model schema, bounded predictions, direction, error sensitivity, personal file, reload, dev mode, tracking gate, reset), checks `AutomaticEnvelope` direction and saved `automatic` flag, then path, range and playlist | none | active generator |
-| `ShieldCoachSetup.cs` | Generates marker and Movement Coach once | none (from `ExercisePathSetup`) | active generator |
-| `ShieldExerciseSetup.cs` | Original game setup; profile labels (27). Overwrites shield prefabs before the early return at 32. `Verify` checks scoring | Set Up Shield Exercises | half-alive, see warnings |
-| `ShieldExerciseVerification.cs` | Play Mode integration test; `Run` covers the OPTIONAL CALIBRATION flow, `RunAutomatic` the automatic start (no calibration, .2 / .65 seed, anchoring, fixed scored targets, saved restart); `Run`, `RunAutomatic`, `VerifiedBuild` rebuild prefabs first; asserts 18 summary columns | none, use `-executeMethod` | active check |
-| `ShieldPreviewCapture.cs` | Renders preview PNGs to `/tmp`; `Run`, `RunMenu` rebuild prefabs first | none | active check |
-| `ShieldArcadeSetup.cs` | Generates Reactor Rescue and Pulse Drone | none, no callers | dead generator |
-| `EmilVRSetup.cs` | XR config and rig creation. Looks for `Emil VR Rig` (27), so it would add a second rig today | Configure Quest 3 | half-alive, do not run casually |
-| `EmilVRControllerModels.cs` | Controller hand models; `Populate` is used by `EmilVRSetup`. Menu path loads missing `Emil VR Rig.prefab` (26) | Update Controller Hand Models | half-alive, menu stale |
-| `EmilVRTrackingTrailsSetup.cs` | Trails prefab setup; uses missing rig path (30) | Set Up Tracking Trails | dead, menu stale |
-| `WandPathPrototypeSetup.cs` | Old prototype generator; `TestDesktopSession` starts the shield game first | Test Desktop Session (live); Build Wand Path Prototype; Verify Wand Scoring | dead except the first item |
-| `WandReplaySetup.cs` | Old replay generator; `ImportReplay` still works for exports | Load Replay File in Play Mode (live); Set Up Session Replay; Test Prototype Replay | half-alive |
-| `WandPrototypeVerification.cs` | Old wand integration test, needs an active `WandPathGame` | none | dead |
-=======
 | Script | Menu items |
 |---|---|
-| `P7Tools.cs` | Switch to Quest Android, Build Quest APK, Clean Build Quest APK, Export Quest Recordings, Load Replay File in Play Mode, Train Coach Model |
-| `P7Tests.cs` | Run Checks: rules for paths, scoring, progress, participant IDs, the coach network and personal levels. Result in `Temp/p7-checks.txt` |
-| `P7PlayModeTest.cs` | Run Play Mode Test (manual calibration / automatic start): a full simulated session. Result in `Temp/p7-playmode-test.txt` |
->>>>>>> Stashed changes
+| `P7Tools.cs` | Switch to Quest Android, Build Quest APK, Clean Build Quest APK (development build to `Builds/P7-Quest3.apk`), Export Quest Recordings (`adb -d pull` into `Recordings/`, package ID read from Player Settings), Load Replay File in Play Mode, Train Coach Model |
+| `P7Tests.cs` | Run Checks (`P7Tests.RunChecks`): rules for paths, calibration, start shift, scoring, progress, participant IDs, the coach network, personal levels and the playlist. Logs "CHECKS PASSED" on success and writes `Temp/p7-checks.txt` (cleared when Unity quits) |
+| `P7PlayModeTest.cs` | Run Play Mode Test (manual calibration) and (automatic start): a full simulated session. Result in `Temp/p7-playmode-test.txt` |
+
+`Assets/TempDiagnostics/Editor/` adds `Tools/Temp` items (`QuestLog`: install, launch and save logcat; `CompileLog`). Temporary.
 
 ## Scene wiring
 
-<<<<<<< Updated upstream
-Playlist entries and `block` encode `exercise index * 2 + side` (left 0, right 1); `Side=>block%2` (`ShieldExerciseGame.cs:99`). Line numbers in this section are in `ShieldExerciseGame.cs` unless named.
-
-1. Menu. `Start` calls `EnsurePlayerSettings` and `SetFrame` (121). `ExerciseGameMenu.LateUpdate` hit-tests rays and invokes `Navigate`: `"start"` and `"again"` call `Begin()`, and `"redo"` (the OPTIONAL CALIBRATION button) calls `Begin(true)`. Nothing is locked. No A, B or keyboard path reaches `Begin(true)`, reset or Settings; the scene has no `EventSystem`, so `LateUpdate` is the only thing that presses buttons.
-2. `Begin(bool)` (208): sets frame from the head, configures the coach, resets counters, and shows the tutorial if it is a recalibration or the tutorial was never finished. For each enabled exercise and arm (217-232): `Begin(false)` restores a usable saved calibration or, failing that, adds an `AutomaticEnvelope`; `Begin(true)` queues the pair for manual calibration. Queue not empty: `PrepareBlock`. Empty: `StartMission`.
-3. Calibration. Automatic (the default): `AutomaticEnvelope` (238) builds an estimated example range from fixed offsets, flagged `automatic`; these are not measured personal limits. Outside dev mode the arm is seeded at `range=.2`, `speed=.65`, `automaticRange=true`, `Recalibrated` resets its personal level, and it is saved. During each `Approaching` state `TryAutomaticAnchor` (248) waits for a tracked hand in an allowed start pose (`CalibrationPoseAllowed`, 341) within .35 m of the estimate and still within 2.5 cm for .25 s, then shifts start, end and pivot by that offset once, sets `startAnchored` and saves. It never runs in `Playing`, so scored targets stay fixed, and a later approach can retry if no pose was found. Manual (OPTIONAL CALIBRATION): `PrepareBlock` (260) builds a default path and opens the mannequin demo (`State.Demo`). When the demo ends or A skips it, `StartAutomaticPose(false)` sets `CaptureStart`. `UpdateAutomaticPose` (352) needs 1.25 s within 2.5 cm in an allowed pose. Start is captured, then `CaptureEnd()` (367) validates the endpoint with `RangeDirectionAllowed` (332), stores it, clears `automaticRange`, resets speed and range to 1 and saves unless in dev mode. `Ready` (160) waits for the hand back at start, then moves to the next queued block or `StartMission`.
-4. `StartMission` (282): `conduit.Begin(totalRepetitions)`, `PlayerSettings.Playlist(exercises)` (a balanced shuffle, `ExercisePlayerSettings.cs:101`), `LoadChallenge`; a 9 s `Tutorial` state if needed (287, 165).
-5. `LoadChallenge` (289): resets the anchor sampler, picks `block`, applies `EffectiveCalibration` (304, adaptive range through `ScaledCalibration`), sets `Approaching` with `clock=-exerciseGapSeconds` (2.5 s).
-6. Path drawing, every `LateUpdate` while `PathsVisible`. `ExercisePathStream.LateUpdate` (19) samples 180 points for the current path (`n=0`, only unconsumed time) and the next (`n=1`, delayed by `Cycle + gap`), then applies `Approach(point, forward, secondsUntilArrival, 0.55)`. Points come from `PathVisualPoint` (318), which uses `ProjectShield` (276): offset `(±.30, -.32, 1.35)` plus hand displacement. Conduit adds 24 nodes and 119 white or amber sections along the same path.
-7. Approach (167): `TryAutomaticAnchor` runs, the clock runs only while tracked, and active play (`activeSeconds`, `activeSinceBreak`, 153) grows only while tracked in `Approaching` and `Playing`. At 0, `ResetRep`, `State.Playing`, and `OpenRecording` on first entry (168).
-8. Per frame in `Playing` (169-195): `Target` gives `p` at `clock`; the ghost moves to `MapToFront(p)`. Error `pe=|hand-p|`. Then `repQuality`, coverage min/max (177-178), head severity (180-182), start, hold and return flags (184-186), endpoint check with tone, ring and haptic (187), 60 Hz `Record` (189). The clock pauses when untracked (190).
-9. Rep complete at `clock>=Profile.Cycle` (191): `CompleteRep` (380) computes `complete` and score, writes a summary row, then calls `arcade.Reward`, `conduit.Resolve` (passing whether the cap is due), and `adaptiveCoach.Observe` with the rep's mean hand error.
-10. Adaptive update: `Observe` changes the state for that exercise and arm, saves `arm.speed` and `arm.range` and the personal file, and applies to the next attempt of that pair through `ProfileFor` and `RangeFor`. In-progress attempts never change.
-11. Conduit power: `RepairRun.Resolve` (`ConduitRepairGame.cs:13`) updates power and battery, then sets defeat, victory or `session_limit` in that order. Floor lights track power (`ConduitRepairGame.cs:75`).
-12. Next or finish (192-194): when `conduit.Run.Finished`, `Finish(Run.GoalReached)`, which is true for victory and `session_limit`. Otherwise `playlistIndex++`, and the playlist extends by a new batch when near its end. `DueAtRepEnd` then picks `State.Break` or `LoadChallenge`.
-    Break: `clock` counts down from `breakSeconds` whether or not the hand is tracked, then `LoadChallenge` runs the normal gap; A skips through `SkipTutorialPreview`. `PathsVisible` is false, so paths, bridge, nodes, sections and the Conduit status panel hide. `IsMission` is false, so the coach card hides, and the ghost and hand marker hide too. The instruction `board` stays on and `DrawText` shows the wording and countdown. Line tone, samples, summaries and `Resolve` all depend on `Playing`, so FLOW and ENERGY hold still. X still stops the session.
-13. Stop paths: X (143), `OnDisable`, `OnApplicationPause`, each calling `Finish(false)`.
-14. `Finish` (446): marks `aborted` if unresolved, closes writers, writes all export files, `State.Finished`. `MenuVisible` is true again and `ExerciseGameMenu.LateUpdate` opens the results page (page 4) for a newly finished run. `board` is hidden whenever the menu shows (150), so the `DrawText` Welcome and Finished branches do not display.
-=======
 `P7.unity`: Directional Light, Main Camera (inactive), and three prefab instances.
 
 - `VR Rig`: XR Origin with `ControllerVisuals`; Camera Offset holds the VR camera and the controller and tracked-hand models.
 - `Session Replay`: `SessionReplay`, with `viewer` set to the VR camera in the scene.
 - `Shield Exercise Game`: `ExerciseGame` and `AdaptiveCoach`. The scene sets `head`, `trackingSpace` and `replay`. Children: hand markers, target marker, instruction board, Movement Coach (`CoachCard`), Exercise Path Stream (`PathStream`), Exercise Main Menu (`GameMenu`), Conduit Repair (`PathFeedback`) and Reactor Rescue (`ScoreFeedback`). The line material is `VR/Shield/Energy Pulse.mat`.
->>>>>>> Stashed changes
+
+The scene has no `EventSystem`; `GameMenu.LateUpdate` hit-tests the rays and calls `Navigate`, which is the only way to press a menu button.
 
 ## Session flow
 
-Playlist entries are `exerciseIndex * 2 + side` (left 0, right 1).
+Playlist entries are `exerciseIndex * 2 + side` (left 0, right 1); `ActiveSide => block % 2`. Line numbers are in `ExerciseGame.cs` unless named.
 
-1. Menu START calls `Begin()`. Each enabled exercise and arm gets its saved calibration, or an automatic estimate scaled by eye height (35% range, 65% speed; version 2, older automatic estimates are replaced). RECALIBRATE calls `Begin(true)`, which queues a manual capture for every arm.
-2. Manual capture: demo on the mannequin, then hold the start pose and the end pose still for 1.25 s each, then return to the start.
-2b. Tutorial (first START, TUTORIAL ALWAYS, or after RECALIBRATE): intro board, then for each exercise a full-range demo on the figure and one practice repetition per enabled arm on the full-range line (`IsPractice`: no points, recording or FLOW; live hints on the lowered board via `PracticeHint`). The reach (`PracticeReach` x `PracticeRangeShare`) sets the arm's range (`AdaptiveCoach.SetMeasuredRange`) and `AdaptiveCoach.ObserveStart` teaches the start shift. Then a wrap-up. After a manual capture the demos are skipped. A skips the rest.
-3. The playlist is a balanced shuffle. Each exercise first approaches for `exerciseGapSeconds` (2.5 s). While it approaches, an automatic estimate is moved once to the player's real start pose.
-4. Playing: the clock only runs while tracked. Each frame measures distance to the target, coverage, head displacement and the start, hold, endpoint and return checks. Samples are written at 60 Hz.
-5. The hand's offset from the path start (last 0.8 s of the approach, first 20% of outward and the rest phase) is averaged per repetition. At the end of the cycle the repetition is scored, `ScoreFeedback.Reward`, `PathFeedback.Resolve` and `AdaptiveCoach.Observe` run, and the next exercise loads, or a break starts, or the session finishes.
-6. X stops the session. Pausing or disabling the app finishes it as `aborted`.
+1. Menu. START and PLAY AGAIN call `Begin()`; OPTIONAL CALIBRATION (`"redo"`) calls `Begin(true)` (`GameMenu.Navigate`, `GameMenu.cs:123`). Nothing is locked.
+2. `Begin(bool)` (431): sets the frame from the head, configures the coach, resets counters. The tutorial runs if this is a recalibration, the tutorial was never finished, or TUTORIAL ALWAYS is on (457). For each enabled exercise and arm, `PrepareCalibration` (`ExerciseGame.Calibration.cs:28`) restores a usable saved calibration, or adds an `AutomaticEstimate` scaled by eye height (`BodyScaleFor`, 0.8-1.2 of a 1.64 m eye height) and seeds the arm at 35 % range and 65 % speed. Saved automatic estimates older than version 3 are replaced. `Begin(true)` queues every arm for manual capture instead.
+3. Manual capture (only after OPTIONAL CALIBRATION): `PrepareBlock` shows the demo on the mannequin; A skips it. Then hold the start pose and the end pose still within 2.5 cm for 1.25 s each (`UpdatePoseCapture`), `TryCaptureEnd` checks the direction and size, stores the range, clears `automaticRange` and resets speed and range to 1; `UpdateReady` waits until the hand has held the start again for a few seconds. After the last arm, `StartMission`.
+4. `StartMission` (478): `pathFeedback.Begin(totalRepetitions)`, `SavedSettings.Playlist` (a balanced shuffle), then the tutorial or `LoadChallenge`.
+5. Tutorial (`BeginTutorial`, 499): intro board for `TutorialIntroSeconds` (12 s); then for each exercise a full-range demo on the figure (skipped after a manual capture) and one practice repetition per enabled arm on the full-range line (`IsPractice`: no points, recording or FLOW; live hints on the lowered board via `PracticeHint`). `EndPractice` (604) passes the start offset to `AdaptiveCoach.ObserveStart` and, if tracking held, sets the arm's level with `AdaptiveCoach.SetMeasuredLevel` (range = `PracticeReach` x .9, speed from `PracticeSpeed`). Wrap-up for `TutorialOutroSeconds` (5 s). A skips the rest of the tutorial.
+6. `LoadChallenge` (725): picks the next playlist entry, applies `EffectiveCalibration` (1006: range from the coach, plus the coach's start shift) and sets `Approaching` with `clock = -exerciseGapSeconds` (2.5 s).
+7. Path drawing, every `LateUpdate` while `PathsVisible`. `PathStream` samples 180 points for the current and next path and moves them in with `Approach`. Points come from `PathVisualPoint` (1036), which uses `ProjectToFront` (1024): offset `(±.30, -.32, 1.35)` plus the hand's displacement from the start. `PathFeedback` adds the nodes and lit sections along the same path.
+8. Approach (`UpdateApproaching`, 752): `TryAnchorAutomaticStart` may move an automatic estimate once to a steady start pose (.25 s within 2.5 cm, at most 35 cm from the shown start). The hand's offset from the start in the last 0.8 s, within 30 cm, is averaged for the start shift. The clock runs only while tracked. At 0, `StartRepetition` opens the recording on first entry.
+9. Playing (`UpdatePlaying`, 788, and `MeasureFrame`, 821): the target moves along the path; frame quality from the distance; coverage, head severity, start, hold, return and endpoint flags (the endpoint plays a tone, a ring and a haptic pulse); the start offset over the first fifth of the outward phase and the rest; 60 Hz samples. The clock pauses while untracked. Active play (`activeSeconds`, `activeSinceBreak`) grows only while tracked, a line is shown and the rep is not practice.
+10. Rep end (`ScoreRepetition`, 890): score and summary row, then `ScoreFeedback.Reward`, `PathFeedback.Resolve` (passing whether the cap is due) and `AdaptiveCoach.Observe` with the mean hand error and the start offset. The coach changes only the next attempt of that exercise and arm.
+11. Next (`EndRepetition`, 857): if the run is finished, `Finish(GoalReached)`; otherwise the playlist advances (and extends near its end), and `DueAtRepEnd` (945) picks `Break` or `LoadChallenge`. A break counts down `breakSeconds`; A skips it. Paths, markers, HUD and coach card hide, and the board shows "BREAK - GREAT WORK" with the countdown.
+12. Stop: X during a session, `OnDisable`, or `OnApplicationPause` once recording has started, each calling `Finish(false)`.
+13. `Finish` (954): marks `aborted` if unresolved, writes the export files, `State.Finished`. The menu opens the results page once for a newly finished run.
 
 ## Scoring
 
 All values are prototype settings without clinical validation.
 
-<<<<<<< Updated upstream
-The game dereferences `projectile` (150, 196, 461), `arcade.core`, `arcade.drone`, and `replay` without full null guards. Removing one means editing those lines first.
-
-Generated prefab warning. These tools overwrite the assets listed, and manual edits to them are lost:
-- `Build Conduit Repair` (`ConduitSetup.Build`): Conduit Repair, Left/Right/Target Shield, Exercise Main Menu, plus colours on the Arena and Player materials. It destroys and re-creates the Conduit child.
-- `ExercisePathSetup.Build`: Exercise Path Stream, Exercise Main Menu, sets coach range and duration limits.
-- `Set Up Shield Exercises`: Left/Right/Target Shield with the old disc look, shield material colours, and profile `displayName`, `instruction`, `movement`, `minimumTravel`. Existing timing fields are left alone.
-- `ShieldExerciseVerification.Run`/`VerifiedBuild`, `ShieldPreviewCapture.Run`/`RunMenu`: run the first two above.
-
-## Scoring and adaptive logic
-
-All values are prototype settings. None has clinical validation.
-
-| Quantity | Formula or threshold | Where |
+| Quantity | Formula | Where |
 |---|---|---|
-| Frame quality | `1 - InverseLerp(.04, .14, pe)` metres; rotation ignored | `ShieldExerciseProfile.cs:31`, asset fields |
-| Path quality | Time-weighted mean of frame quality while tracked | `ShieldExerciseGame.cs:183, 383` |
-| Endpoint tolerance | `clamp(0.3 * |end-start|, .025, .06)` m | `ShieldExerciseGame.cs:76` |
-| `startedPose` | Within tolerance of start while `clock<.8` | `ShieldExerciseGame.cs:184` |
-| `heldSeconds` | Hold phase with `pe<=tolerance` | `ShieldExerciseGame.cs:185` |
-| `returnedPose` | Within tolerance of start after the return phase | `ShieldExerciseGame.cs:186` |
-| `impactHit` (endpoint reached) | Within .14 m of `end` during hold | `ShieldExerciseGame.cs:187` |
-| Coverage | `clamp01(maxProgress-minProgress)`, progress along start-end | `ShieldExerciseGame.cs:177-178, 400` |
-| Phases | Mean of started, returned, impact, `clamp01(held/(hold*.65))` | `ShieldExerciseGame.cs:385` |
-| `complete` | All flags, `held>=hold*.65`, coverage `>=.65` | `ShieldExerciseGame.cs:382, 386` |
-| Movement score | `(.7*path + .3*phases) * lerp(.25, 1, coverage)` | `ShieldExerciseGame.cs:401` |
-| Head severity | `min(InverseLerp(.10,.25,opposite), InverseLerp(.08,.20,down))`, counted after .5 s sustained, not in rest | `ShieldExerciseGame.cs:39-40, 180-182` |
-| Head penalty | `max(0, raw - .1*severity)` | `ShieldExerciseGame.cs:41` |
-| Session score | `100 * scoreSum / reps` | `ShieldExerciseGame.cs:81` |
-| Power | `min(1, power + InverseLerp(.25,1,q)/target)` | `ConduitRepairGame.cs:17` |
-| Battery | `clamp(battery - max(0,.6-q)*16 + (q>=.85 ? 2 : 0), 0, 100)` | `ConduitRepairGame.cs:18` |
-| Outcome | Defeat at battery 0, checked first; victory at power full; `session_limit` when the cap is due on that rep | `ConduitRepairGame.cs:19` |
-| Node repaired (export, charge, cue) | `q>=.65` | `ConduitRepairGame.cs:41` |
-| Line glow colour | `Glow(q)`: lerp amber*.35 to white over `InverseLerp(.4,.9,q)`; sections stay lit until the rep ends, nodes fade over 1.3 s; also tints the hand trail | `ConduitRepairGame.cs:44, 67` |
-| Perfect | `complete && q>=.9 && coverage>=.9` (`ShieldArcadeFeedback.Perfect`); label PRÆCIS if perfect, GOD if complete | `ShieldArcadeFeedback.cs` |
-| Points | `+1000q`; cell charge if `complete`; if perfect, `Combo++` and `+1000q*min(Combo-1,4)`; else `Combo=0`. `BestCombo` = max `Combo`; `Multiplier` = `clamp(Combo,1,5)`. Perfect-flow ticks add `100*multiplier` (see below) | `ShieldArcadeFeedback.Reward` |
+| Frame quality | `1 - InverseLerp(.04, .14, distance)` metres; rotation is not scored | `ExerciseProfile.Quality` (`ExerciseProfile.cs:70`), asset fields |
+| Path quality | Time-weighted mean of frame quality while tracked | `RepetitionResult.PathQuality` |
+| Endpoint tolerance | `clamp(.3 * |end-start|, .025, .06)` m | `EndpointTolerance`, `ExerciseGame.cs:148` |
+| Start, hold, return | Start within tolerance while `clock<.8`; hold time with the target within tolerance; return within tolerance after the return phase | `MeasureFrame`, `ExerciseGame.cs:836-841` |
+| Endpoint reached | Within .14 m of `end` when the hold phase starts | `ExerciseGame.cs:845` |
+| Coverage | `clamp01(maxProgress - minProgress)` along start to end | `TravelCoverage`, `ExerciseGame.cs:928` |
+| Phases | Mean of start, return, endpoint and `clamp01(held / (hold*.65))` | `ExerciseGame.cs:899` |
+| Complete | All flags, `held >= hold*.65`, coverage `>= .65` | `ExerciseGame.cs:901` |
+| Movement score | `(.7 * path quality + .3 * phases) * lerp(.25, 1, coverage)` | `MovementScore`, `ExerciseGame.cs:922` |
+| Head severity | `min(InverseLerp(.10,.25,towards other side), InverseLerp(.08,.20,down))`, counted after .5 s sustained, not in rest | `HeadPositionSeverity`, `ExerciseGame.cs:936`; `TrackHead` |
+| Head penalty | `max(0, score - .1 * severity)` | `HeadAdjustedScore`, `ExerciseGame.cs:942` |
+| Session score (accuracy) | `100 * scoreSum / reps` | `Score`, `ExerciseGame.cs:147` |
+| ENERGY | `min(1, power + InverseLerp(.25, 1, q) / target)` | `SessionProgress.cs:30` |
+| FLOW | `clamp(battery - max(0, .6 - q) * 16 + (q >= .85 ? 2 : 0), 0, 100)` | `SessionProgress.cs:32-34` |
+| Outcome | Defeat at FLOW 0, checked first; victory at full ENERGY; `session_limit` when the cap is due on that rep | `SessionProgress.cs:36-41` |
+| Node repaired (export, cue) | `q >= .65` | `PathFeedback.NodeRepaired` |
+| Line glow colour | `Glow(q)`: amber*.35 to white over `InverseLerp(.4, .9, q)`; also tints sections and the hand trail | `PathFeedback.Glow` |
+| Perfect | complete, score >= .9 and coverage >= .9 | `ScoreFeedback.Perfect` (`ScoreFeedback.cs:49`) |
+| Points | `+1000q` per rep; if perfect, `Combo++` and `+1000q * min(Combo-1, 4)`, else `Combo = 0`; `Multiplier = clamp(Combo, 1, 5)` | `ScoreFeedback.Reward` (`ScoreFeedback.cs:103`) |
+| Perfect-flow bonus | Quality >= .9 for 2 s, then 100 x its own multiplier every .5 s; the multiplier rises every four ticks, capped at x5; any miss, tracking loss or rest restarts the warm-up | `PerfectFlowBonus.cs` |
 
-Adaptive coach (`AdaptiveExerciseCoach.cs`, which replaced the rules on 2026-11-08; formats and retraining in `ADAPTIVE_COACH.md`). A 3–16–2 tanh network. After each rep `CompleteRep` passes score, coverage and mean tracked hand error to `Observe`. `ErrorSeverity` maps the error to 0..1 as the smaller of an absolute ramp, `InverseLerp(.04,.18,m)`, and a relative one, `InverseLerp(.15,.6,m/max(.08,targetTravel))`. `Predict` takes score/100, coverage and that severity and returns a range-fraction change and a relative speed change for the next attempt, scaled to ±.45 range (`RangeStep`) and ±.35 speed (`SpeedStep`). No rule picks the step size; it comes from the network.
+Adaptive coach (`AdaptiveCoach.cs`, formats and retraining in `ADAPTIVE_COACH.md`). A 4-16-3 tanh network. After each rep `ScoreRepetition` passes score, coverage, mean tracked hand error and the start offset to `Observe` (262). `ErrorSeverity` (432) maps the error to 0..1 as the smaller of `InverseLerp(.04, .18, m)` and `InverseLerp(.15, .6, m / max(.08, targetTravel))`; the start offset maps to 0..1 over 0-20 cm. `Predict` returns a range-fraction change and a relative speed change, scaled to ±.45 (`RangeStep`) and ±.35 (`SpeedStep`). `PredictStartFollow` returns the share of the offset to follow; `NextStartShift` (167) limits that to 5 cm per step and 20 cm in total and ignores offsets under 2.5 cm.
 
-Gates outside the network: changes under .02 range or .0225 speed are dropped (dead zone); head severity above .2 blocks increases but still allows easing; a rep with tracking loss above 10 % of its time, or a non-finite input, is not learned from; dev mode and `adaptationEnabled=false` switch learning off; a missing or invalid model keeps the current level.
+Gates outside the network (`Adjust`, 326, and `IsReliable`, 355): changes under .02 range or .0225 speed are dropped; head severity above .2 blocks increases but still allows easing; a rep with tracking loss above 10 % of its time, or a non-finite input, is not learned from; dev mode and `adaptationEnabled = false` switch learning off; a missing or invalid model keeps the current level.
 
-Training: `Train` runs backpropagation (seed 42, 1,800 epochs, rate .025, 6× weight on examples that ask for an increase) on `Assets/VR/Training/coach-training.json`, 2,205 synthetic examples labelled by hand-written rules, 1,792 for training and 413 held out. Menu `Tools/Emil VR/AI/Train Base Neural Model` writes `Assets/Resources/AdaptiveCoach/base-model.json` (currently `nn2-914D68A12D0A1CFF`, held-out MSE .0011) only if the held-out MSE is at most .02. Play never changes the weights. None of this is clinically validated.
+Training: `Train` runs backpropagation (seed 42, 1,800 epochs, rate .025, 6x weight on examples that ask for an increase) on `Assets/VR/Training/coach-training.json`: 2,205 synthetic examples, 1,792 for training and 413 held out, labelled by `Tools/coach_training_labels.py` (v4 labels). `Tools > P7 > Train Coach Model` writes `base-model.json` (currently `nn3-28ACEF866E89FF43`, held-out MSE .0009) only if the held-out MSE is at most .02. Play never changes the weights. None of this is clinically validated.
 
-Personal data: `PersonalPath` puts `*-adaptive.json` next to the settings file (editor: `/tmp/emil-editor-player-settings-adaptive.json`), one level per exercise and arm with speed, range, observation count and mean score and coverage. Speed and range are mirrored into `player-settings.json` for the menu, and existing progress migrates when no personal file exists. `ResetPersonalData` empties the file on RESET SAVED SETTINGS; `Recalibrated` resets one arm after a manual calibration or a new automatic envelope.
+Personal data: `PersonalPath` puts `*-adaptive.json` next to the settings file (editor: `/tmp/p7-editor-player-settings-adaptive.json`), one level per exercise and arm with speed, range, start shift, observation count and mean score and coverage. Speed and range are mirrored into `player-settings.json` for the menu. `ResetPersonalData` empties the file on RESET SAVED SETTINGS; `Recalibrated` resets one arm after a manual capture or a new automatic estimate.
 
-Bounds: range floor `max(.4, minimumTravel/travel)` for a manual calibration and `max(.15, minimumTravel/travel)` for an automatic one (.3 in dev mode), ceiling 1; duration scale ceiling 2 (`slowestDurationScale`), floor `1/maxSpeed`, with `maxSpeed = 1 + fasterPercent/100`, default 1.4.
+Bounds (`LowestRange`, 246): range floor `max(.4, minimumTravel/travel)` for a manual calibration and `max(.15, minimumTravel/travel)` for an automatic one (.3 in dev mode), ceiling 1; speed between `1/slowestDurationScale` (.5) and `1 + fasterPercent/100` (default 1.4).
 
-Session length arithmetic for the P4 estimate. A base move takes 8.5 s plus a 2.5 s gap, so 11 s. Target 120 with perfect play is 120 moves, about 22 minutes. At q=.6 the battery never drains and power gain per move is .467/120, so about 257 moves or 47 minutes. Adaptive slowing can stretch this further. This has not been measured. The cap now stops it at 15 minutes of active play, plus 2 breaks of 45 s, so about 17 minutes without tracking pauses. At 11 s per move that is about 82 moves, so at a target above about 80 the cap comes before victory.
-
-## Tunables
-
-| Value | Location | Default |
-|---|---|---|
-| Total reps target, exercise toggles, speed cap, saved speed/range, dev speed/range, calibrations, tutorial flag | `player-settings.json` in `persistentDataPath` (editor: `/tmp/emil-editor-player-settings.json`), `ShieldExerciseGame.cs:28`; model and clamps at `ExercisePlayerSettings.cs:8-17, 55-81` | target 18 (1-120), cap 40% |
-| Automatic start | Seed in `ShieldExerciseGame.Begin`, envelope offsets in `AutomaticEnvelope`, anchor in `TryAutomaticAnchor`; .15 floor in `AdaptiveExerciseCoach.ProfileFor`, `RangeFor` and `ExercisePlayerSettings.Load` | range .2, speed .65, floor .15; anchor .25 s still within 2.5 cm, at most .35 m from the estimate |
-| Participant counter (default awaiting team confirmation) | `participant.json` in `persistentDataPath` (editor: `/tmp/emil-editor-participant.json`), `ShieldExerciseGame.Participant`; kept apart from `player-settings.json` so a reset cannot lose it | first value `P001`, +1 per confirmed reset |
-| Timing, tolerances, minimum travel, label | `VR/Shield/*.asset` | 3 / 1.5 / 3 / 1 s, .04 / .14 m, travel .02 (serratus .015) |
-| `exerciseGapSeconds` | Serialized on game prefab (`ShieldExerciseGame.cs:47`) | 2.5 |
-| `breakAfterSeconds`, `breakSeconds`, `sessionCapSeconds` | Serialized on `ShieldExerciseGame`, class defaults apply while the prefab has no saved value. Active-play seconds except the break length; 0 switches a limit off. Prototype values, not clinical guidance; a physiotherapist must confirm them. No menu slider yet, since menu widgets come from `ExerciseMenuSetup` | 300, 45, 900 |
-| `approachSpeed` | Serialized on stream prefab (`ExercisePathStream.cs:11`) | .55 |
-| `adaptationEnabled`, `minimumRangeScale`, `slowestDurationScale` | Serialized on game prefab (`AdaptiveExerciseCoach.cs:14, 22-24`). `fastestDurationScale` only applies when settings are null (62) | on, .4, 2 |
-| Coach output bounds, dead zone | Constants `RangeStep`, `SpeedStep` (`AdaptiveExerciseCoach.cs:131`); dead zone in `Observe` (98-99) | ±.45, ±.35; .02, .0225 |
-| Front offset | Constant, `ShieldExerciseGame.cs:279` | `(±.30, -.32, 1.35)` |
-| Path samples, line colour multipliers | Constants, `ExercisePathStream.cs:12, 36` | 180; .55 current, .30 incoming |
-| Line width | Generator `ExercisePathSetup.cs:15`, repaired `ConduitRepairGame.cs:99` | .025, .018 |
-| Camera background | `ConduitRepairGame.cs:71` | `(.018,.03,.055)` |
-| Tones | `ShieldArcadeFeedback.Awake` | 660 capture, 330 endpoint, 880 reward; volume .18 |
-| Streak notes, multiplier chime, line tone | Constants at the top of `ShieldArcadeFeedback`: `StreakHz`, `LineHz`, `LineLevelOff/On`, `LineCutoffOff/On`, `LineFadeSeconds`, `ChimeDelay` | 880-1760 Hz, A major pentatonic; 220 Hz; level .012-.035; cutoff 300-1600 Hz; fade .2 s; chime after .2 s. None tuned by ear |
-| Haptic | `ShieldExerciseGame.cs:187` | amplitude .3, .08 s |
+Session length, arithmetic only, not measured. A move takes 8.5 s at speed 1 plus the 2.5 s gap, so 11 s, and about 14 s at the .65 start speed. At the default target of 18, a strong player (q near 1) wins in about 18 moves, before the first break. At q = .6, FLOW never drains and each move adds .467/target ENERGY, so about 39 moves, which reaches the 5-minute break. The 15-minute cap comes before victory only for targets above roughly 60-80.
 
 ## Data export
 
-Quest path: `/sdcard/Android/data/<bundle ID>/files/Sessions/<yyyyMMddTHHmmssfffZ>/` (`ShieldExerciseGame.cs:431`). Pull it with Export Quest Recordings into gitignored `Recordings/`. Simulation writes only in `TestMode`, to `/tmp/emil-shield-tests`. Files are written in `Finish` (455-458), except samples, which stream during play. Nothing is recorded in a break, so `timestamp_s` in samples and replay jumps across it and replay playback holds the last frame.
+Quest: `/sdcard/Android/data/<bundle ID>/files/Sessions/<yyyyMMddTHHmmssfffZ>/` (`ExerciseGame.Recording.cs:75`). Pull it with Export Quest Recordings into gitignored `Recordings/`. The editor simulation writes only in `TestMode`, to `/tmp/p7-tests`. Files are written in `WriteSessionFiles` (`ExerciseGame.Recording.cs:218`), except samples, which stream during play. Nothing is recorded in a break or a practice rep, so `timestamp_s` jumps across a break and replay holds the last frame.
 
 | File | Content |
 |---|---|
-| `samples.csv`, `.tsv` | 40 columns, one row per hand per sample up to 60 Hz. `timestamp_s, exercise_time_s, exercise_id, repetition, phase, active_side, side, valid, scorable`, hand, target and head poses, `hand_error_m, shield_normal_error_deg, head_displacement_m, head_rotation_deg`, `visual_shield_*`, `visual_target_*` (105) |
-| `summary.csv`, `.tsv` | 18 columns per completed rep. `exercise_id, side, repetition, score, complete_movement, hold_seconds, start_reached, return_reached, endpoint_reached, valid_seconds, mean_hand_error_m, mean_shield_normal_error_deg, path_accuracy_percent, travel_coverage, phase_completion, unpenalized_score, head_position_severity, head_penalty_points` (458) |
-| `session.json` | `schemaVersion=shield-6` (was `shield-5`; `session_limit` and breaks are new meaning, no column changed; nothing in the code compares these strings), `participantId` (additive, same unreleased `shield-6`), `scoreVersion=position-only-hand-5`, `calibrationMode=automatic-estimate-or-manual-3`, `controlMapping=front-translation-2`, `presentation=finite-3d-paths-mirror-coach-1`, `developerMode`, `breakAfterSeconds`, `breakSeconds`, `sessionCapSeconds`, `challengeOrder`, calibrations (each with `automatic` and `startAnchored`), exercises (103) |
-| `outcome.json` | `participant_id`, `complete` (true for victory and `session_limit`), `outcome` (`victory`, `defeat`, `session_limit`, `aborted`), `tracking_pause_seconds`, `active_seconds`, `breaks` |
-| `adaptive-coach.json` | One `Decision` per rep, `policy=neural-range-tempo-v2`, model ID, mean hand error, error severity, raw predicted range and speed changes, the bounded next level and the reason |
+| `samples.csv`, `.tsv` | 40 columns, one row per hand per sample at up to 60 Hz: `timestamp_s, exercise_time_s, exercise_id, repetition, phase, active_side, side, valid, scorable`, hand, target and head poses, `hand_error_m, shield_normal_error_deg, head_displacement_m, head_rotation_deg`, `visual_shield_*`, `visual_target_*` |
+| `summary.csv`, `.tsv` | 18 columns per scored rep: `exercise_id, side, repetition, score, complete_movement, hold_seconds, start_reached, return_reached, endpoint_reached, valid_seconds, mean_hand_error_m, mean_shield_normal_error_deg, path_accuracy_percent, travel_coverage, phase_completion, unpenalized_score, head_position_severity, head_penalty_points` |
+| `session.json` | `schemaVersion=shield-6`, `participantId`, `scoreVersion=position-only-hand-5`, `calibrationMode=automatic-estimate-or-manual-3`, `controlMapping=front-translation-2`, `presentation=finite-3d-paths-mirror-coach-1`, `developerMode`, gap, break and cap seconds, `challengeOrder`, scoring weights, calibrations (each with `automatic`, `startAnchored` and `estimateVersion`), exercises |
+| `outcome.json` | `participant_id` (`TEST` in tests), `complete` (true for victory and `session_limit`), `outcome` (`victory`, `defeat`, `session_limit`, `aborted`), `tracking_pause_seconds`, `active_seconds`, `breaks` |
+| `adaptive-coach.json` | One `Decision` per rep, `policy=neural-range-tempo-start-v3`: model ID, mean hand error, error severity, raw predicted changes, the bounded next level, `measuredStartOffset`, `startShiftUsed`, `nextStartShift` (head-relative metres), `startOffsetSeverity`, `predictedStartFollow` and the reason |
 | `game-points.json` | `version=perfect-flow-2`, total and tracking-bonus points, base 1,000 per rep and 100 per tick |
-| `conduit.json`, `conduit.csv`, `.tsv` | `version=conduit-2` (was `conduit-1`; adds outcome `session_limit`, on the last row of the CSV); `movement, accuracy, ship_power, battery, outcome` |
-| `conduit-path.csv`, `.tsv` | `movement, exercise_id, side, exercise_time_s, path_quality, node_repaired` |
-| `replay.json` | Replay schema "1", capped at 18,000 frames (`WandSessionReplay.cs:48`) |
-=======
-| Quantity | Formula |
-|---|---|
-| Frame quality | `1 - InverseLerp(.04, .14, distance)` |
-| Endpoint tolerance | `clamp(.3 * |end-start|, .025, .06)` m |
-| Complete | start, hold (at least 65% of the hold time), endpoint within .14 m, return, and coverage >= .65 |
-| Movement score | `(.7 * path quality + .3 * phases) * lerp(.25, 1, coverage)` |
-| Head penalty | `max(0, score - .1 * severity)`; severity needs the head both down and towards the other side for over .5 s |
-| ENERGY | `+ InverseLerp(.25, 1, q) / target` per repetition |
-| FLOW | `- max(0, .6 - q) * 16`, `+2` when `q >= .85`; 0 means defeat |
-| Perfect | complete, score >= .9 and coverage >= .9 |
-| Points | `1000 * q`, times the streak multiplier for perfect reps, plus the perfect-flow bonus |
-
-## Data export
-
-Quest: `/sdcard/Android/data/<bundle ID>/files/Sessions/<UTC time>/`. Editor tests: `/tmp/p7-tests`.
-
-| File | Content |
-|---|---|
-| `samples.csv/.tsv` | 40 columns, one row per hand per sample at up to 60 Hz |
-| `summary.csv/.tsv` | 18 columns, one row per repetition |
-| `session.json` | rules, calibrations and the playlist (`schemaVersion` shield-6); calibrations gained `estimateVersion` on 2026-11-10 |
-| `outcome.json` | participant, outcome, active seconds, breaks |
-| `adaptive-coach.json` | one coach decision per repetition (`policy` neural-range-tempo-start-v3); since 2026-11-10 also `measuredStartOffset`, `startShiftUsed`, `nextStartShift` (head-relative metres), `startOffsetSeverity`, `predictedStartFollow` |
-| `conduit.json`, `conduit.csv/.tsv` | ENERGY/FLOW per repetition |
-| `conduit-path.csv/.tsv` | path quality per time bin |
-| `game-points.json` | total and bonus points |
-| `replay.json` | replay frames |
->>>>>>> Stashed changes
+| `conduit.json`, `conduit.csv`, `.tsv` | `version=conduit-2`; `movement, accuracy, ship_power, battery, outcome` per rep |
+| `conduit-path.csv`, `.tsv` | `movement, exercise_id, side, exercise_time_s, path_quality, node_repaired` per time bin |
+| `replay.json` | Replay schema "1", capped at 18,000 frames (`SessionReplay.MaxFrames`) |
 
 ## Tunables
 
-| Value | Where |
-|---|---|
-<<<<<<< Updated upstream
-| Line continuity, gaps | `ExercisePathStream.LateUpdate` (offset at 28, `n` loop), `ShieldExerciseGame.LoadChallenge:289` and `exerciseGapSeconds` |
-| Line at the hand versus in front (decided: stays in front) | `ShieldExerciseGame.ProjectShield:276`, used by `MapToFront:281` and `PathVisualPoint:318`; `Verify` in `ShieldExerciseSetup:44-48` asserts displacement |
-| Line brightness and glow | `ExercisePathStream.cs:32-36`; `ConduitRepairGame.NodeRepaired:41`, `Glow:44` and `LateUpdate:67` |
-| Progressive fill | `ConduitRepairGame.LateUpdate` section loop and `SectionLit` (sections held at `PathVisualPoint` with no approach offset; outward fill .018 m wide, return a .01 m core lifted .01 m toward the player; passed nodes still drift and fade through `Point`), `first` in `ExercisePathStream.LateUpdate` |
-| Hand trail | `ConduitRepairGame.UpdateTrails` adds a `TrailRenderer` to `game.shields` at runtime (prefabs untouched); time .25 s, width .03 m. Previously: new component on the player marker. Marker pose is set at `ShieldExerciseGame.cs:138`. Prefab comes from `ConduitSetup.Marker:16`, so add it there. `ControllerTrackingTrails` records unmapped hand positions and is trigger-driven |
-| Line look, material | `ExercisePathSetup.cs:11-15`, `VR/Shield/Energy Pulse.mat`; theme in `ConduitSetup.Build:29-37` |
-| Show score | `ShieldArcadeFeedback.CreateHud` (gameplay HUD); `ConduitRepairGame.cs:104` status text; results page in `ExerciseGameMenu.Refresh` |
-| Multiplier logic | `ShieldArcadeFeedback.Reward`; `complete` and `Perfect(...)` are passed at `ShieldExerciseGame.cs:390` |
-| Multiplier display | `ConduitRepairGame` status text and `UpdatePips`: five clones of `nodes[0]` parented to `hud` at runtime, in a row .165 m above its centre, between the status panel and the instruction board and clear of the line and coach card; lit .03 m and bright, unlit .018 m and dim. Not yet seen on a headset. `ShieldArcadeFeedback.Show` is the old HUD, hidden by `!conduit` at `ShieldExerciseGame.cs:149` |
-| God/Præcis labels | `ShieldArcadeFeedback.Label`, `LastLabel`; drawn in the `clock<0` cue in `ConduitRepairGame` status text |
-| Round summary, best streak | Results page: `ExerciseGameMenu.EnsureResults:42`, filled in `Refresh:92` (page 4); streak tracked next to `Combo`; the `DrawText` Finished branch (406) does not display with the menu wired |
-| Audio | `ShieldArcadeFeedback`: `Awake` and `Tone` build the clips, `Reward` picks what plays at rep end (perfect: streak note in place of the 880 Hz tone, plus the chime when `Multiplier` rises; complete: 880 Hz; otherwise nothing). The line tone is driven each frame from `ShieldExerciseGame.Update` (next to `arcade.Show`) through `LineTone`, using `RepairQuality`; it has its own child GameObject because `AudioLowPassFilter` filters every source on its GameObject. Compiles and passes `ConduitSetup.Verify`; not heard on a headset. A mute would go at those constants |
-| Haptics | `ShieldExerciseGame.cs:187`; off switch field in `ExercisePlayerSettings`, toggle via `ExerciseMenuSetup.Build` and `ExerciseGameMenu.Change` |
-| Exercise labels | `ExerciseMenuSetup.cs:41` (menu); `ShieldExerciseSetup.cs:27` and `VR/Shield/*.asset` `displayName` (gameplay); cues in `DrawText:413` |
-| Game name | `ExerciseMenuSetup.cs:36-39`, `ShieldExerciseGame.cs:404`, `ConduitRepairGame.cs:28, 104`, `ProjectSettings/ProjectSettings.asset:16` |
-| Player-facing text | `ShieldExerciseGame.DrawText`, `ExerciseGameMenu.Refresh`, `ExerciseMenuSetup.cs:37-39`; menu text needs `ExerciseMenuSetup` and a rebuild. Old `WAND PATH LAB` default on the board in `Shield Exercise Game.prefab` is replaced by `DrawText` at runtime. Wand wording in `WandPathGame` and the `WandSessionReplay` demo label is reached only through the dead `OpenDemo` |
-| Session limits, breaks | Values in `breakAfterSeconds`, `breakSeconds`, `sessionCapSeconds`; decision in `ShieldExerciseGame.DueAtRepEnd`, asserted in `ConduitSetup.Verify`; rest in `State.Break` (`Update`, `DrawText`, `SkipTutorialPreview`); ending in `RepairRun.Resolve` and `Result`. Target clamp `ExercisePlayerSettings.cs:76, 107`; slider `ExerciseMenuSetup.cs:40`; sliders for the limits would go there and need a generator run |
-| Failure ending | `RepairRun.Resolve` (`ConduitRepairGame.cs:18-19`), `Result:28` |
-| Therapist limits | No lock since 2026-11-09: `ExerciseGameMenu.Navigate` opens every page on one click, so a new lock would go there. Widgets in `ExerciseMenuSetup.cs:37-47`; `ShieldExerciseGame.ResetSavedSettings:37` |
-| Automatic start, calibration | `ShieldExerciseGame.Begin`, `AutomaticEnvelope`, `TryAutomaticAnchor`; manual flow `PrepareBlock`, `UpdateAutomaticPose`, `CaptureEnd`; button label `ExerciseMenuSetup.cs:37`; checks in `ExercisePathSetup.Verify` and `ShieldExerciseVerification.RunAutomatic` |
-| Adaptive coach | `AdaptiveExerciseCoach.Observe` (gates), `Predict`, `ErrorSeverity`; training data `Assets/VR/Training/coach-training.json`, then rerun `Tools/Emil VR/AI/Train Base Neural Model`; checks in `ExercisePathSetup.VerifyNeuralCoach` |
-| Participant ID | Counter and recovery in `ExerciseParticipant` (`ExercisePlayerSettings.cs`), helpers asserted in `ConduitSetup.Verify`; advance in `ShieldExerciseGame.ResetSavedSettings`; export in `Settings` and `Finish`; display in `ExerciseGameMenu.Refresh` (`homeStatus`, `footer`). The prefixed line has room at font 23 by Arial width estimate; a fourth line would be cut off by the 100-unit `homeStatus` label. Entry UI does not exist; `ExerciseGameMenu` has no text input. Default awaiting team confirmation |
-| Bundle ID | `ProjectSettings/ProjectSettings.asset:176`, `WandDataExport.cs:22` |
+| Value | Where | Default |
+|---|---|---|
+| Repetition target, enabled exercises and arms, speed limit, dev overrides, tutorial on every start | Settings menu, saved in `player-settings.json` (`SavedSettings`; editor `/tmp/p7-editor-player-settings.json`) | target 18 (1-120), speed limit +40 % (0-100) |
+| Participant counter (default awaiting team confirmation) | `participant.json` (editor `/tmp/p7-editor-participant.json`), kept apart from the settings so a reset cannot lose it | first value `P001`, +1 per confirmed reset |
+| Timing and tolerances per exercise | `VR/Shield/*.asset` | 3 / 1.5 / 3 / 1 s, .04 / .14 m, minimum travel .02 (serratus .015) |
+| Gap, break and session cap | fields on `ExerciseGame` (`ExerciseGame.cs:32-36`); 0 turns a limit off | 2.5, 300, 45, 900 s |
+| Automatic estimate size, start range and speed, reference eye height | constants in `ExerciseGame.Calibration.cs:67-71` | version 3, .35, .65, 1.64 m |
+| Tutorial intro and wrap-up, practice range share, approach measurement | constants on `ExerciseGame` (`ExerciseGame.cs:82-90`) | 12 s, 5 s, .9, last .8 s within .30 m |
+| Approach speed | `PathStream.approachSpeed` | .55 |
+| Path samples, line colour | constants in `PathStream` | 180; .55 current, .30 incoming |
+| Coach range and speed limits | fields on `AdaptiveCoach` (`minimumRangeScale`, `slowestDurationScale`, `adaptationEnabled`) | .4, 2, on |
+| Coach output bounds, start shift step, limit, dead zone, offset scale | constants at the top of `AdaptiveCoach` (`AdaptiveCoach.cs:13-30`); the fraction followed comes from the network | ±.45, ±.35; 5 cm, 20 cm, 2.5 cm, 20 cm |
+| Coach training labels | `Tools/coach_training_labels.py` rewrites `coach-training.json`; then Tools > P7 > Train Coach Model | v4 labels |
+| Front offset | `ProjectToFront` (`ExerciseGame.cs:1024`) | `(±.30, -.32, 1.35)` |
+| Lit sections, hand trail, camera background | `PathFeedback` | sections .018 m (return .01 m); trail .25 s, .03 m; `(.018, .03, .055)` |
+| Sounds | constants at the top of `ScoreFeedback` (`ScoreFeedback.cs:9-15`); one-shots in `ScoreFeedback.cs:310-312` | 660 capture, 330 endpoint, 880 complete; streak 880-1760 Hz; line 220 Hz, level .012-.035, cutoff 300-1600 Hz, fade .2 s; chime after .2 s. None tuned by ear |
+| Haptic | `ExerciseGame.cs:852` | amplitude .3, .08 s |
+| Bundle ID | `ProjectSettings/ProjectSettings.asset:176` | template default |
 
 ## Unverified
 
-- Actual behaviour in Unity or on a Quest. Execution order between `ShieldArcadeFeedback.Update` and `ShieldExerciseGame.Update` decides whether the burst ring shows; no script has a custom execution order.
-- Whether `Shader.Find` in `ShieldCoachDisplay.Awake` survives player stripping. README reports earlier device launches, not this commit.
-- How `/tmp` paths behave in the Windows editor. Nothing here was run.
-- How any of the audio sounds. Clips and levels were chosen on paper; nobody has listened to them.
-- `VR/Prototype/TEST_REPORT.md` was not read; it belongs to the legacy prototype.
-
-## 2026-11-05: sustained perfect tracking bonus
-`PerfectTrackingBonus` (in `ShieldArcadeFeedback.cs`) is a separate timing model: quality >= .9 for 2 seconds, then 100 × multiplier points every .5 seconds; multiplier rises every four ticks, capped at x5. The first tick is at 2 seconds. `ShieldExerciseGame` drives it with current-frame positional quality only during tracked outward/hold/return phases. Off-target, tracking loss, rest, approach, replay and session reset clear the streak; awarded points remain. Frame time is capped at .1 seconds, matching the exercise clock. It does not change accuracy, clinical summaries or adaptive difficulty.
-`ShieldArcadeFeedback` adds bonus points to existing `Points`, creates a world-space total below the status board (2.6 m forward), and a pulsing gold bonus caption above the target ring. Five cached procedural bell clips provide rising dings. Existing repetition combos, line audio and pips remain. Runtime text children inherit the existing prefab font/material, so prefab regeneration is unnecessary. `game-points.json` adds versioned total/bonus points and timing parameters alongside existing exports. `ConduitSetup.Verify` covers timing/reset/cap behavior; preview capture now waits until 3.2 seconds to show the bonus.
-
-### Gameplay HUD polish (2026-11-05)
-Game points now use 1,000 × quality per repetition (with the existing perfect-rep multiplier), and 100 × multiplier per tracking tick. A normal successful run is comfortably above 10,000; very short or aborted runs can be lower. Export version `perfect-flow-2` records both base point values. Accuracy/adaptation remain on their existing scale.
-During Playing/Approaching the large instruction board and Conduit status panel are hidden. Calibration, tutorial and break instructions remain. `ShieldArcadeFeedback.CreateHud` creates a box-free floating HUD: animated score, compact streak, two thin energy/flow rails, brief completion accent, and a tracking-loss warning only when needed. Each tracking tick pulses a gold ring around the target. The bottom current-movement guide keeps its figure and title but removes the opaque backing. Runtime visuals use existing prefab materials/fonts; generators need no run. Integration now requires a completed simulated run to exceed 10,000 points.
-
-### Dedicated results page (2026-11-05)
-`ExerciseGameMenu.EnsureResults` creates a reusable results page, also called by `ExerciseMenuSetup.Build` so it is stored in the menu prefab. Existing prefabs receive the same page at runtime if absent. On a newly finished run, the menu opens results (page 4), with an animated final game score, accuracy, best perfect-rep streak, movement count and perfect-flow bonus contribution. Outcome distinguishes victory, cap, defeat and aborted sessions. Play Again calls the normal saved-settings start; Main Menu switches to home without restarting; Watch Replay returns to the same results page afterward. Results can be re-centered with the existing headset recenter event. Data export stays unchanged. Integration checks results visibility, exact final score, Main Menu and Play Again, and captures `/tmp/emil-results.png`.
-=======
-| Repetition target, enabled exercises and arms, speed limit, dev overrides, tutorial on every start | Settings menu, saved in `player-settings.json` |
-| Timing and tolerances per exercise | `VR/Shield/*.asset` |
-| Gap, break and session cap | fields on `ExerciseGame` |
-| Approach speed | `PathStream.approachSpeed` |
-| Coach range and speed limits | fields on `AdaptiveCoach` |
-| Coach training labels | `Tools/coach_training_labels.py` rewrites `coach-training.json`; then Tools > P7 > Train Coach Model |
-| Start shift step, limit, dead zone, offset scale | constants at the top of `AdaptiveCoach` (the fraction followed comes from the network) |
-| Automatic estimate size, start range and speed, reference eye height | constants in `ExerciseGame.Calibration.cs` |
-| Tutorial intro and wrap-up seconds | constants on `ExerciseGame` |
-| Sounds | constants at the top of `ScoreFeedback` |
->>>>>>> Stashed changes
+- Behaviour on a Quest of everything added in `a6ab39a2`: tutorial, start shift, larger estimate, 35 % start, model nn3.
+- The Play Mode tests were not run for this check; only `P7Tests.RunChecks` was.
+- Whether `Shader.Find` in `CoachCard` survives player stripping in the current build.
+- Which APK the pilot headset ran (see CLAUDE.md section 10).
