@@ -152,28 +152,22 @@ A critical read of the whole Overleaf paper on 2026-11-12, checked against the c
 
 Already fixed in Overleaf on 2026-11-12: the research question's closing "?", the circular adherence sentence in 4.3 (now what Jack et al. found), the SUS mean set against the average of about 68 (Lewis 2018), "accuracy" defined as the mean rep score, 3.6 Pilot test in past tense with the questionnaire language (English, SurveyXact), Brooke cited as the 1996 book chapter instead of a ResearchGate PDF, convenience-sample bias in Limitations, narrative citations shown with author names (`\textcite`), O'Brien and Gale as real citations, haptics in 4.3.1, and two more limitations (head-only compensation, unvalidated coach and break values). New sources sit in `Bibliography/engagement.bib`; `ref.bib` is a Zotero import and cannot be edited in Overleaf.
 
-Paper and code disagree (decided: rewrite to match the code):
-- 4.4 describes a rule-based coach with 65/45/90 thresholds. The code uses a neural network trained on synthetic labels made by the group (section 3). Say plainly that the labels are invented and not validated by physiotherapists, because the research question is about supporting physiotherapists.
-- 4.2 describes manual pose calibration. The default is now the automatic estimate, with optional calibration and a tutorial practice rep.
-- 4.5 says settings are locked. The lock was removed.
-- Table 1: R6 (calibration, "Met") and R9 ("Locked settings") must change.
-- 4.3.1 says PRÆCIS / GOD (written 2026-11-10 from the code then). The game now shows PERFECT / NICE, so change it back.
-- The pilot ran an older build than the main test will (`nn2`, 20 % start, 9 s tutorial against `nn3`, 35 % start, new tutorial). The paper must say which version each test used; confirm which APK was on the headset in the pilot.
+Paper and code: done in Overleaf on 2026-11-17. 4.2 now describes the automatic estimate (35 % range, 65 % speed, eye-height scaling), start anchoring, the tutorial practice rep and optional calibration; 4.4 describes the 4-16-3 network, its inputs and outputs, the synthetic labels written by the group (said plainly) and the gates; 4.5 says the lock was removed; 4.3.1 says PERFECT / NICE and the multiplier as text; Table 1 R5, R6, R9, R10, R13 follow the code; Limitations names the synthetic labels. Still open: the paper describes the current build (`nn3`) and does not yet say that the pilot may have used an older one (`nn2`, 20 % start, 9 s tutorial). Confirm which APK was on the headset, then add one sentence to 4.7. The iteration 2 changes (section 12: reach clamp, floor ring, step-off pause, depth guide, tutorial pages, coach card) are not in the paper yet; they belong in a new "Iteration 2" subsection.
 
-Decided by the team on 2026-11-12, still to write:
-- 3.4: the game itself rates execution; the experts give feedback on whether the rating is precise enough.
-- Dropout: two booked participants did not attend. Report it neutrally in 4.7.
-- Thematic analysis: it was done by Claude; add a method source (for example Braun & Clarke 2006) and describe the process.
-- Cut participant 1's first name from the audio (said at about 01:59-02:00 in "Participant 1.m4a").
+Decided by the team on 2026-11-12: done in Overleaf on 2026-11-17, except the audio.
+- 3.4 now says the game rates execution and the experts give feedback on whether the rating is precise enough.
+- 4.7 reports that two booked participants did not attend.
+- Thematic analysis cites Braun & Clarke (2006) in 3.3 and 3.6, and 3.6 says an AI assistant grouped candidate themes, which were then checked against the transcripts and notes.
+- Still to do: cut participant 1's first name from the audio (said at about 01:59-02:00 in "Participant 1.m4a"); the appendix transcript already shows [name].
 - Follow-up interviews with the experts: yes. With the physiotherapy students: not decided.
 
 Answered by the supervisor (Casper) on 2026-11-17 (Drive doc "Møde d. 17-11-2026"), still to do:
-- AI use: state it in an Acknowledgements section (Whisper transcription, Claude for theme grouping and writing help). The team must approve the wording, since it is their own statement.
+- AI use: a DRAFT Acknowledgements section is in `main.tex` after the Conclusion (marked with a `% DRAFT` comment). It names Whisper, and Claude for transcript cleaning, theme grouping, literature search, code and writing help. The team must check and approve the wording before hand-in, since it is their own statement.
 - Follow-up interview: test with Expert 1 (Trine) too if there is time; it is more data. Nothing was said about follow-ups with the physiotherapy students.
 - Shoulder question: add it to the survey (Methods 3.2 already promises to record shoulder conditions). The team wrote "Tror jeg ikke alle var sunde" about the pilot participants, so "healthy" in section 10 and "without a rehabilitation need" in Limitations may be wrong; confirm with the observers.
-- Methods: write it in the past tense (all of 3.1-3.5, not only 3.6).
+- Methods: done 2026-11-17, all of section 3 is in the past tense. 3.2 now says participants were "not recruited for shoulder injuries" and that shoulder problems were recorded, which the survey must now actually ask.
 - Appendix: keep it at the end of the paper. Built in Overleaf on 2026-11-17, one column, with clickable references (`\hyperref[app:X]{Appendix X}`): A interview Expert 1, B interview Expert 2 (cleaned transcripts from the Google Docs), C pilot procedure and interview guide, D observer notes, E pilot questionnaire responses, F pilot recordings. F uses the first Whisper pass from 2026-11-11 with filler-only lines removed, so its times are approximate; all 11 quotes in the pilot themes table are in F within about 10 s of the times in the table, which were checked against the audio. Table 1 timestamps were checked against Appendix A/B on 2026-11-17 and four that pointed at an interviewer turn were fixed. A precise re-run without voice detection was blocked because Windows Smart App Control blocks newly installed Python DLLs on Frederik's PC.
-- Survey language: keep it in English, do not translate the items; the test leader explains words when asked, and Methods should say so.
+- Survey language: keep it in English, do not translate the items; the test leader explains words when asked. Done in Methods 3.3 on 2026-11-17.
 
 Before the next test:
 - Open, non-leading interview questions ("What did you feel where?" rather than "Did you feel it in the shoulders?").
