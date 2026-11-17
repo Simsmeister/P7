@@ -172,7 +172,7 @@ Answered by the supervisor (Casper) on 2026-11-17 (Drive doc "Møde d. 17-11-202
 - Follow-up interview: test with Expert 1 (Trine) too if there is time; it is more data. Nothing was said about follow-ups with the physiotherapy students.
 - Shoulder question: add it to the survey (Methods 3.2 already promises to record shoulder conditions). The team wrote "Tror jeg ikke alle var sunde" about the pilot participants, so "healthy" in section 10 and "without a rehabilitation need" in Limitations may be wrong; confirm with the observers.
 - Methods: write it in the past tense (all of 3.1-3.5, not only 3.6).
-- Appendix: keep it at the end of the paper. Names for A-J are still missing.
+- Appendix: keep it at the end of the paper. Built in Overleaf on 2026-11-17, one column, with clickable references (`\hyperref[app:X]{Appendix X}`): A interview Expert 1, B interview Expert 2 (cleaned transcripts from the Google Docs), C pilot procedure and interview guide, D observer notes, E pilot questionnaire responses, F pilot recordings. F uses the first Whisper pass from 2026-11-11, so its times are approximate (P2 part 2 is off by up to about 2 minutes); the times in the pilot themes table were checked against the audio. A precise re-run without voice detection was blocked because Windows Smart App Control blocks newly installed Python DLLs on Frederik's PC.
 - Survey language: keep it in English, do not translate the items; the test leader explains words when asked, and Methods should say so.
 
 Before the next test:
