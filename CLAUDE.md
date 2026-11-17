@@ -145,4 +145,39 @@ Test procedure fixes before the next test:
 - Think-aloud gave almost nothing while playing; prompt during play or rely on the interview.
 - The recording for participant 1 only has the interview.
 
-Paper (Overleaf) work from this pilot: done on 2026-11-12. Pilot results sit in Design as "Iteration 1 and pilot test" (`sec:pilot-results`, UES/SUS table and themes table), not in Findings, which is kept for the main evaluation with physiotherapy students and experts; a second pilot would get its own iteration subsection. Still to write: a Design section "Iteration 2" that ties each change to a finding. Also in: Methods (transcription and the survey error) and Limitations (n = 4, healthy Medialogy students rather than physiotherapy students, the survey errors, missing game data for two participants). Whisper transcripts of the recordings were not corrected word for word; check quotes against the audio before citing them.
+Paper (Overleaf) work from this pilot: done on 2026-11-12. Pilot results sit in Design as "Iteration 1 and pilot test" (`sec:pilot-results`, UES/SUS table and themes table), not in Findings, which is kept for the main evaluation with physiotherapy students and experts; a second pilot would get its own iteration subsection. Still to write: a Design section "Iteration 2" that ties each change to a finding. Also in: Methods (transcription and the survey error) and Limitations (n = 4, healthy Medialogy students rather than physiotherapy students, the survey errors, missing game data for two participants). The 11 quotes in the themes table were checked with a second Whisper pass on the audio and four were corrected; nobody has listened to them yet.
+
+## 11. Paper review (2026-11-12) and open to-do list
+A critical read of the whole Overleaf paper on 2026-11-12, checked against the code and the pilot data. The team answered the first version of this list in the Drive doc "To do 12-11-2026"; questions for the supervisor are in "Møde d. 17-11-2026". Answers are marked below.
+
+Already fixed in Overleaf on 2026-11-12: the research question's closing "?", the circular adherence sentence in 4.3 (now what Jack et al. found), the SUS mean set against the average of about 68 (Lewis 2018), "accuracy" defined as the mean rep score, 3.6 Pilot test in past tense with the questionnaire language (English, SurveyXact), Brooke cited as the 1996 book chapter instead of a ResearchGate PDF, convenience-sample bias in Limitations, narrative citations shown with author names (`\textcite`), O'Brien and Gale as real citations, haptics in 4.3.1, and two more limitations (head-only compensation, unvalidated coach and break values). New sources sit in `Bibliography/engagement.bib`; `ref.bib` is a Zotero import and cannot be edited in Overleaf.
+
+Paper and code disagree (decided: rewrite to match the code):
+- 4.4 describes a rule-based coach with 65/45/90 thresholds. The code uses a neural network trained on synthetic labels made by the group (section 3). Say plainly that the labels are invented and not validated by physiotherapists, because the research question is about supporting physiotherapists.
+- 4.2 describes manual pose calibration. The default is now the automatic estimate, with optional calibration and a tutorial practice rep.
+- 4.5 says settings are locked. The lock was removed.
+- Table 1: R6 (calibration, "Met") and R9 ("Locked settings") must change.
+- 4.3.1 says PRÆCIS / GOD (written 2026-11-10 from the code then). The game now shows PERFECT / NICE, so change it back.
+- The pilot ran an older build than the main test will (`nn2`, 20 % start, 9 s tutorial against `nn3`, 35 % start, new tutorial). The paper must say which version each test used; confirm which APK was on the headset in the pilot.
+
+Decided by the team on 2026-11-12, still to write:
+- 3.4: the game itself rates execution; the experts give feedback on whether the rating is precise enough.
+- Dropout: two booked participants did not attend. Report it neutrally in 4.7.
+- Thematic analysis: it was done by Claude; add a method source (for example Braun & Clarke 2006) and describe the process.
+- Cut participant 1's first name from the audio (said at about 01:59-02:00 in "Participant 1.m4a").
+- Follow-up interviews with the experts: yes. With the physiotherapy students: not decided.
+
+Open, ask the supervisor (Casper) on 2026-11-17:
+- Where to state AI use (Whisper transcription and Claude for theme grouping and writing help). Check AAU's rules first.
+- A survey question on shoulder problems (Methods 3.2 promises to record shoulder conditions; the pilot survey did not ask). The team wrote "Tror jeg ikke alle var sunde" about the pilot participants, so "healthy" in section 10 and "without a rehabilitation need" in Limitations may be wrong.
+- Methods 3.1-3.5 are written in the future tense.
+- Whether to keep the appendix list at the end of the paper.
+- Whether survey items may be translated to Danish.
+
+Before the next test:
+- Open, non-leading interview questions ("What did you feel where?" rather than "Did you feel it in the shoulders?").
+- Survey: single-choice UES items, remove "Application X", fix the typos, decide the language.
+- Lock REPLAY to dev mode and keep the result screen up (see test procedure fixes above; not built).
+- Already true: the interviewer did not build the game, and observer notes keep observation and interpretation apart.
+
+Writing left, to do last: abstract, title and Figure 1 (template placeholders); Findings, Discussion beyond Limitations, and Conclusion (empty); appendix A-J names; reference [1] has no author (Tristan is on it in Zotero); section 2.2 has claims without sources (for example "research on gamification indicates that rewards should be designed carefully"); the Iteration 2 section once it is built. Moodboard screenshot copyright: the team decided not to check it.
