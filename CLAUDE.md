@@ -167,12 +167,13 @@ Decided by the team on 2026-11-12, still to write:
 - Cut participant 1's first name from the audio (said at about 01:59-02:00 in "Participant 1.m4a").
 - Follow-up interviews with the experts: yes. With the physiotherapy students: not decided.
 
-Open, ask the supervisor (Casper) on 2026-11-17:
-- Where to state AI use (Whisper transcription and Claude for theme grouping and writing help). Check AAU's rules first.
-- A survey question on shoulder problems (Methods 3.2 promises to record shoulder conditions; the pilot survey did not ask). The team wrote "Tror jeg ikke alle var sunde" about the pilot participants, so "healthy" in section 10 and "without a rehabilitation need" in Limitations may be wrong.
-- Methods 3.1-3.5 are written in the future tense.
-- Whether to keep the appendix list at the end of the paper.
-- Whether survey items may be translated to Danish.
+Answered by the supervisor (Casper) on 2026-11-17 (Drive doc "Møde d. 17-11-2026"), still to do:
+- AI use: state it in an Acknowledgements section (Whisper transcription, Claude for theme grouping and writing help). The team must approve the wording, since it is their own statement.
+- Follow-up interview: test with Expert 1 (Trine) too if there is time; it is more data. Nothing was said about follow-ups with the physiotherapy students.
+- Shoulder question: add it to the survey (Methods 3.2 already promises to record shoulder conditions). The team wrote "Tror jeg ikke alle var sunde" about the pilot participants, so "healthy" in section 10 and "without a rehabilitation need" in Limitations may be wrong; confirm with the observers.
+- Methods: write it in the past tense (all of 3.1-3.5, not only 3.6).
+- Appendix: keep it at the end of the paper. Names for A-J are still missing.
+- Survey language: keep it in English, do not translate the items; the test leader explains words when asked, and Methods should say so.
 
 Before the next test:
 - Open, non-leading interview questions ("What did you feel where?" rather than "Did you feel it in the shoulders?").
