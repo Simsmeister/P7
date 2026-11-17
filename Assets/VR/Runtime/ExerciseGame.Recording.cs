@@ -234,7 +234,8 @@ namespace P7
                 SaveTable("summary", SummaryHeader + "\n" + string.Join("\n", summaryRows));
                 Save("outcome.json", "{\"participant_id\":\"" + participantId + "\",\"complete\":" + (complete ? "true" : "false")
                     + ",\"outcome\":\"" + run.outcome + "\",\"tracking_pause_seconds\":" + F(trackingPause)
-                    + ",\"active_seconds\":" + F(activeSeconds) + ",\"breaks\":" + breaksTaken + "}");
+                    + ",\"active_seconds\":" + F(activeSeconds) + ",\"breaks\":" + breaksTaken
+                    + ",\"off_spot_seconds\":" + F(offSpotSeconds) + "}");
                 replay.Save(sessionFolder);
             }
             catch (Exception e)

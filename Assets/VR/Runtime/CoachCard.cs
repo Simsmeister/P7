@@ -18,7 +18,7 @@ namespace P7
 
             card = new GameObject("Movement card").transform;
             card.SetParent(transform, false);
-            card.localPosition = new Vector3(0, -.82f, 0);
+            card.localPosition = Vector3.zero;
 
             title = new GameObject("View label", typeof(TextMesh)).GetComponent<TextMesh>();
             title.transform.SetParent(card, false);
@@ -46,7 +46,7 @@ namespace P7
             if (!visible)
                 return;
 
-            transform.SetPositionAndRotation(game.Origin + game.Frame * new Vector3(0, 0, 2.25f), game.Frame);
+            transform.SetPositionAndRotation(game.Origin + game.Frame * CardPosition, game.Frame);
 
             var profile = game.ActiveProfile;
             int side = game.ActiveSide;
@@ -65,8 +65,14 @@ namespace P7
 
             title.text = (side == 0 ? "LEFT" : "RIGHT") + "\n" + profile.displayName;
             float viewAngle = profile.movement == ExerciseMovement.SerratusReach ? 90 : 0;
-            Draw(profile, side, hand, start, end, pivot, viewAngle, .22f);
+            Draw(profile, side, hand, start, end, pivot, viewAngle, FigureScale);
         }
+
+        // Pilot test 1: the card was missed (it sat 2.25 m away and 0.8 m below the eyes, behind and under the line).
+        // Now it is centred between the two arms' lines, just behind them and a little below eye height, so it is in
+        // view while following the line. The active line starts 0.30 m to the side at 1.35 m, so the centre stays free.
+        public static readonly Vector3 CardPosition = new Vector3(0, -.22f, 1.75f);
+        public const float FigureScale = .26f;
 
         // A typical movement on an average body, used when nothing else is known.
         public static void ExampleMovement(ExerciseProfile profile, int side, float progress,

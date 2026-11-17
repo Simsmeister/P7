@@ -48,6 +48,15 @@ namespace P7
         int recenterFrames;
         readonly List<XRInputSubsystem> xrSystems = new List<XRInputSubsystem>();
 
+        // Leaving the results page takes two presses on the same button (outside dev mode), so a participant
+        // cannot close the score by accident before the test leader has read it (pilot test 1, participant 3).
+        public const float ConfirmMinSeconds = .4f, ConfirmMaxSeconds = 4;
+        string armedKey = "";
+        float armedAge;
+        readonly Dictionary<string, string> buttonText = new Dictionary<string, string>();
+        // Shown on the home page after a run, so the result can still be read if the results page was left.
+        string lastResult = "";
+
         void Awake()
         {
             AddTutorialToggle();
@@ -120,8 +129,40 @@ namespace P7
             transform.SetPositionAndRotation(game.head.position + yaw * new Vector3(0, -.2f, 2.3f), yaw);
         }
 
+        // Whether a button on the results page needs a second press before it acts.
+        public static bool NeedsConfirm(string key, bool onResults, bool devMode)
+        {
+            return onResults && !devMode && (key == "home" || key == "again" || key == "replay");
+        }
+
+        // A second press counts only if it comes on the same button, not too fast (a held or bouncing trigger)
+        // and not too late.
+        public static bool Confirmed(string armed, string key, float age)
+        {
+            return armed == key && age >= ConfirmMinSeconds && age <= ConfirmMaxSeconds;
+        }
+
+        // For the Play Mode test, which cannot wait between two presses.
+        public void AgeConfirmForTest(float seconds) => armedAge += seconds;
+
         public void Navigate(string key)
         {
+            if (NeedsConfirm(key, page == Page.Results, game.Settings.devMode))
+            {
+                if (!Confirmed(armedKey, key, armedAge))
+                {
+                    armedKey = key;
+                    armedAge = 0;
+                    Refresh();
+                    return;
+                }
+            }
+            armedKey = "";
+
+            // Replays are for the team, not for participants: only in dev mode.
+            if (key == "replay" && !game.Settings.devMode)
+                return;
+
             switch (key)
             {
                 case "recenter":
@@ -222,7 +263,8 @@ namespace P7
 
             homeStatus.text = "Participant " + game.Participant.Id + "  |  "
                 + (data.devMode ? "DEV MODE - fixed overrides, normal progress protected" : "Your personal pace and range are saved automatically")
-                + "\nEnergy fills after about " + data.totalRepetitions + " strong movements";
+                + "\nEnergy fills after about " + data.totalRepetitions + " strong movements"
+                + (lastResult != "" ? "\n" + lastResult : "");
             footer.text = FooterText(data);
 
             exercise = Mathf.Clamp(exercise, 0, game.exercises.Length - 1);
@@ -249,6 +291,8 @@ namespace P7
             resultStreak.text = game.scoreFeedback.BestCombo.ToString();
             resultMoves.text = game.CompletedRepetitions.ToString();
             resultBonus.text = game.scoreFeedback.TrackingBonusPoints.ToString("N0") + " POINTS FROM PERFECT FLOW";
+            lastResult = "Last run: " + resultTitle.text + ", " + game.scoreFeedback.Points.ToString("N0") + " points, "
+                + resultAccuracy.text + " accuracy, best streak " + resultStreak.text + ", " + resultMoves.text + " moves";
         }
 
         string FooterText(SavedSettings data)
@@ -262,7 +306,8 @@ namespace P7
             if (!game.AnyEnabled)
                 return "Enable at least one exercise and arm in Settings.";
             if (page == Page.Results)
-                return "Point with either controller and press trigger.";
+                return data.devMode ? "Point with either controller and press trigger."
+                    : "Test leader: press a button twice to leave the results.";
             return "Point with either controller and press trigger. Drag sliders to adjust.";
         }
 
@@ -271,6 +316,16 @@ namespace P7
             string key = widget.key;
             if (key == "start" || key == "again" || key == "redo")
                 widget.button.interactable = game.AnyEnabled;
+            if (key == "replay")
+                widget.button.interactable = data.devMode;
+
+            if (widget.button && widget.label)
+            {
+                if (!buttonText.ContainsKey(key))
+                    buttonText[key] = widget.label.text;
+                bool armed = page == Page.Results && armedKey == key && armedAge <= ConfirmMaxSeconds;
+                widget.label.text = armed ? "PRESS AGAIN" : buttonText[key];
+            }
 
             if (widget.toggle)
             {
@@ -349,6 +404,7 @@ namespace P7
 
             if (page == Page.Results)
                 AnimateScore();
+            armedAge += Time.unscaledDeltaTime;
 
             refreshTimer += Time.unscaledDeltaTime;
             if (refreshTimer > .3f)
@@ -380,6 +436,7 @@ namespace P7
 
             // Ignore a trigger that is still held from the last press.
             wasDown = true;
+            armedKey = "";
             PlaceInFrontOfPlayer();
             Refresh();
             wasVisible = true;

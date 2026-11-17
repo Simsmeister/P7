@@ -35,6 +35,16 @@ namespace P7
         public float breakSeconds = 45;
         public float sessionCapSeconds = 900;
 
+        // Safety (pilot test 1: players stepped forward and one nearly fell). The player should stand on the floor ring
+        // placed where they stood at START. If the head moves further than stepLimitMetres sideways or forward from
+        // there, the line waits and the board asks them to step back; it goes on below stepReturnMetres.
+        public float stepLimitMetres = .35f;
+        public float stepReturnMetres = .2f;
+        // No target is placed further from the estimated shoulder than this, for the reference body (scaled by eye height).
+        // Shoulder to the controller at a full forward reach with the shoulder blade forward, adult of 1.75 m.
+        public const float ArmReachMetres = .66f;
+        public const float FloorRingRadius = .3f;
+
         // Used by the editor tests to simulate a player.
         [System.NonSerialized] public bool TestMode;
         [System.NonSerialized] public float TestHandFraction = 1, TestHeadDegrees, TestControllerDegrees;
@@ -66,7 +76,7 @@ namespace P7
         bool showTutorial;
 
         // First-time tutorial: an introduction, then for each exercise a demo on the figure and one practice
-        // repetition without points, then a short wrap-up. A / Space skips the rest of it.
+        // repetition without points, then a short wrap-up. A / Space goes on, B / R skips the rest of it.
         enum TutorialStep { Intro, Demo, Practice, Outro }
         TutorialStep tutorialStep;
         readonly List<int> tutorialBlocks = new List<int>();
@@ -86,8 +96,32 @@ namespace P7
         public const float ApproachMeasureRadius = .30f;
         Vector3 approachOffsetSum;
         float approachSeconds;
-        public const float TutorialIntroSeconds = 12;
-        public const float TutorialOutroSeconds = 5;
+        // The intro and wrap-up wait for A instead of a timer (pilot test 1: the text disappeared too fast).
+        // A press only counts after a page has been shown this long, so one press cannot skip two pages.
+        public const float TutorialPageMinSeconds = 1;
+        int introPage;
+        public static readonly string[] TutorialIntroPages =
+        {
+            "WELCOME - HOW TO PLAY\n"
+            + "A glowing line flies towards you.\n"
+            + "Your hand is the solid ball. Keep it inside the hollow ring.\n"
+            + "Follow the line out, hold at the end, then follow it back.",
+
+            "STAND STILL\n"
+            + "Stay on the floor ring. You never need to step or lean.\n"
+            + "Every target is within reach of your arm.\n"
+            + "If one feels too far, go only as far as is comfortable.",
+
+            "ENERGY AND FLOW\n"
+            + "ENERGY (upper bar) fills with every good movement. Fill it to finish the level.\n"
+            + "FLOW (lower bar) drops when you are far from the line\n"
+            + "and rises when you follow it well. If FLOW runs out, the run ends.",
+
+            "YOUR TURN SOON\n"
+            + "The figure shows each movement once, then you try it.\n"
+            + "No points yet, and it is fine to miss.\n"
+            + "How you do sets where the game starts.",
+        };
 
         // The current exercise path in world space.
         Vector3 start, end, pivot;
@@ -99,6 +133,11 @@ namespace P7
         float scoreSum;
         float activeSeconds, activeSinceBreak, trackingPause;
         int breaksTaken;
+        // Eye-height scale of this session, read once in SetFrame so targets never move during a repetition.
+        float bodyScale = 1;
+        bool offSpot;
+        float offSpotSeconds;
+        LineRenderer floorRing;
 
         RepetitionResult current;
         MaterialPropertyBlock targetTint;
@@ -223,6 +262,46 @@ namespace P7
             frame = Quaternion.Euler(0, head.eulerAngles.y, 0);
             neutralHead = head.rotation;
             board.SetPositionAndRotation(origin + frame * new Vector3(0, .70f, 2.3f), frame);
+            bodyScale = BodyScale();
+            offSpot = false;
+            PlaceFloorRing();
+        }
+
+        // A ring on the floor under where the player stood at START. Created at runtime, so no prefab change is needed.
+        void PlaceFloorRing()
+        {
+            if (!floorRing)
+            {
+                floorRing = new GameObject("Floor Ring").AddComponent<LineRenderer>();
+                floorRing.transform.SetParent(transform, false);
+                if (pathStream && pathStream.paths.Length > 0 && pathStream.paths[0])
+                    floorRing.sharedMaterial = pathStream.paths[0].sharedMaterial;
+                floorRing.useWorldSpace = true;
+                floorRing.loop = true;
+                floorRing.positionCount = 48;
+                floorRing.widthMultiplier = .025f;
+            }
+            float floor = simulated || !trackingSpace ? origin.y - ReferenceEyeHeight : trackingSpace.position.y;
+            Vector3 centre = new Vector3(origin.x, floor + .01f, origin.z);
+            for (int i = 0; i < floorRing.positionCount; i++)
+            {
+                float angle = i * Mathf.PI * 2 / floorRing.positionCount;
+                floorRing.SetPosition(i, centre + new Vector3(Mathf.Cos(angle), 0, Mathf.Sin(angle)) * FloorRingRadius);
+            }
+        }
+
+        // Horizontal distance of the head from where the player stood at START.
+        public static float StepDistance(Vector3 headPosition, Vector3 startPosition)
+        {
+            Vector3 d = headPosition - startPosition;
+            d.y = 0;
+            return d.magnitude;
+        }
+
+        // With hysteresis, so standing near the limit does not flicker between paused and running.
+        public static bool OffSpot(bool wasOff, float distance, float limit, float returnDistance)
+        {
+            return wasOff ? distance > returnDistance : distance > limit;
         }
 
         bool HeadTracked()
@@ -270,10 +349,20 @@ namespace P7
                 scoreFeedback.TrackPerfect(false, 0, 0);
             scoreFeedback.LineTone(!reviewing && IsPlaying && IsTracked, FollowQuality);
 
-            board.gameObject.SetActive(!reviewing && !MenuVisible && (!PathsVisible || practicing));
+            bool lineShown = PathsVisible && !reviewing;
+            offSpot = lineShown && OffSpot(offSpot, StepDistance(head.position, origin), stepLimitMetres, stepReturnMetres);
+            if (floorRing)
+            {
+                floorRing.gameObject.SetActive(!reviewing && !MenuVisible);
+                Tint(floorRing, offSpot ? new Color(1, .55f, .1f) : new Color(.1f, .55f, .65f));
+            }
+
+            board.gameObject.SetActive(!reviewing && !MenuVisible && (!PathsVisible || practicing || offSpot));
             // While practising, the board drops closer to the line so the hints are in view.
-            board.SetPositionAndRotation(origin + frame * new Vector3(0, practicing ? PracticeBoardHeight : .70f, 2.3f), frame);
-            if (practicing && !reviewing)
+            board.SetPositionAndRotation(origin + frame * new Vector3(0, practicing || offSpot ? PracticeBoardHeight : .70f, 2.3f), frame);
+            if (offSpot && !reviewing)
+                boardText.text = "STEP BACK ONTO THE FLOOR RING\nThe line waits for you.\nEvery target can be reached from the ring.";
+            else if (practicing && !reviewing)
                 boardText.text = PracticeHint();
             targetMarker.gameObject.SetActive(!reviewing && state != State.Welcome && state != State.Finished && state != State.Break
                 && state != State.Tutorial);
@@ -283,8 +372,11 @@ namespace P7
             if (reviewing && !calibrating)
                 return;
 
-            bool tracked = IsTracked;
+            // Off the floor ring counts like a tracking pause for the line, but is logged separately.
+            bool tracked = IsTracked && !offSpot;
             float dt = Mathf.Min(Time.unscaledDeltaTime, .1f);
+            if (offSpot)
+                offSpotSeconds += Time.unscaledDeltaTime;
             if (tracked && PathsVisible && !practicing)
             {
                 activeSeconds += dt;
@@ -380,8 +472,64 @@ namespace P7
                 r.SetPropertyBlock(targetTint);
         }
 
-        // A: skip the demo, tutorial or break. B: show or hide the last replay. X: stop the session.
-        // In the editor simulation Space is A and R is B.
+        // Depth cue (pilot test 1: "the rings are very 2D", players could not tell if they were too far or too close).
+        // A thin line from the ball to the ring, shown when the hand is off by more than DepthCueMetres in depth:
+        // cyan means reach further forward, orange means bring the hand closer. Drawn in LateUpdate, after the
+        // ring has moved this frame. It does not change scoring.
+        public const float DepthCueMetres = .03f;
+        static readonly Color ReachColor = new Color(.2f, .85f, 1), CloserColor = new Color(1, .55f, .1f);
+        LineRenderer depthGuide;
+
+        // +1: the target is further away than the hand, -1: closer, 0: within the cue's dead zone.
+        public static int DepthDirection(float targetDepthMinusHand)
+        {
+            if (targetDepthMinusHand > DepthCueMetres)
+                return 1;
+            if (targetDepthMinusHand < -DepthCueMetres)
+                return -1;
+            return 0;
+        }
+
+        void LateUpdate()
+        {
+            if (!depthGuide)
+            {
+                depthGuide = new GameObject("Depth Guide").AddComponent<LineRenderer>();
+                depthGuide.transform.SetParent(transform, false);
+                if (pathStream && pathStream.paths.Length > 0 && pathStream.paths[0])
+                    depthGuide.sharedMaterial = pathStream.paths[0].sharedMaterial;
+                depthGuide.useWorldSpace = true;
+                depthGuide.positionCount = 2;
+                depthGuide.widthMultiplier = .006f;
+            }
+
+            int side = ActiveSide;
+            bool show = PathsVisible && !replay.IsActive && handTracked[side] && targetMarker.gameObject.activeInHierarchy
+                && handMarkers[side].gameObject.activeInHierarchy;
+            Vector3 ball = handMarkers[side].position, ring = targetMarker.position;
+            int direction = DepthDirection((Quaternion.Inverse(frame) * (ring - ball)).z);
+            show &= direction != 0;
+            depthGuide.gameObject.SetActive(show);
+            if (!show)
+                return;
+            depthGuide.SetPosition(0, ball);
+            depthGuide.SetPosition(1, ring);
+            Color color = direction > 0 ? ReachColor : CloserColor;
+            Tint(depthGuide, color);
+        }
+
+        // Runtime lines use the path material, which reads _BaseColor from a property block.
+        MaterialPropertyBlock lineTint;
+        void Tint(LineRenderer line, Color color)
+        {
+            lineTint ??= new MaterialPropertyBlock();
+            line.startColor = line.endColor = color;
+            lineTint.SetColor("_BaseColor", color);
+            line.SetPropertyBlock(lineTint);
+        }
+
+        // A: skip the demo or break, or go on in the tutorial. B: skip the tutorial, or (dev mode, in the menu)
+        // show or hide the last replay. X: stop the session. In the editor simulation Space is A and R is B.
         void HandleButtons()
         {
             var keyboard = simulated ? Keyboard.current : null;
@@ -396,7 +544,8 @@ namespace P7
             if (pressedX && state != State.Welcome && state != State.Finished)
                 Finish(false);
 
-            if (pressedB && (state == State.Finished || state == State.Welcome))
+            // B opens the replay only in dev mode (pilot test 1: a participant opened it by accident); it can always close one.
+            if (pressedB && (state == State.Finished || state == State.Welcome) && (Settings.devMode || replay.IsActive))
             {
                 if (replay.IsActive)
                     replay.Close();
@@ -406,8 +555,11 @@ namespace P7
 
             if (pressedA)
                 SkipTutorialPreview();
+            if (pressedB && (state == State.Tutorial || practicing))
+                SkipTutorial();
         }
 
+        // A: skip the calibration demo or a break, or go on in the tutorial (next page, end of a demo, start the game).
         public void SkipTutorialPreview()
         {
             if (state == State.Demo && replay.IsDemo)
@@ -415,14 +567,27 @@ namespace P7
                 replay.Close();
                 StartPoseCapture(false);
             }
-            else if (state == State.Tutorial || practicing)
+            else if (state == State.Tutorial && tutorialStep == TutorialStep.Demo)
             {
-                CompleteTutorial();
+                if (replay.IsDemo)
+                    replay.Close();
+                StartPractice();
+            }
+            else if (state == State.Tutorial)
+            {
+                AdvanceTutorial();
             }
             else if (state == State.Break)
             {
                 LoadChallenge();
             }
+        }
+
+        // B: leave the whole tutorial and start the game.
+        public void SkipTutorial()
+        {
+            if (state == State.Tutorial || practicing)
+                CompleteTutorial();
         }
 
         public void Begin() => Begin(false);
@@ -439,7 +604,7 @@ namespace P7
             adaptiveCoach.Configure(Settings);
 
             CompletedRepetitions = 0;
-            scoreSum = trackingPause = activeSeconds = activeSinceBreak = 0;
+            scoreSum = trackingPause = activeSeconds = activeSinceBreak = offSpotSeconds = 0;
             breaksTaken = 0;
             block = 0;
             missionStarted = false;
@@ -517,7 +682,8 @@ namespace P7
             block = tutorialBlocks[0];
             tutorialStep = TutorialStep.Intro;
             state = State.Tutorial;
-            clock = TutorialIntroSeconds;
+            introPage = 0;
+            clock = 0;
         }
 
         void UpdateTutorial(float dt)
@@ -525,30 +691,41 @@ namespace P7
             switch (tutorialStep)
             {
                 case TutorialStep.Intro:
-                    clock -= dt;
-                    boardText.text = "WELCOME - HOW TO PLAY\n"
-                        + "A glowing line flies towards you. Your hand is the solid ball,\n"
-                        + "the hollow ring is where your hand should be. Keep the ball in the ring.\n"
-                        + "Follow the line out, hold at the big node, then follow it back.\n"
-                        + "First the figure shows the whole movement, then you copy it.\n"
-                        + "Just try - it is fine to miss. How you do sets where you start. No points yet.\n"
-                        + "Starts in " + Mathf.CeilToInt(clock) + " s   |   A / Space: skip tutorial";
-                    if (clock <= 0)
-                        ShowTutorialExercise();
+                    clock += dt;
+                    boardText.text = TutorialIntroPages[introPage] + "\n\n"
+                        + "Page " + (introPage + 1) + "/" + TutorialIntroPages.Length
+                        + "   |   A / Space: next   |   B / R: skip tutorial";
                     break;
                 case TutorialStep.Demo:
                     // The demo closes itself after one playthrough; then the player tries it.
                     StartPractice();
                     break;
                 case TutorialStep.Outro:
-                    clock -= dt;
+                    clock += dt;
                     boardText.text = "TUTORIAL DONE\n" + practiceFeedback
                         + "\nFrom now on the game counts points and adapts to you.\n"
-                        + "The start point and size of each movement adjust to your body as you play.\n"
-                        + "Starting in " + Mathf.CeilToInt(clock) + " s   |   A / Space: start now";
-                    if (clock <= 0)
-                        CompleteTutorial();
+                        + "Fill ENERGY to finish. Keep FLOW up by following the line.\n"
+                        + "A / Space: start";
                     break;
+            }
+        }
+
+        // A in the tutorial: the next intro page, the end of a demo, or the start of the game after the wrap-up.
+        void AdvanceTutorial()
+        {
+            if (tutorialStep == TutorialStep.Intro)
+            {
+                if (clock < TutorialPageMinSeconds)
+                    return;
+                introPage++;
+                clock = 0;
+                if (introPage >= TutorialIntroPages.Length)
+                    ShowTutorialExercise();
+            }
+            else if (tutorialStep == TutorialStep.Outro)
+            {
+                if (clock >= TutorialPageMinSeconds)
+                    CompleteTutorial();
             }
         }
 
@@ -571,7 +748,7 @@ namespace P7
             state = State.Tutorial;
             // The figure shows the mastered movement (the full automatic estimate) at normal speed,
             // whatever this player's current level or calibration.
-            var mastered = AutomaticEstimate(profile, side, origin, frame, BodyScale());
+            var mastered = AutomaticEstimate(profile, side, origin, frame, bodyScale);
             start = mastered.start;
             end = mastered.end;
             pivot = mastered.pivot;
@@ -584,7 +761,7 @@ namespace P7
                 + " - YOUR " + SideName(side) + " ARM" + (sideView ? " / SIDE VIEW" : " / MIRROR")
                 + "\n" + profile.instruction
                 + "\nThis is the goal movement at full speed. Then you try it - it is fine if you cannot do it all yet."
-                + "\nA / Space: skip tutorial";
+                + "\nA / Space: try it now   |   B / R: skip tutorial";
             replay.OpenExerciseDemo(demonstration, caption, sideView);
         }
 
@@ -633,7 +810,7 @@ namespace P7
             {
                 tutorialStep = TutorialStep.Outro;
                 state = State.Tutorial;
-                clock = TutorialOutroSeconds;
+                clock = 0;
             }
         }
 
@@ -762,10 +939,10 @@ namespace P7
                 approachSeconds += dt;
             }
 
-            // The line only moves while the player is tracked.
+            // The line only moves while the player is tracked and on the floor ring.
             if (tracked)
                 clock += dt;
-            else
+            else if (!offSpot)
                 trackingPause += Time.unscaledDeltaTime;
 
             if (clock >= 0)
@@ -804,8 +981,10 @@ namespace P7
             }
             else
             {
+                // A rep with more than 10 % lost time is not learned from; stepping off the ring counts as lost time.
                 current.TrackingLost(Time.unscaledDeltaTime);
-                trackingPause += Time.unscaledDeltaTime;
+                if (!offSpot)
+                    trackingPause += Time.unscaledDeltaTime;
             }
 
             if (!practicing)
@@ -1016,7 +1195,58 @@ namespace P7
             scaled.start += shift;
             scaled.end += shift;
             scaled.pivot += shift;
-            return scaled;
+            return ClampToReach(profile.movement, scaled, origin + frame * ShoulderOffset(side, bodyScale), ArmReachMetres * bodyScale);
+        }
+
+        // The estimated shoulder relative to the eyes, the same point the automatic estimate swings around.
+        public static Vector3 ShoulderOffset(int side, float scale)
+        {
+            return new Vector3(side == 0 ? -.18f : .18f, -.25f, 0) * Mathf.Clamp(scale, .8f, 1.2f);
+        }
+
+        // Keeps every point of the path within reach of the shoulder. First the whole path moves towards the shoulder,
+        // so the movement keeps its size and only its place changes; if that is not enough, the end is cut back along
+        // the path. Works on any calibration (automatic, anchored, start-shifted or manual), so no target asks for a step
+        // or a lean. A path that is already in reach is returned unchanged.
+        public static Calibration ClampToReach(ExerciseMovement movement, Calibration path, Vector3 shoulder, float reach)
+        {
+            const int Steps = 40;
+            var clamped = path.Copy();
+            for (int pass = 0; pass < 6; pass++)
+            {
+                Vector3 furthest = clamped.start;
+                for (int i = 1; i <= Steps; i++)
+                {
+                    Vector3 p = ExerciseProfile.Path(movement, clamped.start, clamped.end, clamped.pivot, i / (float)Steps);
+                    if (Vector3.Distance(p, shoulder) > Vector3.Distance(furthest, shoulder))
+                        furthest = p;
+                }
+                Vector3 outward = furthest - shoulder;
+                if (outward.magnitude <= reach + .001f)
+                    return clamped;
+                Vector3 pull = outward.normalized * (outward.magnitude - reach);
+                clamped.start -= pull;
+                clamped.end -= pull;
+                clamped.pivot -= pull;
+            }
+
+            float allowed = 1;
+            for (int i = 1; i <= Steps; i++)
+            {
+                float u = i / (float)Steps;
+                if (Vector3.Distance(ExerciseProfile.Path(movement, clamped.start, clamped.end, clamped.pivot, u), shoulder) > reach + .001f)
+                {
+                    allowed = (i - 1) / (float)Steps;
+                    break;
+                }
+            }
+            if (allowed < 1)
+            {
+                var cut = clamped.Scaled(movement, allowed);
+                cut.calibratedTravelMetres = clamped.calibratedTravelMetres;
+                return cut;
+            }
+            return clamped;
         }
 
         // The line is drawn in front of the player instead of at the hand: the hand's movement from the start

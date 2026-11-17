@@ -49,7 +49,7 @@ namespace P7
 
             // No saved range yet: start gently on an estimate scaled to the player's eye height,
             // at AutomaticStartRange of that range and AutomaticStartSpeed. The coach then adjusts both.
-            var estimate = AutomaticEstimate(profile, side, origin, frame, BodyScale());
+            var estimate = AutomaticEstimate(profile, side, origin, frame, bodyScale);
             calibrations.Add(estimate);
             if (!Settings.devMode)
             {

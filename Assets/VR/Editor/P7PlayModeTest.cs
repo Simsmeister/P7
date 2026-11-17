@@ -170,6 +170,8 @@ public static class P7PlayModeTest
         if (game.CurrentStep == "Tutorial")
         {
             game.SkipTutorialPreview();
+            Check(game.CurrentStep == "Tutorial", "A on the first intro page does not skip the tutorial");
+            game.SkipTutorial();
             Check(game.CurrentStep == "Approaching", "Skipping the tutorial starts the first line");
             skippedTutorial = true;
         }
@@ -256,8 +258,16 @@ public static class P7PlayModeTest
         var score = game.scoreFeedback;
         Check(menu.results.activeInHierarchy && !menu.home.activeInHierarchy, "A finished session shows the results");
         Check(menu.resultScore.text == score.Points.ToString("N0"), "The results show the exact final score");
+        menu.Navigate("replay");
+        Check(menu.results.activeInHierarchy && !game.replay.IsActive, "One press does not leave the results");
         menu.Navigate("home");
-        Check(menu.home.activeInHierarchy && !menu.results.activeInHierarchy, "Main menu leaves the results");
+        Check(menu.results.activeInHierarchy, "A press on another button only arms that button");
+        menu.AgeConfirmForTest(GameMenu.ConfirmMinSeconds);
+        menu.Navigate("home");
+        Check(menu.home.activeInHierarchy && !menu.results.activeInHierarchy, "A second press on Main menu leaves the results");
+        Check(menu.homeStatus.text.Contains("Last run:"), "The home page keeps the last result");
+        menu.Navigate("replay");
+        Check(!game.replay.IsActive, "Replay is locked outside dev mode");
 
         Check(score.Points >= 10000 && score.TrackingBonusPoints > 0 && score.TrackingBonus.Ticks == 0, "Perfect-flow bonus is paid and reset");
         Check(skippedDemo && skippedTutorial && sawApproach, "Demo skip, tutorial skip and approach all happened");
@@ -339,6 +349,9 @@ public static class P7PlayModeTest
         string step = game.CurrentStep;
         Check(step != "Demo" && step != "CaptureStart" && step != "CaptureEnd" && step != "Ready", "The automatic start never asks for calibration");
         // The automatic test plays the whole tutorial: intro, a demo and one practice repetition per exercise.
+        // The intro pages and the wrap-up wait for A, so the test presses it (it only counts after a second).
+        if (game.TutorialStepName == "Intro" || game.TutorialStepName == "Outro")
+            game.SkipTutorialPreview();
         if (game.IsPractice)
             sawPractice = true;
         if (game.TutorialStepName == "Demo")

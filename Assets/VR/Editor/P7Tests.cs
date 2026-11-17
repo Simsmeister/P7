@@ -24,6 +24,7 @@ public static class P7Tests
             CheckNeuralModel();
             CheckAdaptiveCoach();
             CheckPlaylist();
+            CheckIteration2();
             Report("CHECKS PASSED");
         }
         catch (Exception e)
@@ -487,5 +488,65 @@ public static class P7Tests
         }
         Check(repeats && varies, "The order is random and may repeat");
         Object.DestroyImmediate(profile);
+    }
+
+    // Iteration 2 (pilot test 1 fixes): reach limit, standing still, results confirmation, tutorial pages.
+    static void CheckIteration2()
+    {
+        var profile = ScriptableObject.CreateInstance<ExerciseProfile>();
+        profile.exerciseId = "reach-check";
+        foreach (ExerciseMovement movement in Enum.GetValues(typeof(ExerciseMovement)))
+            for (int side = 0; side < 2; side++)
+                foreach (float scale in new[] { .8f, 1f, 1.2f })
+                {
+                    profile.movement = movement;
+                    var estimate = ExerciseGame.AutomaticEstimate(profile, side, Vector3.zero, Quaternion.identity, scale);
+                    Vector3 shoulder = ExerciseGame.ShoulderOffset(side, scale);
+                    float reach = ExerciseGame.ArmReachMetres * scale;
+                    var same = ExerciseGame.ClampToReach(movement, estimate, shoulder, reach);
+                    Check(Vector3.Distance(same.start, estimate.start) < .0001f && Vector3.Distance(same.end, estimate.end) < .0001f,
+                        "The automatic estimate is already in reach and is not changed");
+
+                    // A start shift 40 cm forward and 20 cm up must be pulled back into reach.
+                    var pushed = estimate.Copy();
+                    Vector3 shift = new Vector3(0, .2f, .4f);
+                    pushed.start += shift;
+                    pushed.end += shift;
+                    pushed.pivot += shift;
+                    var clamped = ExerciseGame.ClampToReach(movement, pushed, shoulder, reach);
+                    for (int i = 0; i <= 20; i++)
+                    {
+                        Vector3 p = ExerciseProfile.Path(movement, clamped.start, clamped.end, clamped.pivot, i / 20f);
+                        Check(Vector3.Distance(p, shoulder) <= reach + .002f, "Every point of a clamped path is in reach");
+                    }
+                    Check(Vector3.Distance(clamped.start, clamped.end) > .5f * Vector3.Distance(estimate.start, estimate.end),
+                        "Clamping moves the movement rather than shrinking it to nothing");
+                }
+        Object.DestroyImmediate(profile);
+
+        Check(Mathf.Abs(ExerciseGame.StepDistance(new Vector3(.3f, 1.7f, .4f), new Vector3(0, 1.2f, 0)) - .5f) < .0001f, "Step distance ignores height");
+        Check(!ExerciseGame.OffSpot(false, .3f, .35f, .2f) && ExerciseGame.OffSpot(false, .4f, .35f, .2f), "Off the floor ring past the limit");
+        Check(ExerciseGame.OffSpot(true, .3f, .35f, .2f) && !ExerciseGame.OffSpot(true, .15f, .35f, .2f), "Back on the ring only below the return distance");
+
+        Check(GameMenu.NeedsConfirm("home", true, false) && GameMenu.NeedsConfirm("again", true, false)
+            && !GameMenu.NeedsConfirm("home", true, true) && !GameMenu.NeedsConfirm("home", false, false)
+            && !GameMenu.NeedsConfirm("start", true, false), "Only results-page buttons outside dev mode need a second press");
+        Check(GameMenu.Confirmed("home", "home", 1) && !GameMenu.Confirmed("home", "home", .1f)
+            && !GameMenu.Confirmed("home", "home", 5) && !GameMenu.Confirmed("again", "home", 1), "A second press must be on the same button, 0.4-4 s later");
+
+        Check(ExerciseGame.TutorialIntroPages.Length >= 3, "The tutorial intro has pages");
+        bool energy = false, flow = false;
+        foreach (var page in ExerciseGame.TutorialIntroPages)
+        {
+            Check(page.Split('\n').Length <= 5, "Each tutorial page is short");
+            energy |= page.Contains("ENERGY");
+            flow |= page.Contains("FLOW");
+        }
+        Check(energy && flow, "The tutorial explains ENERGY and FLOW");
+
+        Check(ExerciseGame.DepthDirection(.1f) == 1 && ExerciseGame.DepthDirection(-.1f) == -1 && ExerciseGame.DepthDirection(.01f) == 0,
+            "The depth cue says reach forward, come closer, or nothing");
+        Check(Mathf.Abs(CoachCard.CardPosition.x) < .15f && CoachCard.CardPosition.z < 2 && CoachCard.CardPosition.y > -.4f,
+            "The coach card sits in view, between the two lines");
     }
 }
