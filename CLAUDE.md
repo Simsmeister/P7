@@ -214,13 +214,13 @@ All four agree on:
 3. Safety must be fixed in code before the final test, not only in the paper: nothing from iteration 2 has run on a headset, the Play Mode tests have not run, scaption must be lowered to 120 degrees in code (section 7), calibration should be mandatory in the test, a person stands next to the player during the overhead exercise, and there is a stop criterion ("stop at sharp pain").
 4. The adaptive coach needs a better defence in 4.4: why a neural network rather than the rules it learned from (the examiner's likely question: "what can the network do that an if-statement cannot?"), report the held-out error (in `ADAPTIVE_COACH.md`), and explain the step limits of ±45 % range and ±35 % speed against R8 "progression must be slow", which Table 1 marks "Met".
 
-Quick text fixes the reviewers found:
-- 4.3 still says "a one-handed task calibrated to the player's own range", which contradicts 4.2 (range is estimated by default).
-- 4.7 says "as described above", but the pilot may have run an older build; confirm the APK and write which build each test used.
-- Table 1: "Met" is the group's own judgement; consider "Implemented" and let the experts judge. Mark requirements that came from an interviewer rather than the expert (R4 was Emil's suggestion, R13 Simon's).
-- Table 3: the theme "Feedback supports correct movement" overclaims; the data show perceived usefulness, not correctness.
-- Physiotherapist: say plainly that the game trains movement quality and range, not strength; never claim it "detects compensation" (it gives a head-based flag only).
-- Introduction says "Nels", Appendix A says "Niels" because Expert 1 said it that way; add a note in Appendix A.
+Quick text fixes the reviewers found. Done in Overleaf on 2026-11-18 unless marked open:
+- 4.3 "calibrated to the player's own range" now says the range is estimated from the player's height and adjusted by the coach.
+- 4.7 no longer says "as described above". Still open: confirm which APK the pilot used and write which build each test used.
+- Table 1: status "Met" is now "Implemented", and the caption says the status is the group's own assessment, not whether the requirement is met in practice. R4 now says E2 agreed with an interviewer's suggestion (R13 already said "she agreed").
+- Table 3: the theme "Feedback supports correct movement" is now "Feedback perceived as useful".
+- 4.2 now says the exercises train range of motion and movement control, not strength. The paper only claims compensation detection as a requirement (R7, "Partial", head-movement indicator only).
+- The expert's name is Nels. Speech recognition wrote "Niels" in the transcripts; all six places in Appendix A and B and in both Google Docs transcripts were changed to Nels.
 - The HCI reviewer would keep Methods in present or future tense until the test has run; the supervisor said past tense, so keep past tense, but it must be true at hand-in.
 
 Supervisor's plan (adjust the dates):
