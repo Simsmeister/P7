@@ -208,6 +208,8 @@ Pilot findings:
 
 Safety, 2026-11-18: scaption estimate lowered from 140 to 120 degrees (estimate version 4; section 7). Saved automatic ranges from v3 are replaced at the next START; manual calibrations are not touched.
 
+Calibration fix, 2026-11-18 (Frederik's headset test: left arm, serratus reach, OPTIONAL CALIBRATION's hold % never went up): `RangeDirectionAllowed` for serratus also required sideways and up/down drift under 35 % of the reach (1.75 cm on a 5 cm reach), so a real reach was rejected and the hold reset every frame. Now a serratus end only has to be mostly forward (`delta.z >= .6 * length`, about 53 degrees). `RangeDirectionAllowed` is also used when checking saved calibrations, so slightly drifting ones are now accepted. Confirmed on the headset by Frederik the same day.
+
 Still open from this plan: run both Play Mode tests; headset test of all of the above; the team questions above; failure-ending redesign (section 7a) waits for a team decision.
 
 ## 13. Review of the paper by four reviewer roles (2026-11-18)

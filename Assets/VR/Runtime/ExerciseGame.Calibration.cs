@@ -473,8 +473,11 @@ namespace P7
                 return delta.y > length * .15f && delta.x * sign > length * .15f && delta.z > -length * .25f;
 
             float sideways = Mathf.Max(.015f, length * .35f);
+            // Serratus: mostly forward (within about 53 degrees). The old extra limit of 35 % sideways and up/down
+            // (1.75 cm on a 5 cm reach) rejected nearly every real reach, so the hold never started (headset test
+            // 2026-11-18, left arm: the capture % never went up).
             if (movement == ExerciseMovement.SerratusReach)
-                return delta.z >= length * .6f && Mathf.Abs(delta.x) < sideways && Mathf.Abs(delta.y) < sideways;
+                return delta.z >= length * .6f;
 
             return delta.x * sign > length * .5f && Mathf.Abs(delta.y) < sideways;
         }

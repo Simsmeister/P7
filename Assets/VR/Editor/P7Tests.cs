@@ -135,6 +135,9 @@ public static class P7Tests
             }
             Check(!ExerciseGame.RangeDirectionAllowed(ExerciseMovement.Scaption, Vector3.zero, side, .02f), "No movement is rejected");
             Check(!ExerciseGame.RangeDirectionAllowed(ExerciseMovement.SerratusReach, Vector3.back * .1f, side, .015f), "Wrong direction is rejected");
+            Check(ExerciseGame.RangeDirectionAllowed(ExerciseMovement.SerratusReach, new Vector3(-sign * .025f, -.02f, .05f), side, .015f)
+                && !ExerciseGame.RangeDirectionAllowed(ExerciseMovement.SerratusReach, new Vector3(0, -.06f, .03f), side, .015f),
+                "A real forward reach that drifts a little inward and down is accepted; a mostly downward one is not");
         }
 
         var baseline = new Calibration
