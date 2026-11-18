@@ -46,7 +46,12 @@ namespace P7
         float shownPoints, scorePulse, completionTime, bonusPulse, ringTime;
 
         // Team decision 2026-11-04: perfect = complete, score >= 90 and coverage >= 90 %.
-        public static bool Perfect(bool complete, float score, float coverage) => complete && score >= .9f && coverage >= .9f;
+        // Added 2026-11-18: the target ring must also have been green for PerfectGreenShare of the scored time, so the
+        // colour and the reward agree (before, a rep with the ring yellow 22 % of the time could still be PERFECT).
+        public const float PerfectGreenShare = .9f;
+
+        public static bool Perfect(bool complete, float score, float coverage, float greenShare = 1)
+            => complete && score >= .9f && coverage >= .9f && greenShare >= PerfectGreenShare;
 
         public static int StreakNote(int combo) => Mathf.Clamp(combo - 1, 0, StreakHz.Length - 1);
 

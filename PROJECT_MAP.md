@@ -114,7 +114,8 @@ All values are prototype settings without clinical validation.
 | Outcome | Defeat at FLOW 0, checked first; victory at full ENERGY; `session_limit` when the cap is due on that rep | `SessionProgress.cs:36-41` |
 | Node repaired (export, cue) | `q >= .65` | `PathFeedback.NodeRepaired` |
 | Line glow colour | `Glow(q)`: amber*.35 to white over `InverseLerp(.4, .9, q)`; also tints sections and the hand trail | `PathFeedback.Glow` |
-| Perfect | complete, score >= .9 and coverage >= .9 | `ScoreFeedback.Perfect` (`ScoreFeedback.cs:49`) |
+| Perfect | complete, score >= .9, coverage >= .9 and the ring green for >= 90 % of the scored time (added 2026-11-18) | `ScoreFeedback.Perfect`, `PerfectGreenShare`; green time in `ExerciseGame.MeasureFrame` |
+| Speed ramp | tutorial start speed at most 80 %; the coach raises speed at most 5 % per attempt, easing unlimited, ceiling 1 + `fasterPercent` (140 %) | `ExerciseGame.PracticeSpeedMax`, `AdaptiveCoach.MaxSpeedStepUp` |
 | Points | `+1000q` per rep; if perfect, `Combo++` and `+1000q * min(Combo-1, 4)`, else `Combo = 0`; `Multiplier = clamp(Combo, 1, 5)` | `ScoreFeedback.Reward` (`ScoreFeedback.cs:103`) |
 | Perfect-flow bonus | Quality >= .9 for 2 s, then 100 x its own multiplier every .5 s; the multiplier rises every four ticks, capped at x5; any miss, tracking loss or rest restarts the warm-up | `PerfectFlowBonus.cs` |
 
@@ -138,7 +139,7 @@ Quest: `/sdcard/Android/data/<bundle ID>/files/Sessions/<yyyyMMddTHHmmssfffZ>/` 
 |---|---|
 | `samples.csv`, `.tsv` | 40 columns, one row per hand per sample at up to 60 Hz: `timestamp_s, exercise_time_s, exercise_id, repetition, phase, active_side, side, valid, scorable`, hand, target and head poses, `hand_error_m, shield_normal_error_deg, head_displacement_m, head_rotation_deg`, `visual_shield_*`, `visual_target_*` |
 | `summary.csv`, `.tsv` | 18 columns per scored rep: `exercise_id, side, repetition, score, complete_movement, hold_seconds, start_reached, return_reached, endpoint_reached, valid_seconds, mean_hand_error_m, mean_shield_normal_error_deg, path_accuracy_percent, travel_coverage, phase_completion, unpenalized_score, head_position_severity, head_penalty_points` |
-| `therapist-view.csv` / `.tsv` | Added 2026-11-18: one row per scored rep for the therapist view: `exercise_id, side, minutes, score, coverage, complete, perfect, range_level, speed_level, coach_learned, head_flag, developer_mode` (`TherapistView.CsvHeader`) |
+| `therapist-view.csv` / `.tsv` | Added 2026-11-18: one row per scored rep for the therapist view: `exercise_id, side, minutes, score, coverage, complete, perfect, range_level, speed_level, coach_learned, head_flag, developer_mode, green_share` (`TherapistView.CsvHeader`) |
 | `session.json` | `schemaVersion=shield-6`, `participantId`, `scoreVersion=position-only-hand-5`, `calibrationMode=automatic-estimate-or-manual-3`, `controlMapping=front-translation-2`, `presentation=finite-3d-paths-mirror-coach-1`, `developerMode`, gap, break and cap seconds, `challengeOrder`, scoring weights, calibrations (each with `automatic`, `startAnchored` and `estimateVersion`), exercises |
 | `outcome.json` | `participant_id` (`TEST` in tests), `complete` (true for victory and `session_limit`), `outcome` (`victory`, `defeat`, `session_limit`, `aborted`), `tracking_pause_seconds`, `active_seconds`, `breaks`, `off_spot_seconds` (added 2026-11-17: time the head was off the floor ring) |
 | `adaptive-coach.json` | One `Decision` per rep, `policy=neural-range-tempo-start-v3`: model ID, mean hand error, error severity, raw predicted changes, the bounded next level, `measuredStartOffset`, `startShiftUsed`, `nextStartShift` (head-relative metres), `startOffsetSeverity`, `predictedStartFollow` and the reason |

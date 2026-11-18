@@ -1058,11 +1058,14 @@ namespace P7
         }
 
         // Starting speed from how well the practice kept up with the full-speed line: 0.6 to 1.
+        public const float PracticeSpeedMax = .8f;
+
         public static float PracticeSpeed(float pathQuality)
         {
             if (float.IsNaN(pathQuality))
                 return .6f;
-            return Mathf.Lerp(.6f, 1, Mathf.InverseLerp(.3f, .8f, pathQuality));
+            // At most 80 % speed after the tutorial (was 100 %, 2026-11-18): players with injuries start slowly and the coach speeds up gradually.
+            return Mathf.Lerp(.6f, PracticeSpeedMax, Mathf.InverseLerp(.3f, .8f, pathQuality));
         }
 
         // The share of the full movement the hand covered from the start, 0-1.
@@ -1193,7 +1196,16 @@ namespace P7
             float headSeverity = phase == "rest" ? 0 : HeadPositionSeverity(headOffset, side);
 
             current.AddFrame(dt, profile.Quality(distance), distance, angle);
-            current.TrackTravel(Vector3.Dot(hand - start, end - start) / Mathf.Max(.000001f, (end - start).sqrMagnitude));
+            float progress = Vector3.Dot(hand - start, end - start) / Mathf.Max(.000001f, (end - start).sqrMagnitude);
+            current.TrackTravel(progress);
+            // Time the ring was green, by the same rule as the ring (UpdateTargetVisuals); PERFECT needs 90 % of it.
+            if (phase != "rest")
+            {
+                current.scoredSeconds += dt;
+                float green = GreenDistanceFor(EndpointTolerance, profile.fullCreditMetres, profile.zeroCreditMetres);
+                if (InTarget(distance, green, phase == "hold", progress))
+                    current.greenSeconds += dt;
+            }
             current.TrackHead(Vector3.Distance(head.position, origin), headDegrees, headSeverity, dt);
 
             float tolerance = EndpointTolerance;
@@ -1273,7 +1285,7 @@ namespace P7
             AddSummaryRow(profile, side, score, complete, pathQuality, coverage, phases, rawScore, headSeverity);
 
             bool capReached = DueAtRepEnd(activeSeconds, activeSinceBreak, breakAfterSeconds, sessionCapSeconds) == "cap";
-            scoreFeedback.Reward(complete, ScoreFeedback.Perfect(complete, score, coverage), score);
+            scoreFeedback.Reward(complete, ScoreFeedback.Perfect(complete, score, coverage, r.GreenShare), score);
             pathFeedback.Resolve(score, capReached);
 
             var baseline = FindCalibration(profile.exerciseId, side);
@@ -1281,7 +1293,7 @@ namespace P7
                 r.headMetres, r.headDegrees, Vector3.Distance(baseline.start, baseline.end), Vector3.Distance(start, end),
                 headSeverity, r.MeanError, r.MeanStartOffset, r.startSeconds);
             RepLog.Add(TherapistView.Rep.From(profile, side, score, coverage, complete, decision,
-                Time.realtimeSinceStartup - sessionStartTime));
+                Time.realtimeSinceStartup - sessionStartTime, r.GreenShare));
         }
 
         // Every scored repetition of this session, for the therapist view on the results page. Not exported.
@@ -1469,6 +1481,8 @@ namespace P7
             public float minimumProgress = float.PositiveInfinity, maximumProgress = float.NegativeInfinity;
             public float headMetres, headDegrees, headSeveritySum, headDisplacedSeconds;
             public float heldSeconds;
+            public float scoredSeconds, greenSeconds;
+            public float GreenShare => scoredSeconds > 0 ? greenSeconds / scoredSeconds : 0;
             public bool startReached, returnReached, endpointReached;
             public Vector3 startOffsetSum;
             public float startSeconds;

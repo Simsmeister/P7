@@ -97,7 +97,7 @@ public static class P7Tests
 
         Check(ExerciseGame.BodyScaleFor(ExerciseGame.ReferenceEyeHeight) == 1 && ExerciseGame.BodyScaleFor(.5f) == 1
             && ExerciseGame.BodyScaleFor(float.NaN) == 1, "Eye height outside the standing range uses the reference body");
-        Check(ExerciseGame.PracticeSpeed(.2f) == .6f && ExerciseGame.PracticeSpeed(.9f) == 1 && ExerciseGame.PracticeSpeed(float.NaN) == .6f,
+        Check(ExerciseGame.PracticeSpeed(.2f) == .6f && ExerciseGame.PracticeSpeed(.9f) == ExerciseGame.PracticeSpeedMax && ExerciseGame.PracticeSpeedMax <= .8f && ExerciseGame.PracticeSpeed(float.NaN) == .6f,
             "Practice sets a starting speed of 0.6-1");
         Check(ExerciseGame.PracticeReach(0, .7f) == .7f && ExerciseGame.PracticeReach(0, 1.3f) == 1
             && ExerciseGame.PracticeReach(float.PositiveInfinity, float.NegativeInfinity) == 0, "Practice reach is 0-1");
@@ -183,6 +183,8 @@ public static class P7Tests
 
         Check(ScoreFeedback.Perfect(true, .9f, .9f) && !ScoreFeedback.Perfect(true, .89f, 1) && !ScoreFeedback.Perfect(true, 1, .89f)
             && !ScoreFeedback.Perfect(false, 1, 1), "Perfect threshold");
+        Check(ScoreFeedback.Perfect(true, 1, 1, .9f) && !ScoreFeedback.Perfect(true, 1, 1, .78f),
+            "PERFECT needs the ring green for 90 % of the time (a rep 22 % yellow is not PERFECT)");
         Check(ScoreFeedback.StreakNote(0) == 0 && ScoreFeedback.StreakNote(1) == 0 && ScoreFeedback.StreakNote(2) == 1 && ScoreFeedback.StreakNote(99) == 5, "Streak notes rise and stop at the top");
         Check(ScoreFeedback.LineLevel(0) > 0 && ScoreFeedback.LineLevel(0) < ScoreFeedback.LineLevel(.5f) && ScoreFeedback.LineLevel(.5f) < ScoreFeedback.LineLevel(1), "Line tone volume");
         Check(ScoreFeedback.LineCutoff(0) < ScoreFeedback.LineCutoff(.5f) && ScoreFeedback.LineCutoff(.5f) < ScoreFeedback.LineCutoff(1), "Line tone filter");
@@ -357,6 +359,7 @@ public static class P7Tests
 
             var result = coach.Observe(profile, 0, 1, 100, 1, 8, 0, 0, 0);
             Check(result.nextDurationScale < 1, "One perfect attempt raises the speed");
+            Check(1 / result.nextDurationScale <= 1 + AdaptiveCoach.MaxSpeedStepUp + .0001f, "Speed rises at most 5 % per attempt");
             var saved = SavedSettings.Load(path);
             Check(saved.Arm("test", 0).speed > 1 && saved.Arm("test", 1).speed == 1, "Each arm is saved separately");
 

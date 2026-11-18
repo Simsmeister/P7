@@ -13,11 +13,11 @@ namespace P7
         {
             public string exerciseId, exerciseName;
             public int side;
-            public float score, coverage, range, speed, minutes;
+            public float score, coverage, range, speed, minutes, greenShare = 1;
             public bool complete, perfect, learned, headFlag, devMode;
 
             public static Rep From(ExerciseProfile profile, int side, float score, float coverage, bool complete, AdaptiveCoach.Decision decision,
-                float secondsIntoSession = 0)
+                float secondsIntoSession = 0, float greenShare = 1)
             {
                 return new Rep
                 {
@@ -27,7 +27,8 @@ namespace P7
                     score = score,
                     coverage = coverage,
                     complete = complete,
-                    perfect = ScoreFeedback.Perfect(complete, score, coverage),
+                    perfect = ScoreFeedback.Perfect(complete, score, coverage, greenShare),
+                    greenShare = greenShare,
                     range = decision != null ? decision.rangeScaleUsed : 1,
                     speed = decision != null && decision.durationScaleUsed > 0 ? 1 / decision.durationScaleUsed : 1,
                     learned = decision != null && Learned(decision.reason),
@@ -72,7 +73,7 @@ namespace P7
         }
 
         // The view's data as a table, saved with the session (therapist-view.csv), so it survives PLAY AGAIN and a closed app.
-        public const string CsvHeader = "exercise_id,side,minutes,score,coverage,complete,perfect,range_level,speed_level,coach_learned,head_flag,developer_mode";
+        public const string CsvHeader = "exercise_id,side,minutes,score,coverage,complete,perfect,range_level,speed_level,coach_learned,head_flag,developer_mode,green_share";
 
         public static string Csv(IList<Rep> log)
         {
@@ -81,7 +82,7 @@ namespace P7
             foreach (var r in log)
                 lines.Add(string.Join(",", r.exerciseId, r.side == 0 ? "left" : "right", r.minutes.ToString("F3", c), (r.score * 100).ToString("F2", c),
                     r.coverage.ToString("F3", c), r.complete ? 1 : 0, r.perfect ? 1 : 0, r.range.ToString("F3", c), r.speed.ToString("F3", c),
-                    r.learned ? 1 : 0, r.headFlag ? 1 : 0, r.devMode ? 1 : 0));
+                    r.learned ? 1 : 0, r.headFlag ? 1 : 0, r.devMode ? 1 : 0, r.greenShare.ToString("F3", c)));
             return string.Join("\n", lines);
         }
 

@@ -33,6 +33,7 @@ namespace P7
         [Range(.25f, 1f)] public float minimumRangeScale = .4f;
         [Range(.75f, 1f)] public float fastestDurationScale = .85f;
         [Range(1f, 2f)] public float slowestDurationScale = 2f;
+        public const float MaxSpeedStepUp = .05f;
 
         // One adjustment, saved in adaptive-coach.json.
         [Serializable]
@@ -339,6 +340,10 @@ namespace P7
                 rangeChange = Mathf.Min(0, rangeChange);
                 speedChange = Mathf.Min(0, speedChange);
             }
+
+            // Speed rises at most MaxSpeedStepUp per attempt (added 2026-11-18: a headset test went from 100 to 140 %
+            // speed in four reps, too fast for players with injuries). Easing is not limited.
+            speedChange = Mathf.Min(speedChange, MaxSpeedStepUp);
 
             state.range = Mathf.Clamp(state.range + rangeChange, state.rangeFloor, 1);
             float speed = Mathf.Clamp(1 / state.durationScale * (1 + speedChange), 1 / slowestDurationScale, state.maxSpeed);
