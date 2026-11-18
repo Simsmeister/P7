@@ -545,20 +545,47 @@ public static class P7Tests
             flow |= page.Contains("FLOW");
         }
         Check(energy && flow, "The tutorial explains ENERGY and FLOW");
+        string colours = Array.Find(ExerciseGame.TutorialIntroPages, p => p.StartsWith("COLOURS")) ?? "";
+        foreach (var c in new[] { ExerciseGame.FarColor, ExerciseGame.NearColor, ExerciseGame.OnTargetColor, ExerciseGame.ArmColor(0),
+                     ExerciseGame.ArmColor(1), new Color(.2f, .85f, 1), new Color(1, .55f, .1f) })
+            Check(colours.Contains("#" + ColorUtility.ToHtmlStringRGB(c)), "The tutorial colour page uses the game's colour #" + ColorUtility.ToHtmlStringRGB(c));
 
         Check(ExerciseGame.DepthDirection(.1f) == 1 && ExerciseGame.DepthDirection(-.1f) == -1 && ExerciseGame.DepthDirection(.01f) == 0,
             "The depth cue says reach forward, come closer, or nothing");
-        Check(ExerciseGame.TargetColor(.2f) == ExerciseGame.OffTargetColor && ExerciseGame.TargetColor(.95f) == ExerciseGame.OnTargetColor
-            && ExerciseGame.OnTarget(.7f) > 0 && ExerciseGame.OnTarget(.7f) < 1, "The target ring turns from white to green as the hand reaches it");
-        var torus = ExerciseGame.TorusMesh(.085f, .008f, 48, 10);
-        bool outward = true;
-        for (int t = 0; t < torus.triangles.Length; t += 3)
+        // Green must mean "counts towards PERFECT": never wider than the hold tolerance, and a rep held at that distance
+        // the whole time, with every phase reached and full coverage, scores at least 90.
+        var ringProfile = ScriptableObject.CreateInstance<ExerciseProfile>();
+        foreach (float tolerance in new[] { .025f, .039f, .06f })
         {
-            Vector3 a = torus.vertices[torus.triangles[t]], b = torus.vertices[torus.triangles[t + 1]], c = torus.vertices[torus.triangles[t + 2]];
-            outward &= Vector3.Dot(Vector3.Cross(b - a, c - a), torus.normals[torus.triangles[t]]) > 0;
+            float green = ExerciseGame.GreenDistanceFor(tolerance, ringProfile.fullCreditMetres, ringProfile.zeroCreditMetres);
+            Check(green <= tolerance && ExerciseGame.MovementScore(ringProfile.Quality(green), 1, 1) >= .9f - .0001f,
+                "Green is within the hold tolerance and good enough for PERFECT");
+            Check(ExerciseGame.TargetColor(green, green, ringProfile.zeroCreditMetres, true) == ExerciseGame.OnTargetColor
+                && ExerciseGame.TargetColor(green + .001f, green, ringProfile.zeroCreditMetres, false) != ExerciseGame.OnTargetColor
+                && ExerciseGame.TargetColor(.2f, green, ringProfile.zeroCreditMetres, false) == ExerciseGame.FarColor,
+                "The ring is red far away, yellow close, and green only when in");
         }
-        Check(outward && torus.bounds.size.z > .015f, "The target torus has depth and its faces point outwards");
-        UnityEngine.Object.DestroyImmediate(torus);
+        Check(ExerciseGame.InTarget(.02f, .04f, false, 0) && !ExerciseGame.InTarget(.05f, .04f, false, 1)
+            && !ExerciseGame.InTarget(.02f, .04f, true, .85f) && ExerciseGame.InTarget(.02f, .04f, true, .92f),
+            "In the hold the ring is green only when the end is also reached (90 % coverage)");
+        UnityEngine.Object.DestroyImmediate(ringProfile);
+
+        foreach (var shape in new[] { ExerciseGame.TorusMesh(.05f, .007f, 48, 10), ExerciseGame.SphereMesh(.018f, 12, 18) })
+        {
+            bool outward = true;
+            var tris = shape.triangles;
+            for (int t = 0; t < tris.Length; t += 3)
+            {
+                Vector3 a = shape.vertices[tris[t]], b = shape.vertices[tris[t + 1]], c = shape.vertices[tris[t + 2]];
+                Vector3 n = shape.normals[tris[t]] + shape.normals[tris[t + 1]] + shape.normals[tris[t + 2]];
+                outward &= Vector3.Dot(Vector3.Cross(b - a, c - a), n) > 0;
+            }
+            bool shaded = shape.subMeshCount == 3;
+            for (int k = 0; k < shape.subMeshCount; k++)
+                shaded &= shape.GetTriangles(k).Length > 0;
+            Check(outward && shaded && shape.bounds.size.z > .013f, shape.name + " has depth, three shading bands and outward faces");
+            UnityEngine.Object.DestroyImmediate(shape);
+        }
         Check(Mathf.Abs(CoachCard.CardPosition.x) < .15f && CoachCard.CardPosition.z < 2 && CoachCard.CardPosition.y > -.4f,
             "The coach card sits in view, between the two lines");
     }

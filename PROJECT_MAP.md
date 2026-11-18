@@ -156,7 +156,7 @@ Quest: `/sdcard/Android/data/<bundle ID>/files/Sessions/<yyyyMMddTHHmmssfffZ>/` 
 | Automatic estimate size, start range and speed, reference eye height | constants in `ExerciseGame.Calibration.cs:67-71` | version 4 (scaption 120 degrees), .35, .65, 1.64 m |
 | Tutorial pages, practice range share, approach measurement | constants on `ExerciseGame` | `TutorialIntroPages` (4), `TutorialPageMinSeconds` 1 s, .9, last .8 s within .30 m |
 | Reach limit, floor ring, step limit, depth cue | `ArmReachMetres`, `FloorRingRadius`, `DepthCueMetres` (constants) and `stepLimitMetres`, `stepReturnMetres` (fields) on `ExerciseGame` | .66 m x body scale, .3 m, .03 m; .35 / .2 m |
-| Target ring colour and size | `ExerciseGame.TargetColor`, `OnTarget`, `TargetRingRadius`, `TargetTubeRadius`; torus built at runtime by `BuildTargetTorus` | white to green from quality .5 to .9, 8.5 cm ring, 8 mm tube |
+| Target ring colour and size, hand ball | `ExerciseGame.GreenDistanceFor`, `InTarget`, `TargetColor`, `PerfectFrameQuality`, `TargetTubeRadius`, `BallRadius`; meshes built at runtime by `BuildTargetVisuals` | hole = min(EndpointTolerance, distance at quality .86); red to yellow, green only when in; 7 mm tube; 1.8 cm ball |
 | Coach card place and size | `CoachCard.CardPosition`, `FigureScale` | `(0, -.22, 1.75)`, .26 |
 | Results confirmation | `GameMenu.ConfirmMinSeconds`, `ConfirmMaxSeconds` | .4 s, 4 s |
 | Approach speed | `PathStream.approachSpeed` | .55 |

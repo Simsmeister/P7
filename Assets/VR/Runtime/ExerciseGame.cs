@@ -107,6 +107,13 @@ namespace P7
             + "Your hand is the solid ball. Keep it inside the hollow ring.\n"
             + "Follow the line out, hold at the end, then follow it back.",
 
+            // Colours must match FarColor, NearColor, OnTargetColor, ArmColor and the depth guide (checked in P7Tests).
+            "COLOURS - AM I IN?\n"
+            + "Ball = your hand: <color=#FF334C>red</color> is the left arm, <color=#1AFF73>green</color> is the right arm.\n"
+            + "Ring: <color=#FF3326>red</color> = far, <color=#FFD91A>yellow</color> = close, <color=#26FF4C>GREEN = you are in</color>.\n"
+            + "Keep the ring green the whole way to get PERFECT.\n"
+            + "Thin line: <color=#33D9FF>blue</color> = reach further, <color=#FF8C1A>orange</color> = come closer.",
+
             "STAND STILL\n"
             + "Stay on the floor ring. You never need to step or lean.\n"
             + "Every target is within reach of your arm.\n"
@@ -141,7 +148,6 @@ namespace P7
 
         RepetitionResult current;
         MaterialPropertyBlock targetTint;
-        Renderer[] targetRenderers;
 
         public static Color ArmColor(int side) => side == 0 ? new Color(1, .2f, .3f) : new Color(.1f, 1, .45f);
 
@@ -209,8 +215,7 @@ namespace P7
         void Awake()
         {
             targetTint = new MaterialPropertyBlock();
-            BuildTargetTorus();
-            targetRenderers = targetMarker.GetComponentsInChildren<Renderer>();
+            BuildTargetVisuals();
 
             input = new InputActionMap("Exercises");
             foreach (string side in new[] { "Left", "Right" })
@@ -467,51 +472,139 @@ namespace P7
                 if (handTracked[s])
                     handMarkers[s].SetPositionAndRotation(MapToFront(handPosition[s], s), frame);
             }
-
-            float onTarget = OnTarget(FollowQuality);
-            targetTint.SetColor("_BaseColor", TargetColor(FollowQuality));
-            foreach (var r in targetRenderers)
-                r.SetPropertyBlock(targetTint);
-            if (targetTorus)
-                targetTorus.localScale = Vector3.one * (1 + .12f * onTarget);
         }
 
-        // Target ring (pilot test 1: "the rings are very 2D"). A solid torus instead of a flat 5 mm line, so the ball
-        // can pass in front of or behind it, and it turns from white to green as the hand reaches it in all three
-        // axes (the same 3D distance that is scored). The arm colour stays on the line and the coach card.
-        public static readonly Color OffTargetColor = new Color(.85f, .9f, 1), OnTargetColor = new Color(.15f, 1, .3f);
-        const float TargetRingRadius = .085f, TargetTubeRadius = .008f;
+        // Target ring and hand ball. Pilot test 1: "the rings are very 2D". Headset test 2026-11-18: the first torus
+        // went green from 9 cm and fully at 5 cm, but the hold only counts within EndpointTolerance and PERFECT also
+        // needs 90 % of the path covered, so the ring said "in" on a rep that was not PERFECT. Now:
+        // - green means exactly "this counts towards PERFECT": within GreenDistance in 3D (the scored distance), and in
+        //   the hold also at least 90 % of the way to the end. Before that the ring goes red, orange, yellow with distance;
+        // - the ring's hole has the radius GreenDistance, so "ball in the hole" and "green" agree when the depth is right;
+        // - both are shaded (three brightness bands on the unlit material) so they read as 3D, and the ball is a small
+        //   sphere in the arm colour instead of the flat 11 cm disc.
+        // Scoring is unchanged.
+        public const float PerfectFrameQuality = .86f;  // a rep at this mean quality with every phase reached scores 90
+        public static readonly Color FarColor = new Color(1, .2f, .15f), NearColor = new Color(1, .85f, .1f),
+            OnTargetColor = new Color(.15f, 1, .3f), IdleTargetColor = new Color(.85f, .9f, 1);
+        const float TargetTubeRadius = .007f, BallRadius = .018f;
+        static readonly float[] BandBrightness = { 1, .6f, .3f };
+        static readonly Vector3 BandLight = new Vector3(-.35f, .75f, -.55f).normalized;
         Transform targetTorus;
+        MeshFilter torusFilter;
+        MeshRenderer torusRenderer;
+        readonly MeshRenderer[] handBalls = new MeshRenderer[2];
+        float torusHole = -1;
+        bool targetHold;
 
-        // 0 below quality .5 (hand about 9 cm off), 1 from quality .9 (within 5 cm).
-        public static float OnTarget(float quality) => Mathf.InverseLerp(.5f, .9f, quality);
-        public static Color TargetColor(float quality) => Color.Lerp(OffTargetColor, OnTargetColor, OnTarget(quality));
+        public static float GreenDistanceFor(float endpointTolerance, float fullCreditMetres, float zeroCreditMetres)
+            => Mathf.Min(endpointTolerance, Mathf.Lerp(fullCreditMetres, zeroCreditMetres, 1 - PerfectFrameQuality));
 
-        void BuildTargetTorus()
+        public static bool InTarget(float distance, float greenDistance, bool hold, float progress)
+            => distance <= greenDistance && (!hold || progress >= .9f);
+
+        public static Color TargetColor(float distance, float greenDistance, float zeroCreditMetres, bool inTarget)
+            => inTarget ? OnTargetColor : Color.Lerp(FarColor, NearColor, Mathf.InverseLerp(zeroCreditMetres, greenDistance, distance));
+
+        void BuildTargetVisuals()
         {
             var flat = targetMarker.GetComponentInChildren<LineRenderer>();
             var torus = new GameObject("Target Torus", typeof(MeshFilter), typeof(MeshRenderer));
             torus.transform.SetParent(targetMarker, false);
-            torus.GetComponent<MeshFilter>().sharedMesh = TorusMesh(TargetRingRadius, TargetTubeRadius, 48, 10);
+            torusFilter = torus.GetComponent<MeshFilter>();
+            torusRenderer = torus.GetComponent<MeshRenderer>();
             if (flat)
             {
-                torus.GetComponent<MeshRenderer>().sharedMaterial = flat.sharedMaterial;
+                torusRenderer.sharedMaterials = new[] { flat.sharedMaterial, flat.sharedMaterial, flat.sharedMaterial };
                 flat.enabled = false;
             }
             targetTorus = torus.transform;
+
+            for (int s = 0; s < 2; s++)
+            {
+                Material material = null;
+                foreach (var r in handMarkers[s].GetComponentsInChildren<Renderer>(true))
+                {
+                    if (r is TrailRenderer)
+                        continue;
+                    material ??= r.sharedMaterial;
+                    r.enabled = false;
+                }
+                var ball = new GameObject("Hand Ball", typeof(MeshFilter), typeof(MeshRenderer));
+                ball.transform.SetParent(handMarkers[s], false);
+                ball.GetComponent<MeshFilter>().sharedMesh = SphereMesh(BallRadius, 12, 18);
+                handBalls[s] = ball.GetComponent<MeshRenderer>();
+                handBalls[s].sharedMaterials = new[] { material, material, material };
+            }
         }
 
-        // A torus around the local z axis, facing the player like the old ring.
+        // Runs in LateUpdate, after the ring and the ball have moved this frame. The marker distance equals the scored
+        // distance, because MapToFront shifts both by the same offset.
+        void UpdateTargetVisuals()
+        {
+            int side = ActiveSide;
+            if (handBalls[side])
+                Shade(handBalls[side], ArmColor(side));
+            if (!targetTorus || !targetMarker.gameObject.activeInHierarchy)
+                return;
+
+            var profile = ActiveProfile;
+            float green = GreenDistanceFor(EndpointTolerance, profile.fullCreditMetres, profile.zeroCreditMetres);
+            if (Mathf.Abs(green - torusHole) > .002f)
+            {
+                if (torusFilter.sharedMesh)
+                    Destroy(torusFilter.sharedMesh);
+                torusFilter.sharedMesh = TorusMesh(green + TargetTubeRadius, TargetTubeRadius, 48, 10);
+                torusHole = green;
+            }
+
+            bool live = handTracked[side] && handMarkers[side].gameObject.activeInHierarchy && !replay.IsActive;
+            float distance = Vector3.Distance(handMarkers[side].position, targetMarker.position);
+            float progress = Vector3.Dot(handPosition[side] - start, end - start) / Mathf.Max(.000001f, (end - start).sqrMagnitude);
+            bool inTarget = live && InTarget(distance, green, IsPlaying && targetHold, progress);
+            Shade(torusRenderer, live ? TargetColor(distance, green, profile.zeroCreditMetres, inTarget) : IdleTargetColor);
+            targetTorus.localScale = Vector3.one * (inTarget ? 1.08f : 1);
+        }
+
+        void Shade(Renderer renderer, Color color)
+        {
+            for (int i = 0; i < BandBrightness.Length; i++)
+            {
+                Color c = color * BandBrightness[i];
+                c.a = 1;
+                targetTint.SetColor("_BaseColor", c);
+                renderer.SetPropertyBlock(targetTint, i);
+            }
+        }
+
+        // Splits a mesh into three submeshes by how much each face turns towards a light above, left and in front,
+        // so an unlit material can be drawn bright, medium and dark and the shape reads as 3D.
+        static Mesh BandedMesh(string meshName, Vector3[] vertices, Vector3[] normals, List<int> triangles)
+        {
+            var bands = new[] { new List<int>(), new List<int>(), new List<int>() };
+            for (int t = 0; t < triangles.Count; t += 3)
+            {
+                Vector3 n = normals[triangles[t]] + normals[triangles[t + 1]] + normals[triangles[t + 2]];
+                float d = Vector3.Dot(n.normalized, BandLight);
+                bands[d > .3f ? 0 : d > -.25f ? 1 : 2].AddRange(new[] { triangles[t], triangles[t + 1], triangles[t + 2] });
+            }
+            var mesh = new Mesh { name = meshName, vertices = vertices, normals = normals, subMeshCount = 3 };
+            for (int k = 0; k < 3; k++)
+                mesh.SetTriangles(bands[k], k);
+            mesh.RecalculateBounds();
+            return mesh;
+        }
+
+        // A torus around the local z axis, facing the player. Faces are clockwise seen from outside (Unity's front).
         public static Mesh TorusMesh(float radius, float tube, int segments, int sides)
         {
             var vertices = new Vector3[segments * sides];
             var normals = new Vector3[vertices.Length];
-            var triangles = new int[segments * sides * 6];
-            for (int i = 0, t = 0; i < segments; i++)
+            var triangles = new List<int>(segments * sides * 6);
+            for (int i = 0; i < segments; i++)
             {
                 float a = i * Mathf.PI * 2 / segments;
                 var outward = new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0);
-                for (int j = 0; j < sides; j++, t += 6)
+                for (int j = 0; j < sides; j++)
                 {
                     float b = j * Mathf.PI * 2 / sides;
                     var normal = outward * Mathf.Cos(b) + Vector3.forward * Mathf.Sin(b);
@@ -519,14 +612,37 @@ namespace P7
                     normals[i * sides + j] = normal;
                     int i2 = (i + 1) % segments, j2 = (j + 1) % sides;
                     int v00 = i * sides + j, v10 = i2 * sides + j, v01 = i * sides + j2, v11 = i2 * sides + j2;
-                    // Clockwise seen from outside, Unity's front face.
-                    triangles[t] = v00; triangles[t + 1] = v10; triangles[t + 2] = v01;
-                    triangles[t + 3] = v10; triangles[t + 4] = v11; triangles[t + 5] = v01;
+                    triangles.AddRange(new[] { v00, v10, v01, v10, v11, v01 });
                 }
             }
-            var mesh = new Mesh { name = "Target Torus", vertices = vertices, normals = normals, triangles = triangles };
-            mesh.RecalculateBounds();
-            return mesh;
+            return BandedMesh("Target Torus", vertices, normals, triangles);
+        }
+
+        public static Mesh SphereMesh(float radius, int rings, int segments)
+        {
+            int row = segments + 1;
+            var vertices = new Vector3[(rings + 1) * row];
+            var normals = new Vector3[vertices.Length];
+            var triangles = new List<int>(rings * segments * 6);
+            for (int r = 0; r <= rings; r++)
+            {
+                float theta = Mathf.PI * r / rings;
+                for (int s = 0; s <= segments; s++)
+                {
+                    float phi = Mathf.PI * 2 * s / segments;
+                    var n = new Vector3(Mathf.Sin(theta) * Mathf.Cos(phi), Mathf.Cos(theta), Mathf.Sin(theta) * Mathf.Sin(phi));
+                    vertices[r * row + s] = n * radius;
+                    normals[r * row + s] = n;
+                    if (r == rings || s == segments)
+                        continue;
+                    int a = r * row + s, b = a + row, c = a + 1, d = b + 1;
+                    if (r > 0)
+                        triangles.AddRange(new[] { a, c, b });
+                    if (r < rings - 1)
+                        triangles.AddRange(new[] { c, d, b });
+                }
+            }
+            return BandedMesh("Hand Ball", vertices, normals, triangles);
         }
 
         // Depth cue (pilot test 1: "the rings are very 2D", players could not tell if they were too far or too close).
@@ -549,6 +665,7 @@ namespace P7
 
         void LateUpdate()
         {
+            UpdateTargetVisuals();
             if (!depthGuide)
             {
                 depthGuide = new GameObject("Depth Guide").AddComponent<LineRenderer>();
@@ -1030,6 +1147,7 @@ namespace P7
             float distance = Vector3.Distance(handPosition[side], target);
             float angle = Vector3.Angle(handRotation[side] * Vector3.forward, targetRotation * Vector3.forward);
             followQuality = tracked ? profile.Quality(distance) : 0;
+            targetHold = phase == "hold";
             scoreFeedback.TrackPerfect(tracked && phase != "rest" && !practicing, followQuality, dt);
 
             if (tracked)

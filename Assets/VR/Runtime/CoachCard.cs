@@ -51,17 +51,11 @@ namespace P7
             var profile = game.ActiveProfile;
             int side = game.ActiveSide;
             float progress = game.CurrentMovementProgress;
+            // Always the example movement on the figure's own body. The player's path used to be drawn here, but start
+            // anchoring, the coach's start shift and the reach limit move it away from the figure's fixed shoulder, and
+            // the coach shrinks it to 35 % at first, so the arm looked bent or barely moved (headset test 2026-11-18).
+            // The figure shows the form; the line shows the player's own range.
             ExampleMovement(profile, side, progress, out var hand, out var start, out var end, out var pivot);
-
-            // Show the player's own calibrated movement when there is one.
-            if (game.PathDefinition(0, out _, out var calibration, out _))
-            {
-                var toLocal = Quaternion.Inverse(game.Frame);
-                start = toLocal * (calibration.start - game.Origin);
-                end = toLocal * (calibration.end - game.Origin);
-                pivot = toLocal * (calibration.pivot - game.Origin);
-                hand = ExerciseProfile.Path(profile.movement, start, end, pivot, progress);
-            }
 
             title.text = (side == 0 ? "LEFT" : "RIGHT") + "\n" + profile.displayName;
             float viewAngle = profile.movement == ExerciseMovement.SerratusReach ? 90 : 0;
@@ -83,8 +77,9 @@ namespace P7
             switch (profile.movement)
             {
                 case ExerciseMovement.Scaption:
+                    // Straight arm (.565 m) lifted in the scapular plane to 120 degrees, as the automatic estimate.
                     start = pivot + Vector3.down * .565f;
-                    end = pivot + new Vector3(sign * .457f, 0, .332f);
+                    end = pivot + new Vector3(sign * .396f, .2825f, .288f);
                     break;
                 case ExerciseMovement.SerratusReach:
                     start = pivot + Vector3.forward * .565f;
