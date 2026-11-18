@@ -548,6 +548,17 @@ public static class P7Tests
 
         Check(ExerciseGame.DepthDirection(.1f) == 1 && ExerciseGame.DepthDirection(-.1f) == -1 && ExerciseGame.DepthDirection(.01f) == 0,
             "The depth cue says reach forward, come closer, or nothing");
+        Check(ExerciseGame.TargetColor(.2f) == ExerciseGame.OffTargetColor && ExerciseGame.TargetColor(.95f) == ExerciseGame.OnTargetColor
+            && ExerciseGame.OnTarget(.7f) > 0 && ExerciseGame.OnTarget(.7f) < 1, "The target ring turns from white to green as the hand reaches it");
+        var torus = ExerciseGame.TorusMesh(.085f, .008f, 48, 10);
+        bool outward = true;
+        for (int t = 0; t < torus.triangles.Length; t += 3)
+        {
+            Vector3 a = torus.vertices[torus.triangles[t]], b = torus.vertices[torus.triangles[t + 1]], c = torus.vertices[torus.triangles[t + 2]];
+            outward &= Vector3.Dot(Vector3.Cross(b - a, c - a), torus.normals[torus.triangles[t]]) > 0;
+        }
+        Check(outward && torus.bounds.size.z > .015f, "The target torus has depth and its faces point outwards");
+        UnityEngine.Object.DestroyImmediate(torus);
         Check(Mathf.Abs(CoachCard.CardPosition.x) < .15f && CoachCard.CardPosition.z < 2 && CoachCard.CardPosition.y > -.4f,
             "The coach card sits in view, between the two lines");
     }

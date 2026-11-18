@@ -209,6 +209,7 @@ namespace P7
         void Awake()
         {
             targetTint = new MaterialPropertyBlock();
+            BuildTargetTorus();
             targetRenderers = targetMarker.GetComponentsInChildren<Renderer>();
 
             input = new InputActionMap("Exercises");
@@ -467,9 +468,65 @@ namespace P7
                     handMarkers[s].SetPositionAndRotation(MapToFront(handPosition[s], s), frame);
             }
 
-            targetTint.SetColor("_BaseColor", ArmColor(ActiveSide));
+            float onTarget = OnTarget(FollowQuality);
+            targetTint.SetColor("_BaseColor", TargetColor(FollowQuality));
             foreach (var r in targetRenderers)
                 r.SetPropertyBlock(targetTint);
+            if (targetTorus)
+                targetTorus.localScale = Vector3.one * (1 + .12f * onTarget);
+        }
+
+        // Target ring (pilot test 1: "the rings are very 2D"). A solid torus instead of a flat 5 mm line, so the ball
+        // can pass in front of or behind it, and it turns from white to green as the hand reaches it in all three
+        // axes (the same 3D distance that is scored). The arm colour stays on the line and the coach card.
+        public static readonly Color OffTargetColor = new Color(.85f, .9f, 1), OnTargetColor = new Color(.15f, 1, .3f);
+        const float TargetRingRadius = .085f, TargetTubeRadius = .008f;
+        Transform targetTorus;
+
+        // 0 below quality .5 (hand about 9 cm off), 1 from quality .9 (within 5 cm).
+        public static float OnTarget(float quality) => Mathf.InverseLerp(.5f, .9f, quality);
+        public static Color TargetColor(float quality) => Color.Lerp(OffTargetColor, OnTargetColor, OnTarget(quality));
+
+        void BuildTargetTorus()
+        {
+            var flat = targetMarker.GetComponentInChildren<LineRenderer>();
+            var torus = new GameObject("Target Torus", typeof(MeshFilter), typeof(MeshRenderer));
+            torus.transform.SetParent(targetMarker, false);
+            torus.GetComponent<MeshFilter>().sharedMesh = TorusMesh(TargetRingRadius, TargetTubeRadius, 48, 10);
+            if (flat)
+            {
+                torus.GetComponent<MeshRenderer>().sharedMaterial = flat.sharedMaterial;
+                flat.enabled = false;
+            }
+            targetTorus = torus.transform;
+        }
+
+        // A torus around the local z axis, facing the player like the old ring.
+        public static Mesh TorusMesh(float radius, float tube, int segments, int sides)
+        {
+            var vertices = new Vector3[segments * sides];
+            var normals = new Vector3[vertices.Length];
+            var triangles = new int[segments * sides * 6];
+            for (int i = 0, t = 0; i < segments; i++)
+            {
+                float a = i * Mathf.PI * 2 / segments;
+                var outward = new Vector3(Mathf.Cos(a), Mathf.Sin(a), 0);
+                for (int j = 0; j < sides; j++, t += 6)
+                {
+                    float b = j * Mathf.PI * 2 / sides;
+                    var normal = outward * Mathf.Cos(b) + Vector3.forward * Mathf.Sin(b);
+                    vertices[i * sides + j] = outward * radius + normal * tube;
+                    normals[i * sides + j] = normal;
+                    int i2 = (i + 1) % segments, j2 = (j + 1) % sides;
+                    int v00 = i * sides + j, v10 = i2 * sides + j, v01 = i * sides + j2, v11 = i2 * sides + j2;
+                    // Clockwise seen from outside, Unity's front face.
+                    triangles[t] = v00; triangles[t + 1] = v10; triangles[t + 2] = v01;
+                    triangles[t + 3] = v10; triangles[t + 4] = v11; triangles[t + 5] = v01;
+                }
+            }
+            var mesh = new Mesh { name = "Target Torus", vertices = vertices, normals = normals, triangles = triangles };
+            mesh.RecalculateBounds();
+            return mesh;
         }
 
         // Depth cue (pilot test 1: "the rings are very 2D", players could not tell if they were too far or too close).
