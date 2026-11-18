@@ -109,7 +109,7 @@ Decided 2026-11-04: night "Beat Saber Lite" theme, no ship story. Player-facing 
 
 Decided 2026-11-04: the line stays about 1.35 m in front of the player (no move to the hand).
 
-Decided 2026-11-04: perfect = `complete`, score >= 90 and coverage >= 90 % (`ScoreFeedback.Perfect`). Changed 2026-11-18 by Frederik after his headset test (19 of 21 reps PERFECT, one with the ring yellow 22 % of the time): PERFECT also needs the target ring green for at least 90 % of the scored time (`ScoreFeedback.PerfectGreenShare`, measured in `MeasureFrame` by the ring's own rule `InTarget`). The score and the coach are unchanged. Paper 4.3.1 must say this.
+Decided 2026-11-04: perfect = `complete`, score >= 90 and coverage >= 90 % (`ScoreFeedback.Perfect`). Changed 2026-11-18 by Frederik after his headset test (19 of 21 reps PERFECT, one with the ring yellow 22 % of the time): PERFECT also needs the target ring green for at least 90 % of the scored time (`ScoreFeedback.PerfectGreenShare`, measured in `MeasureFrame` by the ring's own rule `InTarget`). The score and the coach are unchanged. Done in Overleaf the same day: 4.3.1 (perfect rule incl. the green ring, and that ring, rule and speed limits came after the pilot), 4.4 (speed rises at most 5 % per attempt) and 4.2 (starting speed 60-80 % from the tutorial practice).
 
 Decided 2026-11-18 by Frederik: slower start for players with injuries. The tutorial's measured starting speed is at most 80 % (`ExerciseGame.PracticeSpeedMax`, was 100 %), and the coach raises speed at most 5 % per attempt (`AdaptiveCoach.MaxSpeedStepUp`, a gate outside the network; easing is not limited). His full round before this went from 100 to 140 % speed in four reps per exercise and arm. Range steps are unchanged (still section 15 A5).
 
