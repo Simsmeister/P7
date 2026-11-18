@@ -499,8 +499,20 @@ namespace P7
         public static float GreenDistanceFor(float endpointTolerance, float fullCreditMetres, float zeroCreditMetres)
             => Mathf.Min(endpointTolerance, Mathf.Lerp(fullCreditMetres, zeroCreditMetres, 1 - PerfectFrameQuality));
 
-        public static bool InTarget(float distance, float greenDistance, bool hold, float progress)
-            => distance <= greenDistance && (!hold || progress >= .9f);
+        // In the hold, "reached the end" means the rep's coverage so far is at least 90 % (the PERFECT rule), so holding
+        // still near a short serratus end stays green (fixed 2026-11-18: needing 90 % progress in every hold frame made
+        // the ring yellow for about half of a good serratus hold).
+        public static bool InTarget(float distance, float greenDistance, bool hold, float coverageSoFar)
+            => distance <= greenDistance && (!hold || coverageSoFar >= .9f);
+
+        // The rep's range coverage so far, including the hand's current progress along the path.
+        float CoverageSoFar(float progress)
+        {
+            if (current == null)
+                return Mathf.Clamp01(progress);
+            float lo = Mathf.Min(current.minimumProgress, progress), hi = Mathf.Max(current.maximumProgress, progress);
+            return TravelCoverage(lo, hi);
+        }
 
         public static Color TargetColor(float distance, float greenDistance, float zeroCreditMetres, bool inTarget)
             => inTarget ? OnTargetColor : Color.Lerp(FarColor, NearColor, Mathf.InverseLerp(zeroCreditMetres, greenDistance, distance));
@@ -560,7 +572,7 @@ namespace P7
             bool live = handTracked[side] && handMarkers[side].gameObject.activeInHierarchy && !replay.IsActive;
             float distance = Vector3.Distance(handMarkers[side].position, targetMarker.position);
             float progress = Vector3.Dot(handPosition[side] - start, end - start) / Mathf.Max(.000001f, (end - start).sqrMagnitude);
-            bool inTarget = live && InTarget(distance, green, IsPlaying && targetHold, progress);
+            bool inTarget = live && InTarget(distance, green, IsPlaying && targetHold, CoverageSoFar(progress));
             Shade(torusRenderer, live ? TargetColor(distance, green, profile.zeroCreditMetres, inTarget) : IdleTargetColor);
             targetTorus.localScale = Vector3.one * (inTarget ? 1.08f : 1);
         }
@@ -1203,7 +1215,7 @@ namespace P7
             {
                 current.scoredSeconds += dt;
                 float green = GreenDistanceFor(EndpointTolerance, profile.fullCreditMetres, profile.zeroCreditMetres);
-                if (InTarget(distance, green, phase == "hold", progress))
+                if (InTarget(distance, green, phase == "hold", CoverageSoFar(progress)))
                     current.greenSeconds += dt;
             }
             current.TrackHead(Vector3.Distance(head.position, origin), headDegrees, headSeverity, dt);

@@ -106,13 +106,17 @@ namespace P7
         Font font;
         Transform content;
         int shownCount = -1;
+        Rep shownLast;
 
         public void Show(IList<Rep> log, Font textFont)
         {
             gameObject.SetActive(true);
-            if (log.Count == shownCount && font == textFont)
+            // Rebuild when the log changed, also when a new session happens to have the same number of reps.
+            var last = log.Count > 0 ? log[log.Count - 1] : null;
+            if (log.Count == shownCount && last == shownLast && font == textFont)
                 return;
             shownCount = log.Count;
+            shownLast = last;
             font = textFont;
             if (!material)
                 material = new Material(Shader.Find("Universal Render Pipeline/Unlit"));

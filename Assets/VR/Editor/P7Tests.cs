@@ -594,7 +594,7 @@ public static class P7Tests
                 "The ring is red far away, yellow close, and green only when in");
         }
         Check(ExerciseGame.InTarget(.02f, .04f, false, 0) && !ExerciseGame.InTarget(.05f, .04f, false, 1)
-            && !ExerciseGame.InTarget(.02f, .04f, true, .85f) && ExerciseGame.InTarget(.02f, .04f, true, .92f),
+            && !ExerciseGame.InTarget(.02f, .04f, true, .85f) && ExerciseGame.InTarget(.02f, .04f, true, .92f) && ExerciseGame.InTarget(.02f, .04f, true, 1),
             "In the hold the ring is green only when the end is also reached (90 % coverage)");
         UnityEngine.Object.DestroyImmediate(ringProfile);
 

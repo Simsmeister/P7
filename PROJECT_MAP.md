@@ -25,6 +25,7 @@ Assets/
   TempDiagnostics/             temporary debugging tools (Tools > Temp); remove before hand-in
   _Recovery/0.unity            crash-recovery scene committed by accident; remove
 Tools/coach_training_labels.py  the synthetic label rules for the coach network
+Tools/analyse_sessions.py      analysis of exported sessions for the final test (per participant, exercise and arm; --selftest)
 ADAPTIVE_COACH.md              coach file formats, retraining steps and guards
 Builds/, Recordings/           build output and exported sessions (gitignored)
 .utmp/                         Android build cache; gitignored, but about 47 files are still tracked
