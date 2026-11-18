@@ -148,7 +148,7 @@ def cell_rows(sessions):
             "final_speed": speed(dec[-1], "nextDurationScale") if dec else "",
             "increases": kinds.count("increase"), "eases": kinds.count("ease"),
             "keeps": kinds.count("keep"), "not_learned": kinds.count("not_learned"), "settled": settled,
-            "at_caps_end": int(bool(dec) and num(dec[-1].get("nextRangeScale")) >= .999 and 1 / num(dec[-1].get("nextDurationScale"), 1) >= 1.399),
+            "at_caps_end": int(bool(dec) and num(dec[-1].get("nextRangeScale")) >= .999 and 1 / num(dec[-1].get("nextDurationScale"), 1) >= 1.199),  # speed ceiling 1.2 since 2026-11-18 (1.4 before)
         })
         series[(pid, sid, ex, side)] = ([num(d.get("rangeScaleUsed")) for d in dec], [1 / num(d.get("durationScaleUsed"), 1) for d in dec])
     return out, series

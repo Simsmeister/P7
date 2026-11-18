@@ -34,6 +34,17 @@ namespace P7
         [Range(.75f, 1f)] public float fastestDurationScale = .85f;
         [Range(1f, 2f)] public float slowestDurationScale = 2f;
         public const float MaxSpeedStepUp = .05f;
+        // Added 2026-11-18 for players with injuries (decided by Frederik): range rises at most 10 percentage points per
+        // increase, and an increase needs two good attempts in a row at that exercise and arm. Easing is never limited.
+        public const float MaxRangeStepUp = .10f;
+        public const int GoodAttemptsBeforeIncrease = 2;
+
+        // After a STOP press: the next increase for this exercise and arm again needs two good attempts in a row.
+        public void ResetGoodStreak(string exerciseId, int side)
+        {
+            if (states.TryGetValue(exerciseId + ":" + side, out var state))
+                state.goodInRow = 0;
+        }
 
         // One adjustment, saved in adaptive-coach.json.
         [Serializable]
@@ -108,7 +119,8 @@ namespace P7
         {
             public ExerciseProfile profile;
             public float baseOutward, baseReturn;
-            public float durationScale = 1, range = 1, rangeFloor = .4f, maxSpeed = 1.4f;
+            public float durationScale = 1, range = 1, rangeFloor = .4f, maxSpeed = 1.2f;
+            public int goodInRow;  // good attempts in a row that asked for an increase; in memory only
             public Vector3 startShift;
         }
 
@@ -344,6 +356,33 @@ namespace P7
             // Speed rises at most MaxSpeedStepUp per attempt (added 2026-11-18: a headset test went from 100 to 140 %
             // speed in four reps, too fast for players with injuries). Easing is not limited.
             speedChange = Mathf.Min(speedChange, MaxSpeedStepUp);
+            rangeChange = Mathf.Min(rangeChange, MaxRangeStepUp);
+
+            // Any easing wins over an increase, and resets the streak. An increase needs GoodAttemptsBeforeIncrease good
+            // attempts in a row; a neutral attempt also breaks the streak.
+            bool held = false;
+            if (rangeChange < 0 || speedChange < 0)
+            {
+                rangeChange = Mathf.Min(0, rangeChange);
+                speedChange = Mathf.Min(0, speedChange);
+                state.goodInRow = 0;
+            }
+            else if (rangeChange > 0 || speedChange > 0)
+            {
+                if (++state.goodInRow < GoodAttemptsBeforeIncrease)
+                {
+                    rangeChange = speedChange = 0;
+                    held = true;
+                }
+                else
+                {
+                    state.goodInRow = 0;
+                }
+            }
+            else
+            {
+                state.goodInRow = 0;
+            }
 
             state.range = Mathf.Clamp(state.range + rangeChange, state.rangeFloor, 1);
             float speed = Mathf.Clamp(1 / state.durationScale * (1 + speedChange), 1 / slowestDurationScale, state.maxSpeed);
@@ -354,7 +393,7 @@ namespace P7
             else if (rangeChange > 0 || speedChange > 0)
                 decision.reason = "Network increases next attempt within limits";
             else
-                decision.reason = "Maintain difficulty";
+                decision.reason = held ? "Maintain difficulty until a second good attempt in a row" : "Maintain difficulty";
         }
 
         static bool IsReliable(float score, float coverage, float validSeconds, float trackingLostSeconds,

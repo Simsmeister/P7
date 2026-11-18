@@ -116,7 +116,8 @@ All values are prototype settings without clinical validation.
 | Node repaired (export, cue) | `q >= .65` | `PathFeedback.NodeRepaired` |
 | Line glow colour | `Glow(q)`: amber*.35 to white over `InverseLerp(.4, .9, q)`; also tints sections and the hand trail | `PathFeedback.Glow` |
 | Perfect | complete, score >= .9, coverage >= .9 and the ring green for >= 90 % of the scored time (added 2026-11-18) | `ScoreFeedback.Perfect`, `PerfectGreenShare`; green time in `ExerciseGame.MeasureFrame` |
-| Speed ramp | tutorial start speed at most 80 %; the coach raises speed at most 5 % per attempt, easing unlimited, ceiling 1 + `fasterPercent` (140 %) | `ExerciseGame.PracticeSpeedMax`, `AdaptiveCoach.MaxSpeedStepUp` |
+| Speed and range ramp | tutorial start speed at most 80 %; speed +5 % and range +10 points at most per increase; an increase needs two good attempts in a row; easing unlimited; ceiling 1 + `fasterPercent` (default 20, so 120 %) | `ExerciseGame.PracticeSpeedMax`, `AdaptiveCoach.MaxSpeedStepUp`, `MaxRangeStepUp`, `GoodAttemptsBeforeIncrease`, `SavedSettings.fasterPercent` |
+| STOP | B during play pauses; paused time is lost time; resets the good-attempt streak; `stop_presses`, `stop_seconds` in outcome.json | `ExerciseGame.stopped`, `AdaptiveCoach.ResetGoodStreak` |
 | Points | `+1000q` per rep; if perfect, `Combo++` and `+1000q * min(Combo-1, 4)`, else `Combo = 0`; `Multiplier = clamp(Combo, 1, 5)` | `ScoreFeedback.Reward` (`ScoreFeedback.cs:103`) |
 | Perfect-flow bonus | Quality >= .9 for 2 s, then 100 x its own multiplier every .5 s; the multiplier rises every four ticks, capped at x5; any miss, tracking loss or rest restarts the warm-up | `PerfectFlowBonus.cs` |
 

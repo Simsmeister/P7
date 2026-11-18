@@ -22,7 +22,7 @@ namespace P7
     public class SpeedLimit
     {
         public string id;
-        public float fasterPercent = 40;
+        public float fasterPercent = 20;  // ceiling 120 % speed (was 40, lowered 2026-11-18 for players with injuries)
     }
 
     // Everything the player or therapist can change, saved as player-settings.json.
@@ -98,7 +98,7 @@ namespace P7
                 arm.devRange = SafeClamp(arm.devRange, .3f, 1, 1);
             }
             foreach (var limit in data.limits)
-                limit.fasterPercent = SafeClamp(limit.fasterPercent, 0, 100, 40);
+                limit.fasterPercent = SafeClamp(limit.fasterPercent, 0, 100, 20);
 
             return data;
         }

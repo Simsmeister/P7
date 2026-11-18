@@ -117,7 +117,8 @@ namespace P7
             "STAND STILL\n"
             + "Stay on the floor ring. You never need to step or lean.\n"
             + "Every target is within reach of your arm.\n"
-            + "If one feels too far, go only as far as is comfortable.",
+            + "If one feels too far, go only as far as is comfortable.\n"
+            + "If anything hurts, press B to pause (STOP) and tell the test leader.",
 
             "ENERGY AND FLOW\n"
             + "ENERGY (upper bar) fills with every good movement. Fill it to finish the level.\n"
@@ -144,6 +145,12 @@ namespace P7
         float bodyScale = 1;
         bool offSpot;
         float offSpotSeconds;
+        // STOP (B during play, added 2026-11-18): pauses the line for pain or a rest. Logged, and never a reason to
+        // make it harder: paused time counts as lost time and the coach's good-attempt streak resets.
+        bool stopped;
+        int stopPresses;
+        float stopSeconds;
+        public bool Stopped => stopped;
         LineRenderer floorRing;
 
         RepetitionResult current;
@@ -363,10 +370,12 @@ namespace P7
                 Tint(floorRing, offSpot ? new Color(1, .55f, .1f) : new Color(.1f, .55f, .65f));
             }
 
-            board.gameObject.SetActive(!reviewing && !MenuVisible && (!PathsVisible || practicing || offSpot));
+            board.gameObject.SetActive(!reviewing && !MenuVisible && (!PathsVisible || practicing || offSpot || stopped));
             // While practising, the board drops closer to the line so the hints are in view.
-            board.SetPositionAndRotation(origin + frame * new Vector3(0, practicing || offSpot ? PracticeBoardHeight : .70f, 2.3f), frame);
-            if (offSpot && !reviewing)
+            board.SetPositionAndRotation(origin + frame * new Vector3(0, practicing || offSpot || stopped ? PracticeBoardHeight : .70f, 2.3f), frame);
+            if (stopped && !reviewing)
+                boardText.text = "PAUSED (STOP)\nRest as long as you need, and tell the test leader if it hurts.\nB: continue   X: end the session";
+            else if (offSpot && !reviewing)
                 boardText.text = "STEP BACK ONTO THE FLOOR RING\nThe line waits for you.\nEvery target can be reached from the ring.";
             else if (practicing && !reviewing)
                 boardText.text = PracticeHint();
@@ -379,10 +388,12 @@ namespace P7
                 return;
 
             // Off the floor ring counts like a tracking pause for the line, but is logged separately.
-            bool tracked = IsTracked && !offSpot;
+            bool tracked = IsTracked && !offSpot && !stopped;
             float dt = Mathf.Min(Time.unscaledDeltaTime, .1f);
             if (offSpot)
                 offSpotSeconds += Time.unscaledDeltaTime;
+            if (stopped)
+                stopSeconds += Time.unscaledDeltaTime;
             if (tracked && PathsVisible && !practicing)
             {
                 activeSeconds += dt;
@@ -735,6 +746,17 @@ namespace P7
             if (CloseTherapistView)
                 pressedB = false;
 
+            if (pressedB && !practicing && (state == State.Playing || state == State.Approaching))
+            {
+                stopped = !stopped;
+                if (stopped)
+                {
+                    stopPresses++;
+                    adaptiveCoach.ResetGoodStreak(ActiveProfile.exerciseId, ActiveSide);
+                }
+                pressedB = false;
+            }
+
             if (pressedX && state != State.Welcome && state != State.Finished)
                 Finish(false);
 
@@ -798,7 +820,9 @@ namespace P7
             adaptiveCoach.Configure(Settings);
 
             CompletedRepetitions = 0;
-            scoreSum = trackingPause = activeSeconds = activeSinceBreak = offSpotSeconds = 0;
+            scoreSum = trackingPause = activeSeconds = activeSinceBreak = offSpotSeconds = stopSeconds = 0;
+            stopped = false;
+            stopPresses = 0;
             breaksTaken = 0;
             block = 0;
             missionStarted = false;
@@ -1141,7 +1165,7 @@ namespace P7
             // The line only moves while the player is tracked and on the floor ring.
             if (tracked)
                 clock += dt;
-            else if (!offSpot)
+            else if (!offSpot && !stopped)
                 trackingPause += Time.unscaledDeltaTime;
 
             if (clock >= 0)
@@ -1183,7 +1207,7 @@ namespace P7
             {
                 // A rep with more than 10 % lost time is not learned from; stepping off the ring counts as lost time.
                 current.TrackingLost(Time.unscaledDeltaTime);
-                if (!offSpot)
+                if (!offSpot && !stopped)
                     trackingPause += Time.unscaledDeltaTime;
             }
 
@@ -1347,6 +1371,7 @@ namespace P7
 
         void Finish(bool complete)
         {
+            stopped = false;
             if (state == State.Welcome || state == State.Finished)
                 return;
             if (replay.IsDemo)

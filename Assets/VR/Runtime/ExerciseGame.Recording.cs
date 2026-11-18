@@ -236,7 +236,7 @@ namespace P7
                 Save("outcome.json", "{\"participant_id\":\"" + participantId + "\",\"complete\":" + (complete ? "true" : "false")
                     + ",\"outcome\":\"" + run.outcome + "\",\"tracking_pause_seconds\":" + F(trackingPause)
                     + ",\"active_seconds\":" + F(activeSeconds) + ",\"breaks\":" + breaksTaken
-                    + ",\"off_spot_seconds\":" + F(offSpotSeconds) + "}");
+                    + ",\"off_spot_seconds\":" + F(offSpotSeconds) + ",\"stop_presses\":" + stopPresses + ",\"stop_seconds\":" + F(stopSeconds) + "}");
                 replay.Save(sessionFolder);
             }
             catch (Exception e)

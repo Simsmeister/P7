@@ -358,7 +358,11 @@ public static class P7Tests
             coach.Configure(settings);
 
             var result = coach.Observe(profile, 0, 1, 100, 1, 8, 0, 0, 0);
-            Check(result.nextDurationScale < 1, "One perfect attempt raises the speed");
+            Check(result.nextDurationScale == result.durationScaleUsed && result.nextRangeScale == result.rangeScaleUsed,
+                "One good attempt alone keeps the level (two in a row are needed)");
+            result = coach.Observe(profile, 0, 1, 100, 1, 8, 0, 0, 0);
+            Check(result.nextDurationScale < 1, "A second good attempt in a row raises the speed");
+            Check(result.nextRangeScale - result.rangeScaleUsed <= AdaptiveCoach.MaxRangeStepUp + .0001f, "Range rises at most 10 points per increase");
             Check(1 / result.nextDurationScale <= 1 + AdaptiveCoach.MaxSpeedStepUp + .0001f, "Speed rises at most 5 % per attempt");
             var saved = SavedSettings.Load(path);
             Check(saved.Arm("test", 0).speed > 1 && saved.Arm("test", 1).speed == 1, "Each arm is saved separately");
@@ -368,14 +372,20 @@ public static class P7Tests
 
             result = coach.Observe(profile, 0, 2, 30, .4f, 8, 0, 0, 0);
             Check(result.nextRangeScale < 1 && result.nextDurationScale > result.durationScaleUsed, "A poor attempt eases at once");
+            coach.Observe(profile, 0, 3, 100, 1, 8, 0, 0, 0);
             result = coach.Observe(profile, 0, 3, 100, 1, 8, 0, 0, 0);
-            Check(result.nextRangeScale > result.rangeScaleUsed && result.nextDurationScale < result.durationScaleUsed, "A strong attempt raises speed and range");
+            Check(result.nextRangeScale > result.rangeScaleUsed && result.nextDurationScale < result.durationScaleUsed, "Two strong attempts raise speed and range");
             result = coach.Observe(profile, 0, 4, 62, .85f, 8, 0, 0, 0);
             Check(result.nextDurationScale == result.durationScaleUsed && result.nextRangeScale == result.rangeScaleUsed, "A medium attempt keeps the level");
             result = coach.Observe(profile, 0, 5, 0, 0, 8, 4, 0, 0);
             Check(result.nextDurationScale == result.durationScaleUsed && result.nextRangeScale == result.rangeScaleUsed, "Lost tracking changes nothing");
+            coach.Observe(profile, 0, 6, 100, 1, 8, 0, 0, 85);
             result = coach.Observe(profile, 0, 6, 100, 1, 8, 0, 0, 85);
             Check(result.nextDurationScale < result.durationScaleUsed, "Head rotation alone does not block progress");
+            coach.Observe(profile, 0, 6, 100, 1, 8, 0, 0, 0);
+            coach.ResetGoodStreak(profile.exerciseId, 0);
+            result = coach.Observe(profile, 0, 6, 100, 1, 8, 0, 0, 0);
+            Check(result.nextDurationScale == result.durationScaleUsed, "After a STOP the next good attempt does not raise the level");
             result = coach.Observe(profile, 0, 7, 100, 1, 8, 0, .3f, 0, 0, 0, 1);
             Check(result.nextDurationScale == result.durationScaleUsed && result.nextRangeScale == result.rangeScaleUsed, "Leaning blocks an increase");
             result = coach.Observe(profile, 0, 7, 34.6159f, .7471f, 8, 0, .0748f, 26.556f);
