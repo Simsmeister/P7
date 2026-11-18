@@ -204,3 +204,32 @@ Pilot findings:
 - 6, compensation, and 7, music: not started. 8 is not a code item.
 
 Still open from this plan: run both Play Mode tests; headset test of all of the above; the team questions above; failure-ending redesign (section 7a) waits for a team decision.
+
+## 13. Review of the paper by four reviewer roles (2026-11-18)
+Four AI reviewers read the whole paper (41 pages incl. appendices) and this file, each in one role: external examiner, supervisor, physiotherapist and HCI methods reviewer. Their views are input for the team, not decisions. Literature they suggested (CORGIS, Smeddinck 2015, Hocine 2015, Lange 2012, Mueller and Isbister 2014, PXI, Braun and Clarke 2019) has NOT been checked; verify each against Crossref before citing.
+
+All four agree on:
+1. The final test does not yet measure the whole research question. Engagement is covered (UES-SF), but "appropriate level of challenge" and "support physiotherapists" are not. Add a challenge measure (a "too easy / about right / too hard" item per exercise, or a validated scale such as CORGIS), use the coach logs per participant, exercise and arm (does the level settle, how often it eased or increased), and define in 3.1 beforehand what "appropriate" means. Give the physiotherapists a task in the therapist role (watch a replay, judge progression, set limits), or narrow the research question.
+2. The game rates its own execution (3.4), so "88 %/92 % accuracy" only says how well the line was followed. Let the experts rate a sample of reps (live or from replay) with a simple checklist and report agreement with PERFECT/NICE (for example Cohen's kappa).
+3. Safety must be fixed in code before the final test, not only in the paper: nothing from iteration 2 has run on a headset, the Play Mode tests have not run, scaption must be lowered to 120 degrees in code (section 7), calibration should be mandatory in the test, a person stands next to the player during the overhead exercise, and there is a stop criterion ("stop at sharp pain").
+4. The adaptive coach needs a better defence in 4.4: why a neural network rather than the rules it learned from (the examiner's likely question: "what can the network do that an if-statement cannot?"), report the held-out error (in `ADAPTIVE_COACH.md`), and explain the step limits of ±45 % range and ±35 % speed against R8 "progression must be slow", which Table 1 marks "Met".
+
+Quick text fixes the reviewers found:
+- 4.3 still says "a one-handed task calibrated to the player's own range", which contradicts 4.2 (range is estimated by default).
+- 4.7 says "as described above", but the pilot may have run an older build; confirm the APK and write which build each test used.
+- Table 1: "Met" is the group's own judgement; consider "Implemented" and let the experts judge. Mark requirements that came from an interviewer rather than the expert (R4 was Emil's suggestion, R13 Simon's).
+- Table 3: the theme "Feedback supports correct movement" overclaims; the data show perceived usefulness, not correctness.
+- Physiotherapist: say plainly that the game trains movement quality and range, not strength; never claim it "detects compensation" (it gives a head-based flag only).
+- Introduction says "Nels", Appendix A says "Niels" because Expert 1 said it that way; add a note in Appendix A.
+- The HCI reviewer would keep Methods in present or future tense until the test has run; the supervisor said past tense, so keep past tense, but it must be true at hand-in.
+
+Supervisor's plan (adjust the dates):
+- Week 47: freeze a build tested on a headset (feature freeze after this), lower scaption to 120 degrees, fix SurveyXact and the consent, run a dress rehearsal with 1-2 people outside the group.
+- Week 48: final test with 6-10 physiotherapy students (overbook by 30 %; two did not show in the pilot) and follow-ups with both experts. Export data after every participant and never uninstall the app.
+- Week 49: analysis (framework matrix, UES/SUS descriptives, coach logs) and the Iteration 2 subsection.
+- Week 50: Findings, Discussion, Conclusion. End Findings with a table: the three parts of the research question as rows, data sources as columns.
+- Last days: abstract, title, Figure 1, approve Acknowledgements, proofread, keep two days of buffer.
+
+Physiotherapist's extra points: dosing is clinically set in sets, repetitions and symptom response rather than minutes, so show repetitions per exercise; rotation is where trunk compensation is most common and may need a slower pace; a therapist would want to lock limits, switch automatic progression off, see a session report and see the patient move without VR first.
+
+Strong points all four named: honesty about limitations, traceability from expert statement to requirement to implementation (Table 1 with timestamps), and transparent pilot reporting. The examiner rated the written sections 1-4 at about 7, with potential for 10 if the final test measures what the research question asks.
