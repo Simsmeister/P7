@@ -153,7 +153,7 @@ Quest: `/sdcard/Android/data/<bundle ID>/files/Sessions/<yyyyMMddTHHmmssfffZ>/` 
 | Participant counter (default awaiting team confirmation) | `participant.json` (editor `/tmp/p7-editor-participant.json`), kept apart from the settings so a reset cannot lose it | first value `P001`, +1 per confirmed reset |
 | Timing and tolerances per exercise | `VR/Shield/*.asset` | 3 / 1.5 / 3 / 1 s, .04 / .14 m, minimum travel .02 (serratus .015) |
 | Gap, break and session cap | fields on `ExerciseGame` (`ExerciseGame.cs:32-36`); 0 turns a limit off | 2.5, 300, 45, 900 s |
-| Automatic estimate size, start range and speed, reference eye height | constants in `ExerciseGame.Calibration.cs:67-71` | version 3, .35, .65, 1.64 m |
+| Automatic estimate size, start range and speed, reference eye height | constants in `ExerciseGame.Calibration.cs:67-71` | version 4 (scaption 120 degrees), .35, .65, 1.64 m |
 | Tutorial pages, practice range share, approach measurement | constants on `ExerciseGame` | `TutorialIntroPages` (4), `TutorialPageMinSeconds` 1 s, .9, last .8 s within .30 m |
 | Reach limit, floor ring, step limit, depth cue | `ArmReachMetres`, `FloorRingRadius`, `DepthCueMetres` (constants) and `stepLimitMetres`, `stepReturnMetres` (fields) on `ExerciseGame` | .66 m x body scale, .3 m, .03 m; .35 / .2 m |
 | Coach card place and size | `CoachCard.CardPosition`, `FigureScale` | `(0, -.22, 1.75)`, .26 |

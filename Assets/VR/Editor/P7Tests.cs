@@ -119,6 +119,8 @@ public static class P7Tests
                 Check(Vector3.Distance(small.start, small.end) < Vector3.Distance(estimate.start, estimate.end)
                     && small.start.y > estimate.start.y, "A shorter body gets a smaller, higher-starting estimate");
                 Check(ExerciseGame.RangeDirectionAllowed(movement, estimate.end - estimate.start, side, profile.minimumTravel), "Estimate direction");
+                if (movement == ExerciseMovement.Scaption)  // Expert 2's sheet: lift to 90-120 degrees (section 7, 2026-11-18)
+                    Check(Mathf.Abs(Vector3.Angle(Vector3.down, estimate.end - estimate.pivot) - 120) < 2, "Scaption estimate ends at about 120 degrees");
                 Check(estimate.ToLocal(Vector3.zero, Quaternion.identity).automatic, "Saving keeps the automatic flag");
             }
 

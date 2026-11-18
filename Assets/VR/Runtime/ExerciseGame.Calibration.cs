@@ -62,9 +62,10 @@ namespace P7
         }
 
         // The automatic estimate is the mastered movement: range 1 is the goal, the coach starts lower and works up.
-        // Version 3 (2026-11-10): scaption to about 140 degrees, 18 cm reach, 75 degrees rotation, scaled by eye height.
-        // Version 2: 120 degrees, 15 cm, 60 degrees. Version 1: shoulder height, 10 cm, 40 degrees.
-        public const int AutomaticEstimateVersion = 3;
+        // Version 4 (2026-11-18): scaption to about 120 degrees, the top of Expert 2's exercise sheet (90-120 degrees,
+        // paper Appendix G); 18 cm reach and 75 degrees rotation unchanged. Saved v3 ranges (140 degrees) are replaced.
+        // Version 3: 140 degrees, 18 cm, 75 degrees. Version 2: 120 degrees, 15 cm, 60 degrees. Version 1: shoulder height, 10 cm, 40 degrees.
+        public const int AutomaticEstimateVersion = 4;
         public const float AutomaticStartRange = .35f;
         public const float AutomaticStartSpeed = .65f;
         // Eye height of a 1.75 m adult; the estimate is drawn for this body.
@@ -97,9 +98,10 @@ namespace P7
             switch (profile.movement)
             {
                 case ExerciseMovement.Scaption:
-                    // Arm hanging down, lifted in the scapular plane to about 140 degrees.
+                    // Arm hanging down (0.5 m), lifted in the scapular plane (about 36 degrees forward of the frontal
+                    // plane) to 120 degrees, i.e. 30 degrees above horizontal: up .5*sin30, out .5*cos30.
                     start = pivot + Vector3.down * .5f * s;
-                    end = pivot + new Vector3(sign * .26f, .383f, .19f) * s;
+                    end = pivot + new Vector3(sign * .35f, .25f, .255f) * s;
                     break;
                 case ExerciseMovement.SerratusReach:
                     start = pivot + Vector3.forward * .35f * s;
