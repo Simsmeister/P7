@@ -11,7 +11,7 @@ namespace P7
     // because the scene has no EventSystem.
     public class GameMenu : MonoBehaviour
     {
-        enum Page { Home, Settings, ExerciseDetails, ResetConfirmation, Results }
+        enum Page { Home, Settings, ExerciseDetails, ResetConfirmation, Results, Therapist }
 
         static readonly Color ButtonNormal = new Color(.1f, .24f, .33f);
         static readonly Color ButtonHover = new Color(.15f, .55f, .65f);
@@ -57,9 +57,21 @@ namespace P7
         // Shown on the home page after a run, so the result can still be read if the results page was left.
         string lastResult = "";
 
+        // Physiotherapist's view of the last session (CLAUDE.md section 14). Not shown to the player: it opens from a
+        // THERAPIST VIEW button on the home page that takes two presses (outside dev mode), like the test leader's
+        // buttons on the results page. It is drawn 0.8 m in front of the menu, so the text is large enough to read.
+        // Built at runtime, so the menu prefab is unchanged.
+        TherapistView therapistView;
+
         void Awake()
         {
+            therapistView = new GameObject("Therapist View").AddComponent<TherapistView>();
+            therapistView.transform.SetParent(transform, false);
+            therapistView.transform.localPosition = new Vector3(-TherapistView.Width / 2, .6f, -.8f);
+            therapistView.Hide();
+            AddTherapistBack();
             AddTutorialToggle();
+            AddTherapistButton();
             foreach (var widget in widgets)
             {
                 string key = widget.key;
@@ -93,6 +105,50 @@ namespace P7
                 label = copy.GetComponentInChildren<Text>(true),
                 toggle = copy.GetComponentInChildren<Toggle>(true),
             });
+        }
+
+        // BACK TO MENU, just above the therapist panel: a copy of a menu "back" button on its own small world-space
+        // canvas (the panel is not a canvas), at the menu canvas's scale.
+        void AddTherapistBack()
+        {
+            var back = widgets.Find(w => w.key == "back" && w.button && w.rect);
+            if (back == null)
+                return;
+            var holder = new GameObject("Therapist Back", typeof(RectTransform), typeof(Canvas));
+            holder.GetComponent<Canvas>().renderMode = RenderMode.WorldSpace;
+            holder.transform.SetParent(therapistView.transform, false);
+            holder.transform.localPosition = new Vector3(TherapistView.Width / 2, .09f, -.01f);
+            holder.transform.localScale = canvasRoot.lossyScale;
+            var copy = Instantiate(back.rect.gameObject, holder.transform, false);
+            copy.name = "therapistBack";
+            var rect = (RectTransform)copy.transform;
+            rect.anchorMin = rect.anchorMax = rect.pivot = new Vector2(.5f, .5f);
+            rect.anchoredPosition = Vector2.zero;
+            rect.sizeDelta = new Vector2(Mathf.Max(rect.sizeDelta.x, 320), rect.sizeDelta.y);
+            var label = copy.GetComponentInChildren<Text>(true);
+            if (label)
+                label.text = "BACK TO MENU";
+            widgets.Add(new Widget { key = "therapistBack", rect = rect, label = label, button = copy.GetComponentInChildren<Button>(true) });
+        }
+
+        // A runtime copy of the home page's LAST REPLAY button, which is split in two halves to make room.
+        void AddTherapistButton()
+        {
+            var replay = widgets.Find(w => w.key == "replay" && w.rect && w.rect.IsChildOf(home.transform));
+            if (replay == null || widgets.Exists(w => w.key == "therapist"))
+                return;
+
+            var copy = Instantiate(replay.rect.gameObject, replay.rect.parent, false);
+            copy.name = "therapist";
+            var rect = (RectTransform)copy.transform;
+            float half = replay.rect.sizeDelta.x / 4 + 5;
+            rect.sizeDelta = replay.rect.sizeDelta = new Vector2(replay.rect.sizeDelta.x / 2 - 10, replay.rect.sizeDelta.y);
+            rect.anchoredPosition = replay.rect.anchoredPosition + new Vector2(half, 0);
+            replay.rect.anchoredPosition -= new Vector2(half, 0);
+            var label = copy.GetComponentInChildren<Text>(true);
+            if (label)
+                label.text = "THERAPIST VIEW";
+            widgets.Add(new Widget { key = "therapist", rect = rect, label = label, button = copy.GetComponentInChildren<Button>(true) });
         }
 
         void OnEnable()
@@ -132,7 +188,7 @@ namespace P7
         // Whether a button on the results page needs a second press before it acts.
         public static bool NeedsConfirm(string key, bool onResults, bool devMode)
         {
-            return onResults && !devMode && (key == "home" || key == "again" || key == "replay");
+            return !devMode && (key == "therapist" || onResults && (key == "home" || key == "again" || key == "replay"));
         }
 
         // A second press counts only if it comes on the same button, not too fast (a held or bouncing trigger)
@@ -165,6 +221,9 @@ namespace P7
 
             switch (key)
             {
+                case "therapist":
+                    page = Page.Therapist;
+                    break;
                 case "recenter":
                     Recenter();
                     return;
@@ -260,6 +319,10 @@ namespace P7
 
             if (page == Page.Results)
                 RefreshResults();
+            if (page == Page.Therapist)
+                therapistView.Show(game.RepLog, resultTitle.font);
+            else
+                therapistView.Hide();
 
             homeStatus.text = "Participant " + game.Participant.Id + "  |  "
                 + (data.devMode ? "DEV MODE - fixed overrides, normal progress protected" : "Your personal pace and range are saved automatically")
@@ -299,6 +362,8 @@ namespace P7
         {
             if (page == Page.ResetConfirmation)
                 return "Confirming starts a new participant: " + game.Participant.NextId;
+            if (page == Page.Therapist)
+                return "Therapist view of the last session. BACK TO MENU, B or trigger to go back.";
             if (!string.IsNullOrEmpty(data.error))
                 return "Could not save settings. Progress may not persist.";
             if (!string.IsNullOrEmpty(game.Participant.error))
@@ -318,6 +383,8 @@ namespace P7
                 widget.button.interactable = game.AnyEnabled;
             if (key == "replay")
                 widget.button.interactable = data.devMode;
+            if (key == "therapist")
+                widget.button.interactable = game.RepLog.Count > 0;
 
             if (widget.button && widget.label)
             {
@@ -389,6 +456,12 @@ namespace P7
                 Recenter();
 
             bool visible = game.MenuVisible;
+            if (page == Page.Therapist && (game.CloseTherapistView || !visible))
+            {
+                page = Page.Home;
+                Refresh();
+            }
+            game.therapistViewOpen = visible && page == Page.Therapist;
             canvasRoot.gameObject.SetActive(visible);
             pointer.gameObject.SetActive(false);
             if (!visible)
@@ -489,6 +562,18 @@ namespace P7
             wasDown = down;
             if (!down)
                 dragging = null;
+
+            // In the therapist view only BACK TO MENU is a widget; a trigger press anywhere else also goes back.
+            if (page == Page.Therapist && pressed)
+            {
+                var back = widgets.Find(w => w.key == "therapistBack");
+                if (back == null || !Hit(back.rect, ray, out _))
+                {
+                    page = Page.Home;
+                    Refresh();
+                    return;
+                }
+            }
 
             foreach (var widget in widgets)
             {

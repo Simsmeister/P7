@@ -533,6 +533,8 @@ public static class P7Tests
         Check(GameMenu.NeedsConfirm("home", true, false) && GameMenu.NeedsConfirm("again", true, false)
             && !GameMenu.NeedsConfirm("home", true, true) && !GameMenu.NeedsConfirm("home", false, false)
             && !GameMenu.NeedsConfirm("start", true, false), "Only results-page buttons outside dev mode need a second press");
+        Check(GameMenu.NeedsConfirm("therapist", false, false) && !GameMenu.NeedsConfirm("therapist", false, true),
+            "The therapist view needs two presses outside dev mode");
         Check(GameMenu.Confirmed("home", "home", 1) && !GameMenu.Confirmed("home", "home", .1f)
             && !GameMenu.Confirmed("home", "home", 5) && !GameMenu.Confirmed("again", "home", 1), "A second press must be on the same button, 0.4-4 s later");
 
@@ -545,6 +547,21 @@ public static class P7Tests
             flow |= page.Contains("FLOW");
         }
         Check(energy && flow, "The tutorial explains ENERGY and FLOW");
+        // Therapist view: counts per exercise and arm, in play order, first and last three means.
+        var log = new System.Collections.Generic.List<TherapistView.Rep>();
+        float[] scores = { .5f, .6f, .7f, .8f, .9f, .95f };
+        foreach (float s in scores)
+            log.Add(new TherapistView.Rep { exerciseId = "a", side = 1, score = s, complete = s >= .7f, perfect = s >= .9f });
+        log.Insert(2, new TherapistView.Rep { exerciseId = "b", side = 0, score = 1, complete = true, perfect = true });
+        var arms = TherapistView.Summarise(log);
+        Check(arms.Count == 2 && arms[0].exerciseId == "a" && arms[0].tries == 6 && arms[0].complete == 4 && arms[0].perfect == 2
+            && Mathf.Abs(arms[0].firstMean - 60) < .01f && Mathf.Abs(arms[0].lastMean - 88.33f) < .01f
+            && arms[1].tries == 1 && Mathf.Abs(arms[1].firstMean - 100) < .01f && Mathf.Abs(arms[1].lastMean - 100) < .01f,
+            "The therapist view counts tries, complete and PERFECT reps per exercise and arm");
+        Check(TherapistView.Rep.Learned("Network eases next attempt") && TherapistView.Rep.Learned("Maintain difficulty")
+            && !TherapistView.Rep.Learned("Tracking unreliable; keep difficulty") && !TherapistView.Rep.Learned("Adaptation disabled"),
+            "The therapist view marks reps the coach did not learn from");
+
         string colours = Array.Find(ExerciseGame.TutorialIntroPages, p => p.StartsWith("COLOURS")) ?? "";
         foreach (var c in new[] { ExerciseGame.FarColor, ExerciseGame.NearColor, ExerciseGame.OnTargetColor, ExerciseGame.ArmColor(0),
                      ExerciseGame.ArmColor(1), new Color(.2f, .85f, 1), new Color(1, .55f, .1f) })

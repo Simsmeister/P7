@@ -704,6 +704,10 @@ namespace P7
 
         // A: skip the demo or break, or go on in the tutorial. B: skip the tutorial, or (dev mode, in the menu)
         // show or hide the last replay. X: stop the session. In the editor simulation Space is A and R is B.
+        // Set by GameMenu while the therapist view is open: B then closes it instead of opening a replay.
+        [System.NonSerialized] public bool therapistViewOpen;
+        public bool CloseTherapistView { get; private set; }
+
         void HandleButtons()
         {
             var keyboard = simulated ? Keyboard.current : null;
@@ -714,6 +718,10 @@ namespace P7
             previousA = a;
             previousB = b;
             previousX = x;
+
+            CloseTherapistView = pressedB && therapistViewOpen;
+            if (CloseTherapistView)
+                pressedB = false;
 
             if (pressedX && state != State.Welcome && state != State.Finished)
                 Finish(false);
@@ -787,6 +795,8 @@ namespace P7
             recordingOpen = false;
             sessionFolder = "";
             summaryRows.Clear();
+            RepLog.Clear();
+            sessionStartTime = Time.realtimeSinceStartup;
             calibrations.Clear();
             calibrationQueue.Clear();
             calibrationIndex = 0;
@@ -1267,10 +1277,16 @@ namespace P7
             pathFeedback.Resolve(score, capReached);
 
             var baseline = FindCalibration(profile.exerciseId, side);
-            adaptiveCoach.Observe(profile, side, repetition + 1, score * 100, coverage, r.validSeconds, r.trackingLostSeconds,
+            var decision = adaptiveCoach.Observe(profile, side, repetition + 1, score * 100, coverage, r.validSeconds, r.trackingLostSeconds,
                 r.headMetres, r.headDegrees, Vector3.Distance(baseline.start, baseline.end), Vector3.Distance(start, end),
                 headSeverity, r.MeanError, r.MeanStartOffset, r.startSeconds);
+            RepLog.Add(TherapistView.Rep.From(profile, side, score, coverage, complete, decision,
+                Time.realtimeSinceStartup - sessionStartTime));
         }
+
+        // Every scored repetition of this session, for the therapist view on the results page. Not exported.
+        public readonly List<TherapistView.Rep> RepLog = new List<TherapistView.Rep>();
+        float sessionStartTime;  // wall clock at START, for the view's time axis (breaks and pauses included)
 
         // Partial credit: following the line counts most, then reaching each phase, all scaled by how much of the range was used.
         public static float MovementScore(float pathQuality, float coverage, float phases)
