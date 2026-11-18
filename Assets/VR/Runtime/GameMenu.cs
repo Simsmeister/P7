@@ -363,7 +363,7 @@ namespace P7
             if (page == Page.ResetConfirmation)
                 return "Confirming starts a new participant: " + game.Participant.NextId;
             if (page == Page.Therapist)
-                return "Therapist view of the last session. BACK TO MENU, B or trigger to go back.";
+                return "Therapist view of the last session. BACK TO MENU or B to go back.";
             if (!string.IsNullOrEmpty(data.error))
                 return "Could not save settings. Progress may not persist.";
             if (!string.IsNullOrEmpty(game.Participant.error))
@@ -390,7 +390,7 @@ namespace P7
             {
                 if (!buttonText.ContainsKey(key))
                     buttonText[key] = widget.label.text;
-                bool armed = page == Page.Results && armedKey == key && armedAge <= ConfirmMaxSeconds;
+                bool armed = (page == Page.Results || key == "therapist") && armedKey == key && armedAge <= ConfirmMaxSeconds;
                 widget.label.text = armed ? "PRESS AGAIN" : buttonText[key];
             }
 
@@ -563,16 +563,13 @@ namespace P7
             if (!down)
                 dragging = null;
 
-            // In the therapist view only BACK TO MENU is a widget; a trigger press anywhere else also goes back.
-            if (page == Page.Therapist && pressed)
+            // In the therapist view only BACK TO MENU (or B) goes back, so pointing around does not close it by accident.
+            // If that button is missing, any trigger press goes back, so the view can never trap the test leader.
+            if (page == Page.Therapist && pressed && !widgets.Exists(w => w.key == "therapistBack"))
             {
-                var back = widgets.Find(w => w.key == "therapistBack");
-                if (back == null || !Hit(back.rect, ray, out _))
-                {
-                    page = Page.Home;
-                    Refresh();
-                    return;
-                }
+                page = Page.Home;
+                Refresh();
+                return;
             }
 
             foreach (var widget in widgets)

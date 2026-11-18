@@ -561,6 +561,11 @@ public static class P7Tests
         Check(TherapistView.Rep.Learned("Network eases next attempt") && TherapistView.Rep.Learned("Maintain difficulty")
             && !TherapistView.Rep.Learned("Tracking unreliable; keep difficulty") && !TherapistView.Rep.Learned("Adaptation disabled"),
             "The therapist view marks reps the coach did not learn from");
+        string csv = TherapistView.Csv(log);
+        string[] csvLines = csv.Split('\n');
+        Check(csv.StartsWith(TherapistView.CsvHeader) && csvLines.Length == log.Count + 1
+            && csvLines[1].Split(',').Length == TherapistView.CsvHeader.Split(',').Length,
+            "therapist-view.csv has a header and one row per repetition");
 
         string colours = Array.Find(ExerciseGame.TutorialIntroPages, p => p.StartsWith("COLOURS")) ?? "";
         foreach (var c in new[] { ExerciseGame.FarColor, ExerciseGame.NearColor, ExerciseGame.OnTargetColor, ExerciseGame.ArmColor(0),

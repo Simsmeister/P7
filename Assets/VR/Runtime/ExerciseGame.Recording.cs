@@ -232,6 +232,7 @@ namespace P7
                 Save("adaptive-coach.json", adaptiveCoach.ExportJson());
                 Save("session.json", JsonUtility.ToJson(BuildSessionInfo(participantId), true));
                 SaveTable("summary", SummaryHeader + "\n" + string.Join("\n", summaryRows));
+                SaveTable("therapist-view", TherapistView.Csv(RepLog));  // added 2026-11-18, a new file only
                 Save("outcome.json", "{\"participant_id\":\"" + participantId + "\",\"complete\":" + (complete ? "true" : "false")
                     + ",\"outcome\":\"" + run.outcome + "\",\"tracking_pause_seconds\":" + F(trackingPause)
                     + ",\"active_seconds\":" + F(activeSeconds) + ",\"breaks\":" + breaksTaken
