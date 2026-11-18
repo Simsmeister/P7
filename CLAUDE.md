@@ -83,6 +83,7 @@ Pilot test 1 (2026-11-11) changes the priorities: see section 10 for the iterati
 - P4 Clinical: therapist-only limits are open again since the lock was removed (section 4). Session length and breaks are in: a 45 s break after each 5 minutes of active play and a finish at the next rep boundary after 15 minutes, exported as outcome `session_limit`. A physiotherapist must confirm the numbers and whether A may skip a break. Only the timing helper and `SessionProgress` are asserted, so the break has not been run. Follow-up: menu sliders for these values, added to the menu prefab.
 - P5 Evaluation: participant ID in exports is in as a default awaiting team confirmation: the counter in `participant.json`, shown on the home menu, advanced by the RESET SAVED SETTINGS confirmation, written to `session.json` and `outcome.json`. `P7Tests` asserts the helpers and file recovery but not the menu or a real export. Still open: VRNQ questionnaire outside the app (no in-app support).
 - P6 Cleanup: one game name (working title SHOULDER FLOW in the menu, product name `P7`); consistent exercise labels (menu says FORWARD REACH / OUTWARD ROTATION, gameplay says SERRATUS REACH / EXTERNAL ROTATION); real bundle ID; the open repo issues in section 4.
+- P1b Progress view for the physiotherapist (requested by Simon on 2026-11-18): rep counts and a difficulty graph on the results page. Full spec and open questions in section 14.
 - Later, optional: haptic toggle and pattern, cosmetic unlocks, in-game progress view.
 
 ## 7. Team decisions
@@ -233,3 +234,32 @@ Supervisor's plan (adjust the dates):
 Physiotherapist's extra points: dosing is clinically set in sets, repetitions and symptom response rather than minutes, so show repetitions per exercise; rotation is where trunk compensation is most common and may need a slower pace; a therapist would want to lock limits, switch automatic progression off, see a session report and see the patient move without VR first.
 
 Strong points all four named: honesty about limitations, traceability from expert statement to requirement to implementation (Table 1 with timestamps), and transparent pilot reporting. The examiner rated the written sections 1-4 at about 7, with potential for 10 if the final test measures what the research question asks.
+
+## 14. Feature request: progress view for the physiotherapist (2026-11-18)
+Requested by Simon. Not built yet: the next developer picks it up from here and records progress in the build log (section 12).
+
+Why. Both experts asked to see how the player is doing: Expert 1 wants the number and quality of repetitions (Appendix A, 00:12:04 and 00:22:40); Expert 2 wants to see whether the line is held before and after training (Appendix B, 00:25:37). Table 1 R12 is "Partial; no therapist view". The physiotherapist reviewer (section 13) says dosing is set in repetitions per exercise and that a therapist wants a session report, and the reviewers' point 1 says the final test does not yet measure "support physiotherapists". This feature gives the physiotherapists in the final test something concrete to look at and judge.
+
+Scope for version 1 (read-only, on the results page, nothing else changes):
+1. Repetition counts per exercise and arm: attempts, complete reps and PERFECT reps. Attempts is what the results page already shows as "moves" (`CompletedRepetitions` counts every finished rep, complete or not). Complete is the `complete` flag in `ExerciseGame` (around line 1080). PERFECT is `ScoreFeedback.Perfect(complete, score, coverage)`: complete, score >= 90 and coverage >= 90 % (section 7, decided 2026-11-04). Label it "PERFECT reps", not "correct reps": the rule only says the line was followed, and it is not clinically validated (section 8, section 13 point 2).
+2. Difficulty graph: one small line chart per enabled exercise and arm, x = repetition number, y = the coach's level 0-100 %. Plot range (`AdaptiveCoach.Decision.rangeScaleUsed`) and speed (from `durationScaleUsed`; check how it maps to the speed % shown in Settings, `ArmSettings.speed`, and use the same %). Mark reps where the head flag blocked an increase and reps that were not learned from (tracking loss over 10 %, off the floor ring). Draw it in world space on the results page with a `LineRenderer` or UI lines; no new package.
+3. Optional if time allows: mean score of the first three and the last three reps per exercise and arm (Expert 2's "before and after").
+
+Data: everything already exists during the session. Use the coach's in-memory `decisions` list (`AdaptiveCoach.cs`, filled in `Observe`, saved as `adaptive-coach.json`) and the per-rep summary rows (`AddSummaryRow`). No new recording is needed. Tutorial practice reps are not counted (they give no points or recording). In dev mode learning is off, so the graph is flat: show "Dev mode: adaptation off" instead of the graph.
+
+Rules:
+- Read-only. Do not change scoring, the coach, the network or the gates.
+- Export formats are research data (section 4): add new fields or files only, rename nothing.
+- Put the counting and graph data in small pure functions and add a check for them to `P7Tests.RunChecks`.
+- Must be readable in the headset: large text, few lines. Check it on a headset.
+- Update PROJECT_MAP.md, the "Rewards: personal progress" and "Rewards: round summary" rows in section 5, and the build log in section 12 in the same commit. The paper (Table 1 R12, the Iteration 2 subsection) is updated by the team afterwards.
+
+Timing: the supervisor's plan (section 13) has a feature freeze at the end of week 47, with a headset-tested build. Build only part 1 and 2, keep it small, and test it on a headset before the freeze. If it is not working by then, leave it out of the final test build rather than delay the safety fixes (section 7 scaption, section 13 point 3), which go first.
+
+Open questions for the team (ask, do not assume):
+- PERFECT or complete as the headline number?
+- Per arm or both arms combined?
+- On the results page, or a separate THERAPIST page reached from it?
+- Should the final test use it: after each participant, the physiotherapist reads the page and answers whether they could use it? That would give the "support physiotherapists" part of the research question its own data.
+
+Later, not in version 1: progress across sessions (from the saved `Sessions` folder and `*-adaptive.json`, "better than last time", R11), a session report the therapist can export, and a therapist-only lock for the view.
